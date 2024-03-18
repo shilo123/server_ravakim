@@ -38,13 +38,12 @@
             class="RamaDatit"
             dir="rtl"
           >
-            <el-option value="אדמור" align="right"></el-option>
-            <el-option value="רב עיר" align="right"></el-option>
-            <el-option value="אברך" align="right"></el-option>
+            <el-option value="לא דתי" align="right"></el-option>
+            <el-option value=" מסורתי" align="right"></el-option>
+            <el-option value="דתי לאומי" align="right"></el-option>
             <el-option value="דתי" align="right"></el-option>
-            <el-option value="מסורתי" align="right"></el-option>
-            <el-option value="לא מאמין" align="right"></el-option>
-            <el-option value="כופר בתורת משה" align="right"></el-option>
+            <el-option value="תורני" align="right"></el-option>
+            <el-option value="חרדי" align="right"></el-option>
           </el-select>
         </el-col>
         <el-col :span="6">
@@ -140,6 +139,7 @@
 import { onMounted, reactive, ref, watch, watchEffect } from "vue";
 import { URL } from "@/URL/url";
 import axios from "axios";
+import { ElMessage } from "element-plus";
 export default {
   setup() {
     const Switchty = ref(null);
@@ -158,18 +158,57 @@ export default {
     });
     //
     watch(Form, (val) => {
-      console.log(val);
+      // console.log(val);
     });
     //
     const Submit = async () => {
-      let { data } = await axios.post(URL + "ADDForm", Form);
-      // Form = {};
-      if (data) {
-        Object.keys(Form).forEach((key) => {
-          Form[key] = ""; // או כל ערך התחלתי אחר תלוי בסוג הנתונים
-        });
-        AfterUpload.value = false;
-        Zehu.value = true;
+      const bool =
+        Form.Name &&
+        Form.phone &&
+        Form.IsuckOrMosadLimudim &&
+        Form.Age &&
+        Form.RamaDatit &&
+        Form.Ofi &&
+        Form.Hobits &&
+        Form.MaMehapes &&
+        Form.KavimClalim &&
+        Form.Gender;
+
+      if (bool) {
+        if (Form.phone.length === 10) {
+          let { data } = await axios.post(URL + "ADDForm", Form);
+          if (data) {
+            Object.keys(Form).forEach((key) => {
+              Form[key] = ""; // או כל ערך התחלתי אחר תלוי בסוג הנתונים
+            });
+            AfterUpload.value = false;
+            Zehu.value = true;
+          }
+        } else {
+          ElMessage.error("מספר טלפון חייב להכיל עשרה תווים");
+        }
+      } else {
+        if (!Form.Name) {
+          ElMessage.error("לא מלאת שם");
+        } else if (!Form.phone) {
+          ElMessage.error("לא מלאת מספר טלפון");
+        } else if (!Form.IsuckOrMosadLimudim) {
+          ElMessage.error("לא מלאת עיסוק\\מוסד לימודים");
+        } else if (!Form.Age) {
+          ElMessage.error("לא מלאת גיל");
+        } else if (!Form.RamaDatit) {
+          ElMessage.error("לא מלאת רמה דתית");
+        } else if (!Form.Ofi) {
+          ElMessage.error("לא מלאת אופי");
+        } else if (!Form.Hobits) {
+          ElMessage.error("לא מלאת תחביבים");
+        } else if (!Form.MaMehapes) {
+          ElMessage.error("לא אמרת מה אתה מחפש");
+        } else if (!Form.KavimClalim) {
+          ElMessage.error("לא תארת את משפחתך");
+        } else if (!Form.Gender) {
+          ElMessage.error("לא תארת מגדר");
+        }
       }
     };
     const GetPiccher = (url) => {

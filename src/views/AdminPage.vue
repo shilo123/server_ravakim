@@ -3,13 +3,12 @@
     <input-Serch class="input-Serch" v-model="Filters.Name" />
     <select v-model="Filters.RamaDatit" class="FilterOfRamaDatit">
       <option label="כולם" value=""></option>
-      <option value="אדמור" label="אדמור"></option>
-      <option value="רב עיר" label="רב עיר"></option>
-      <option value="אברך" label="אברך"></option>
-      <option value="דתי" label="דתי"></option>
-      <option value="מסורתי" label="מסורתי"></option>
-      <option value="לא מאמין" label="לא מאמין"></option>
-      <option value="כופר בתורת משה" label="כופר בתורת משה"></option>
+      <option value="לא דתי" label="לא דתי" align="right"></option>
+      <option value=" מסורתי" label=" מסורתי" align="right"></option>
+      <option value="דתי לאומי" label="דתי לאומי" align="right"></option>
+      <option value="דתי" label="דתי" align="right"></option>
+      <option value="תורני" label="תורני" align="right"></option>
+      <option value="חרדי" label="חרדי" align="right"></option>
     </select>
     <div class="filterAges">
       <label>מגיל:</label>
@@ -31,6 +30,17 @@
       <el-row :gutter="70">
         <el-col :span="5" v-for="(Item, i) in data" :key="i">
           <div class="card">
+            <img :src="Item.picURL" />
+
+            <div class="card-details" @click="GetPratim(Item._id)">
+              <p class="text-title">{{ Item.Name }}/{{ Item.Age }}</p>
+              <!-- <p class="text-body">{{ Item.Age }}</p> -->
+            </div>
+            <button class="card-button" @click="GetPratim(Item._id)">
+              מידע נוסף
+            </button>
+          </div>
+          <!-- <div class="card">
             <div class="first-content">
               <img :src="Item.picURL" />
               <div class="OtehrContent">
@@ -42,7 +52,7 @@
             <div class="second-content" @click="GetPratim(Item._id)">
               <span>לפרטים נוספים</span>
             </div>
-          </div>
+          </div> -->
         </el-col>
       </el-row>
     </div>
@@ -178,7 +188,7 @@ export default {
       Name: "",
       RamaDatit: "",
       AgeStart: 1,
-      AgeEnd: 50,
+      AgeEnd: 100,
       Gender: "",
     });
     const TextOfShare = ref("");
@@ -216,23 +226,23 @@ export default {
       } else {
         expendNote.value = false;
         TextOfShare.value = `
-        שם: 
+        *שם:*
         ${val.Name ? val.Name : "לא ידוע"},
-        גיל:
+        *גיל:*
         ${val.Age ? val.Age : "לא ידוע"},
-        מספר טלפון:
+        *מספר טלפון:*
         ${val.Phone ? val.Phone : "לא ידוע"},
-        רמה דתית:
+       *רמה דתית:*
         ${val.RamaDatit ? val.RamaDatit : "לא ידוע"},
-        מגדר:
+        *מגדר:*
         ${val.Gender ? val.Gender : "לא ידוע"},
-         עיסוק\\מוסד לימודים:
+         *עיסוק\\מוסד לימודים:*
         ${val.IsuckOrMosadLimudim ? val.IsuckOrMosadLimudim : "לא ידוע"},
-        תכונות אופי:
+        *תכונות אופי:*
         ${val.Ofi ? val.Ofi : "לא ידוע"},
-        משפחה:
+        *משפחה:*
         ${val.KavimClalim ? val.KavimClalim : "לא ידוע"},
-        מה מחפש:
+        *מה מחפש:*
         ${val.MaMehapes ? val.MaMehapes : "לא ידוע"},
         `;
       }
@@ -246,8 +256,6 @@ export default {
         ElMessage.error("השתבש פה משהו");
       }
     };
-    {
-    }
     // $ computed:
     const Note = computed(() => {
       return activeIsh.value.Note;
@@ -319,66 +327,102 @@ export default {
 <style lang="scss" scoped>
 // $ Card:
 .container-All {
+  // .card {
+  //   position: relative;
+  //   // width: 14%;
+  //   width: 100%;
+  //   height: 370px;
+  //   background: rgb(103, 225, 255);
+  //   transition: all 0.4s;
+  //   border-radius: 10px;
+  //   box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.705);
+  //   font-size: 30px;
+  //   font-weight: 900;
+
+  //   &:hover {
+  //     border-radius: 15px;
+  //     cursor: pointer;
+  //     box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.705);
+  //     background: rgb(103, 151, 255);
+  //   }
+  // }
+  // .first-content {
+  //   height: 100%;
+  //   width: 100%;
+  //   transition: all 0.4s;
+  //   display: flex;
+  //   justify-content: center;
+  //   align-items: center;
+  //   opacity: 1;
+  //   border-radius: 15px;
+  // }
+
+  // .card:hover .first-content {
+  //   height: 0px;
+  //   opacity: 0;
+  // }
+
+  // .second-content {
+  //   height: 0%;
+  //   width: 100%;
+  //   opacity: 0;
+  //   display: flex;
+  //   justify-content: center;
+  //   align-items: center;
+  //   border-radius: 15px;
+  //   transition: all 0.4s;
+  //   font-size: 0px;
+  //   transform: rotate(90deg) scale(-1);
+  // }
+
+  // .card:hover .second-content {
+  //   opacity: 1;
+  //   height: 100%;
+  //   font-size: 1.8rem;
+  //   transform: rotate(0deg);
+  // }
+  // //
+  // .first-content {
+  //   position: relative;
+  //   display: flex;
+  //   flex-direction: column;
+  //   img {
+  //     margin-top: 30px;
+  //     margin-bottom: 30px;
+  //     width: 50%;
+  //     height: 37%;
+  //     border-radius: 60%;
+  //     position: absolute;
+  //     top: 0;
+  //   }
+  //   .OtehrContent {
+  //     height: 42%;
+  //     position: absolute;
+  //     bottom: 0;
+
+  //     .Age {
+  //       font-size: 20px;
+  //       text-align: center;
+  //     }
+  //   }
+  // }
+  // $
   .card {
+    width: 190px;
+    height: 254px;
+    border-radius: 20px;
+    background: #f5f5f5;
     position: relative;
-    // width: 14%;
-    width: 100%;
-    height: 370px;
-    background: rgb(103, 225, 255);
-    transition: all 0.4s;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.705);
-    font-size: 30px;
-    font-weight: 900;
-
-    &:hover {
-      border-radius: 15px;
-      cursor: pointer;
-      transform: scale(1.2);
-      box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.705);
-      background: rgb(103, 151, 255);
-    }
-  }
-  .first-content {
-    height: 100%;
-    width: 100%;
-    transition: all 0.4s;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 1;
-    border-radius: 15px;
-  }
-
-  .card:hover .first-content {
-    height: 0px;
-    opacity: 0;
-  }
-
-  .second-content {
-    height: 0%;
-    width: 100%;
-    opacity: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 15px;
-    transition: all 0.4s;
-    font-size: 0px;
-    transform: rotate(90deg) scale(-1);
-  }
-
-  .card:hover .second-content {
-    opacity: 1;
-    height: 100%;
-    font-size: 1.8rem;
-    transform: rotate(0deg);
-  }
-  //
-  .first-content {
-    position: relative;
+    padding: 1.8rem;
+    border: 2px solid #c3c6ce;
+    transition: 0.5s ease-out;
+    overflow: visible;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    &:hover {
+      cursor: pointer;
+    }
     img {
       margin-top: 30px;
       margin-bottom: 30px;
@@ -386,19 +430,56 @@ export default {
       height: 37%;
       border-radius: 60%;
       position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
       top: 0;
     }
-    .OtehrContent {
-      height: 42%;
-      position: absolute;
-      bottom: 0;
-
-      .Age {
-        font-size: 20px;
-        text-align: center;
-      }
-    }
   }
+
+  .card-details {
+    color: black;
+    height: 100%;
+    gap: 0.5em;
+    display: grid;
+    place-content: center;
+  }
+
+  .card-button {
+    transform: translate(-50%, 125%);
+    width: 60%;
+    border-radius: 1rem;
+    border: none;
+    background-color: #008bf8;
+    color: #fff;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    opacity: 0;
+    transition: 0.3s ease-out;
+  }
+
+  /*Text*/
+  .text-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    position: absolute;
+    text-align: center;
+    bottom: 0;
+  }
+
+  /*Hover*/
+  .card:hover {
+    border-color: #008bf8;
+    box-shadow: 0 4px 18px 0 rgba(0, 0, 0, 0.25);
+  }
+
+  .card:hover .card-button {
+    transform: translate(-50%, 50%);
+    opacity: 1;
+  }
+  // $
   .el-row {
     position: absolute;
     top: 160px;
@@ -413,6 +494,8 @@ export default {
 .Maala {
   // background: #ffd622;
   background: #22bdff;
+  background: radial-gradient(circle at center, #22bdff, #4554f9, #56ccff);
+
   position: absolute;
   top: 0;
   right: 0;
