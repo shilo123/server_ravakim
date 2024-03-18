@@ -9,7 +9,6 @@ const fs = require("fs");
 const axios = require("axios");
 const mailjetModule = require("node-mailjet");
 const path = require("path");
-
 const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -53,7 +52,7 @@ app.post("/postFilee", upload.single("file"), async (req, res) => {
   });
 });
 //
-app.post("/GetForm", async (req, res) => {
+app.post("/ADDForm", async (req, res) => {
   try {
     req.body.Age = parseInt(req.body.Age);
     await collection.insertOne(req.body);
@@ -73,16 +72,19 @@ app.get("/GetRavakim", async (req, res) => {
 });
 app.post("/FilterData", async (req, res) => {
   try {
-    const { Name, AgeStart, AgeEnd } = req.body;
+    // console.log(req.body);
+    const { Name, AgeStart, AgeEnd, Gender } = req.body;
     let RamaDatit = req.body.RamaDatit;
     const ContentQuery = {
       Name: { $regex: `^${Name}`, $options: "i" },
       RamaDatit: { $regex: `^${RamaDatit}`, $options: "i" },
       Age: { $gt: +AgeStart, $lt: +AgeEnd },
     };
-    console.log(ContentQuery);
+    if (Gender) {
+      ContentQuery.Gender = Gender;
+    }
     let data = await collection.find(ContentQuery).toArray();
-    console.log(data);
+    // console.log(data);
     res.json(data);
   } catch (error) {
     res.json(false);
@@ -92,8 +94,22 @@ app.get("/GetDetalis/:id", async (req, res) => {
   try {
     const id = req.params.id;
     let data = await collection.find({ _id: new ObjectId(id) }).toArray();
-    console.log(data);
+    // console.log(data);
     res.json(data[0]);
+  } catch (error) {
+    res.json(false);
+  }
+});
+app.post("/AddNote", async (req, res) => {
+  try {
+    const { val, id } = req.body;
+    if (collection) {
+      await collection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { Note: val } }
+      );
+    }
+    res.json(true);
   } catch (error) {
     res.json(false);
   }
