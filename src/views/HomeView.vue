@@ -2,11 +2,11 @@
   <div>
     <div class="Form" dir="rtl" v-if="!Zehu">
       <div class="line"></div>
-      <el-row :gutter="360">
-        <el-col :span="8">
+      <el-row :gutter="300">
+        <el-col :span="6">
           <input-form v-model="Form.Name" :Label="'שם'" :Pleace="'הקלד שם'" />
         </el-col>
-        <el-col :span="8">
+        <el-col :span="6">
           <input-form
             v-model="Form.phone"
             :Label="'מספר טלפון'"
@@ -14,9 +14,16 @@
             type="Number"
           />
         </el-col>
+        <el-col :span="6">
+          <input-form
+            v-model="Form.IsuckOrMosadLimudim"
+            :Label="'עיסוק/מוסד לימודים'"
+            :Pleace="'הקלד עיסוק/מוסד לימודים '"
+          />
+        </el-col>
       </el-row>
-      <el-row :gutter="360">
-        <el-col :span="8">
+      <el-row :gutter="300">
+        <el-col :span="6">
           <input-form
             v-model="Form.Age"
             :Label="'גיל'"
@@ -24,7 +31,7 @@
             type="Number"
           />
         </el-col>
-        <el-col :span="8">
+        <el-col :span="6">
           <el-select
             v-model="Form.RamaDatit"
             placeholder="רמה דתית"
@@ -40,9 +47,20 @@
             <el-option value="כופר בתורת משה" align="right"></el-option>
           </el-select>
         </el-col>
+        <el-col :span="6">
+          <label>תכונות אופי:</label>
+          <el-input
+            v-model="Form.Ofi"
+            style="width: 240px; margin-top: 10px"
+            :autosize="{ minRows: 4, maxRows: 4 }"
+            type="textarea"
+            placeholder="כתוב נא את תוכונות האופי שלך"
+            :input-style="{ background: 'none', border: '1px solid black' }"
+          />
+        </el-col>
       </el-row>
-      <el-row :gutter="360">
-        <el-col :span="8">
+      <el-row :gutter="300">
+        <el-col :span="6">
           <label>תחביבים</label>
           <el-input
             v-model="Form.Hobits"
@@ -53,7 +71,7 @@
             :input-style="{ background: 'none', border: '1px solid black' }"
           />
         </el-col>
-        <el-col :span="8">
+        <el-col :span="6">
           <label class="Lablel">מה אתה מחפש?</label>
           <el-input
             v-model="Form.MaMehapes"
@@ -64,24 +82,38 @@
             :input-style="{ background: 'none', border: '1px solid black' }"
           />
         </el-col>
+        <el-col :span="6">
+          <label>תאר בקווים כללים את משפחתך</label>
+          <el-input
+            v-model="Form.KavimClalim"
+            style="width: 240px; margin-top: 10px"
+            :autosize="{ minRows: 4, maxRows: 4 }"
+            type="textarea"
+            placeholder="כתוב  "
+            :input-style="{ background: 'none', border: '1px solid black' }"
+          />
+        </el-col>
       </el-row>
-      <div class="sabaSwich">
-        <label>מגדר:</label>
-        <div class="ParentsSwithc">
-          <el-switch
-            ref="Switchty"
-            class="Swichto"
-            v-model="Form.Gender"
-            :active-text="'זכר'"
-            :inactive-text="'נקבה'"
-            active-value="זכר"
-            inactive-value="נקבה"
-            size="large"
-            style="
-              --el-switch-on-color: #3c9dff;
-              --el-switch-off-color: #533cff;
-            "
-          ></el-switch>
+      <div class="mydict">
+        <div>
+          <label>
+            <input
+              type="radio"
+              name="radio"
+              value="זכר"
+              v-model="Form.Gender"
+            />
+            <span>גבר</span>
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="radio"
+              value="נקבה"
+              v-model="Form.Gender"
+            />
+            <span>אישה</span>
+          </label>
         </div>
       </div>
       <el-upload
@@ -125,10 +157,12 @@ export default {
       }
     });
     //
-    watch(Form, (val) => {});
+    watch(Form, (val) => {
+      console.log(val);
+    });
     //
     const Submit = async () => {
-      let { data } = await axios.post(URL + "GetForm", Form);
+      let { data } = await axios.post(URL + "ADDForm", Form);
       // Form = {};
       if (data) {
         Object.keys(Form).forEach((key) => {
@@ -166,8 +200,10 @@ export default {
   top: 100px;
   left: 50%;
   transform: translateX(-50%);
-  width: 45%;
-  height: 45%;
+  // width: 45%;
+  // height: 45%;
+  width: 55%;
+  height: 60%;
   border: 3px solid black;
   padding: 20px;
   padding-right: 30%;
@@ -183,30 +219,6 @@ export default {
     margin-bottom: 30px;
   }
 
-  .sabaSwich {
-    display: flex;
-    position: absolute;
-    bottom: 10px;
-    left: 1%;
-    label {
-      position: absolute;
-      top: 15px;
-      right: -70px;
-      font-size: 25px;
-    }
-    .ParentsSwithc {
-      background: #00000065;
-      padding: 10px 40px;
-      width: 130px;
-      height: 40px;
-
-      border-radius: 20px;
-      .Swichto {
-        position: absolute;
-        left: 38%;
-      }
-    }
-  }
   .RamaDatit {
     width: 200px;
     position: relative;
@@ -254,5 +266,64 @@ export default {
   top: 130px;
   left: 28%;
   font-size: 70px;
+}
+label {
+  display: block;
+  width: 200px;
+}
+//
+//
+//
+//RadioButton
+:focus {
+  outline: 0;
+  border-color: #2260ff;
+  box-shadow: 0 0 0 4px #b5c9fc;
+}
+
+.mydict div {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+  justify-content: center;
+}
+
+.mydict input[type="radio"] {
+  clip: rect(0 0 0 0);
+  clip-path: inset(100%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.mydict input[type="radio"]:checked + span {
+  box-shadow: 0 0 0 0.0625em #0043ed;
+  background-color: #dee7ff;
+  z-index: 1;
+  color: #0043ed;
+}
+
+label span {
+  display: block;
+  cursor: pointer;
+  background-color: #fff;
+  padding: 0.375em 0.75em;
+  position: relative;
+  margin-left: 0.0625em;
+  box-shadow: 0 0 0 0.0625em #b5bfd9;
+  letter-spacing: 0.05em;
+  color: #3e4963;
+  text-align: center;
+  transition: background-color 0.5s ease;
+}
+
+label:first-child span {
+  border-radius: 0.375em 0 0 0.375em;
+}
+
+label:last-child span {
+  border-radius: 0 0.375em 0.375em 0;
 }
 </style>
