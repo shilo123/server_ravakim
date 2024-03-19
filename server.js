@@ -15,7 +15,7 @@ const upload = multer({ storage: storage });
 app.use("/UpFile", express.static("UpFile"));
 app.use(bodyParser.json());
 app.use(cors());
-const URL = "http://localhost:3006";
+const URL = "https://server-ravakim-10c1effbda77.herokuapp.com";
 let collection = null;
 (async () => {
   const url =
@@ -23,6 +23,7 @@ let collection = null;
   const connection = await mongo.connect(url);
   const db = connection.db("Project-ravakim");
   collection = db.collection("Users-Ravakim");
+  // collection.deleteMany({});
 })();
 function random(min, max) {
   if (min > max) {
