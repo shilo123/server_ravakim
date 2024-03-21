@@ -1,9 +1,13 @@
 import { createStore } from "vuex";
 
 export default createStore({
-  state: {},
+  state: { isFinished: false },
   getters: {},
-  mutations: {},
+  mutations: {
+    updateisFinished(state, val) {
+      state.isFinished = val;
+    },
+  },
   actions: {},
   modules: {},
 });

@@ -15,7 +15,12 @@ export default {
 <style lang="scss">
 body {
   background: #ffa9f154;
+  overflow-x: hidden;
+  width: 100%;
   // background: #ffa9f180;
+}
+html {
+  overflow-x: hidden;
 }
 .Maala {
   position: absolute;

@@ -38,6 +38,7 @@ export default {
     });
 
     const focus = ref(false);
+
     const emito = (text) => {
       emit("update:modelValue", text);
     };
@@ -104,6 +105,9 @@ export default {
 }
 label {
   font-size: 15px;
+}
+input {
+  z-index: 99999999;
 }
 /* styling of Input */
 </style>

@@ -3,10 +3,10 @@
     <div class="Form" dir="rtl" v-if="!Zehu">
       <div class="line"></div>
       <el-row :gutter="300">
-        <el-col :span="6">
+        <el-col :span="widthphone ? 24 : 6">
           <input-form v-model="Form.Name" :Label="'שם'" :Pleace="'הקלד שם'" />
         </el-col>
-        <el-col :span="6">
+        <el-col :span="widthphone ? 24 : 6">
           <input-form
             v-model="Form.phone"
             :Label="'מספר טלפון'"
@@ -14,7 +14,7 @@
             type="Number"
           />
         </el-col>
-        <el-col :span="6">
+        <el-col :span="widthphone ? 24 : 6">
           <input-form
             v-model="Form.IsuckOrMosadLimudim"
             :Label="'עיסוק/מוסד לימודים'"
@@ -23,7 +23,7 @@
         </el-col>
       </el-row>
       <el-row :gutter="300">
-        <el-col :span="6">
+        <el-col :span="widthphone ? 24 : 6">
           <input-form
             v-model="Form.Age"
             :Label="'גיל'"
@@ -31,7 +31,7 @@
             type="Number"
           />
         </el-col>
-        <el-col :span="6">
+        <el-col :span="widthphone ? 24 : 6">
           <el-select
             v-model="Form.RamaDatit"
             placeholder="רמה דתית"
@@ -46,7 +46,7 @@
             <el-option value="חרדי" align="right"></el-option>
           </el-select>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="widthphone ? 24 : 6">
           <label>תכונות אופי:</label>
           <el-input
             v-model="Form.Ofi"
@@ -59,7 +59,7 @@
         </el-col>
       </el-row>
       <el-row :gutter="300">
-        <el-col :span="6">
+        <el-col :span="widthphone ? 24 : 6">
           <label>תחביבים</label>
           <el-input
             v-model="Form.Hobits"
@@ -70,7 +70,7 @@
             :input-style="{ background: 'none', border: '1px solid black' }"
           />
         </el-col>
-        <el-col :span="6">
+        <el-col :span="widthphone ? 24 : 6">
           <label class="Lablel">מה אתה מחפש?</label>
           <el-input
             v-model="Form.MaMehapes"
@@ -81,7 +81,7 @@
             :input-style="{ background: 'none', border: '1px solid black' }"
           />
         </el-col>
-        <el-col :span="6">
+        <el-col :span="widthphone ? 24 : 6">
           <label>תאר בקווים כללים את משפחתך</label>
           <el-input
             v-model="Form.KavimClalim"
@@ -118,7 +118,7 @@
       <el-upload
         v-if="!AfterUpload"
         class="Uploados"
-        action="http://localhost:3006/postFilee"
+        action="https://server-ravakim-10c1effbda77.herokuapp.com/postFilee"
         multiple
         :on-success="GetPiccher"
       >
@@ -127,7 +127,11 @@
         ></el-button>
       </el-upload>
       <img :src="Form.picURL" v-else class="IMG" />
-      <el-button type="success" class="ButtonFinish" @click="Submit"
+      <el-button
+        type="success"
+        class="ButtonFinish"
+        @click="Submit"
+        :loading="LoadingB"
         >שלח</el-button
       >
     </div>
@@ -136,7 +140,7 @@
 </template>
 
 <script>
-import { onMounted, reactive, ref, watch, watchEffect } from "vue";
+import { computed, onMounted, reactive, ref, watch, watchEffect } from "vue";
 import { URL } from "@/URL/url";
 import axios from "axios";
 import { ElMessage } from "element-plus";
@@ -146,6 +150,7 @@ export default {
     const AfterUpload = ref(false);
     const Form = reactive({});
     const Zehu = ref(false);
+    const LoadingB = ref(false);
     //
     onMounted(() => {
       if (Switchty.value) {
@@ -157,11 +162,14 @@ export default {
       }
     });
     //
+
     watch(Form, (val) => {
       // console.log(val);
     });
     //
     const Submit = async () => {
+      // ElMessage(`${Form.phone.length}`);
+      LoadingB.value = true;
       const bool =
         Form.Name &&
         Form.phone &&
@@ -177,6 +185,8 @@ export default {
       if (bool) {
         if (Form.phone.length === 10) {
           let { data } = await axios.post(URL + "ADDForm", Form);
+          LoadingB.value = false;
+
           if (data) {
             Object.keys(Form).forEach((key) => {
               Form[key] = ""; // או כל ערך התחלתי אחר תלוי בסוג הנתונים
@@ -186,9 +196,12 @@ export default {
           }
         } else {
           ElMessage.error("מספר טלפון חייב להכיל עשרה תווים");
+          LoadingB.value = false;
         }
       } else {
         if (!Form.Name) {
+          LoadingB.value = false;
+
           ElMessage.error("לא מלאת שם");
         } else if (!Form.phone) {
           ElMessage.error("לא מלאת מספר טלפון");
@@ -209,6 +222,7 @@ export default {
         } else if (!Form.Gender) {
           ElMessage.error("לא תארת מגדר");
         }
+        LoadingB.value = false;
       }
     };
     const GetPiccher = (url) => {
@@ -220,6 +234,8 @@ export default {
         }, 100);
       }
     };
+    const widthphone = computed(() => window.innerWidth < 400);
+
     return {
       Switchty,
       Form,
@@ -227,6 +243,8 @@ export default {
       Submit,
       GetPiccher,
       Zehu,
+      widthphone,
+      LoadingB,
     };
   },
 };
@@ -320,49 +338,184 @@ label {
   box-shadow: 0 0 0 4px #b5c9fc;
 }
 
-.mydict div {
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 0.5rem;
-  justify-content: center;
+.mydict {
+  div {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+    justify-content: center;
+  }
+  input[type="radio"] {
+    clip: rect(0 0 0 0);
+    clip-path: inset(100%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+  input[type="radio"]:checked + span {
+    box-shadow: 0 0 0 0.0625em #0043ed;
+    background-color: #dee7ff;
+    z-index: 1;
+    color: #0043ed;
+  }
+  label {
+    span {
+      display: block;
+      cursor: pointer;
+      background-color: #fff;
+      padding: 0.375em 0.75em;
+      position: relative;
+      margin-left: 0.0625em;
+      box-shadow: 0 0 0 0.0625em #b5bfd9;
+      letter-spacing: 0.05em;
+      color: #3e4963;
+      text-align: center;
+      transition: background-color 0.5s ease;
+    }
+    &:first-child span {
+      border-radius: 0.375em 0 0 0.375em;
+    }
+
+    &:last-child span {
+      border-radius: 0 0.375em 0.375em 0;
+    }
+  }
 }
 
-.mydict input[type="radio"] {
-  clip: rect(0 0 0 0);
-  clip-path: inset(100%);
-  height: 1px;
-  overflow: hidden;
-  position: absolute;
-  white-space: nowrap;
-  width: 1px;
+@media screen and (max-width: 400px) {
+  .Form {
+    background: #ff8fd842;
+    border-radius: 20px;
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    // width: 45%;
+    // height: 45%;
+    width: 55%;
+    height: auto;
+    border: 3px solid black;
+    padding: 20px;
+    padding-right: 30%;
+    padding-bottom: 30%;
+    .line {
+      display: none;
+      height: 100%;
+      width: 1px;
+      background: #000;
+      position: absolute;
+      right: 25%;
+      top: 0;
+    }
+    .el-col {
+      margin-bottom: 30px;
+      position: relative;
+      left: 50px;
+      z-index: 1;
+    }
+    .RamaDatit {
+      width: 200px;
+      position: relative;
+      top: 20px;
+    }
+    .Uploados {
+      width: 25%;
+      height: 100%;
+      position: absolute;
+      right: 20%;
+      top: 0;
+      display: flex;
+      justify-items: center;
+      align-items: center;
+      display: none;
+      .el-button {
+        display: none;
+        position: absolute;
+        right: 170%;
+        top: 0px;
+        border-radius: 30px;
+        .ic {
+          margin-right: 10px;
+        }
+      }
+    }
+    .Lablel {
+      display: block;
+      width: 100px;
+    }
+    .ButtonFinish {
+      position: absolute;
+      bottom: 0;
+      right: 0%;
+      width: 100%;
+    }
+    .IMG {
+      width: 25%;
+      height: 80%;
+      position: absolute;
+      right: 0%;
+      top: 50%;
+      transform: translateY(-50%);
+      border-radius: 50%;
+    }
+  }
 }
-
-.mydict input[type="radio"]:checked + span {
-  box-shadow: 0 0 0 0.0625em #0043ed;
-  background-color: #dee7ff;
-  z-index: 1;
-  color: #0043ed;
-}
-
-label span {
-  display: block;
-  cursor: pointer;
-  background-color: #fff;
-  padding: 0.375em 0.75em;
+//
+//
+//
+//
+//
+//
+//
+.mydict {
   position: relative;
-  margin-left: 0.0625em;
-  box-shadow: 0 0 0 0.0625em #b5bfd9;
-  letter-spacing: 0.05em;
-  color: #3e4963;
-  text-align: center;
-  transition: background-color 0.5s ease;
-}
+  left: 40px;
+  bottom: 30px;
+  z-index: 2000;
+  div {
+    display: flex;
+    flex-wrap: nowrap;
+    margin-top: 0.5rem;
+    justify-content: center;
+  }
+  input[type="radio"] {
+    clip: rect(0 0 0 0);
+    clip-path: inset(100%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+  input[type="radio"]:checked + span {
+    box-shadow: 0 0 0 0.0625em #0043ed;
+    background-color: #dee7ff;
+    z-index: 1;
+    color: #0043ed;
+  }
+  label {
+    span {
+      display: block;
+      cursor: pointer;
+      background-color: #fff;
+      padding: 0.375em 0.75em;
+      position: relative;
+      margin-left: 0.0625em;
+      box-shadow: 0 0 0 0.0625em #b5bfd9;
+      letter-spacing: 0.05em;
+      color: #3e4963;
+      text-align: center;
+      transition: background-color 0.5s ease;
+    }
+    &:first-child span {
+      border-radius: 0.375em 0 0 0.375em;
+    }
 
-label:first-child span {
-  border-radius: 0.375em 0 0 0.375em;
-}
-
-label:last-child span {
-  border-radius: 0 0.375em 0.375em 0;
+    &:last-child span {
+      border-radius: 0 0.375em 0.375em 0;
+    }
+  }
 }
 </style>
