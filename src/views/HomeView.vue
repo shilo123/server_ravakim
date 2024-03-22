@@ -168,61 +168,65 @@ export default {
     });
     //
     const Submit = async () => {
-      // ElMessage(`${Form.phone.length}`);
-      LoadingB.value = true;
-      const bool =
-        Form.Name &&
-        Form.phone &&
-        Form.IsuckOrMosadLimudim &&
-        Form.Age &&
-        Form.RamaDatit &&
-        Form.Ofi &&
-        Form.Hobits &&
-        Form.MaMehapes &&
-        Form.KavimClalim &&
-        Form.Gender;
+      try {
+        LoadingB.value = true;
+        const bool =
+          Form.Name &&
+          Form.phone &&
+          Form.IsuckOrMosadLimudim &&
+          Form.Age &&
+          Form.RamaDatit &&
+          Form.Ofi &&
+          Form.Hobits &&
+          Form.MaMehapes &&
+          Form.KavimClalim &&
+          Form.Gender;
 
-      if (bool) {
-        if (Form.phone.length === 10) {
-          let { data } = await axios.post(URL + "ADDForm", Form);
-          LoadingB.value = false;
+        if (bool) {
+          if (Form.phone.length === 10) {
+            let { data } = await axios.post(URL + "ADDForm", Form);
+            LoadingB.value = false;
 
-          if (data) {
-            Object.keys(Form).forEach((key) => {
-              Form[key] = ""; // או כל ערך התחלתי אחר תלוי בסוג הנתונים
-            });
-            AfterUpload.value = false;
-            Zehu.value = true;
+            if (data) {
+              Object.keys(Form).forEach((key) => {
+                Form[key] = ""; // או כל ערך התחלתי אחר תלוי בסוג הנתונים
+              });
+              AfterUpload.value = false;
+              Zehu.value = true;
+            }
+          } else {
+            ElMessage.error("מספר טלפון חייב להכיל עשרה תווים");
+            LoadingB.value = false;
           }
         } else {
-          ElMessage.error("מספר טלפון חייב להכיל עשרה תווים");
-          LoadingB.value = false;
-        }
-      } else {
-        if (!Form.Name) {
-          LoadingB.value = false;
+          if (!Form.Name) {
+            LoadingB.value = false;
 
-          ElMessage.error("לא מלאת שם");
-        } else if (!Form.phone) {
-          ElMessage.error("לא מלאת מספר טלפון");
-        } else if (!Form.IsuckOrMosadLimudim) {
-          ElMessage.error("לא מלאת עיסוק\\מוסד לימודים");
-        } else if (!Form.Age) {
-          ElMessage.error("לא מלאת גיל");
-        } else if (!Form.RamaDatit) {
-          ElMessage.error("לא מלאת רמה דתית");
-        } else if (!Form.Ofi) {
-          ElMessage.error("לא מלאת אופי");
-        } else if (!Form.Hobits) {
-          ElMessage.error("לא מלאת תחביבים");
-        } else if (!Form.MaMehapes) {
-          ElMessage.error("לא אמרת מה אתה מחפש");
-        } else if (!Form.KavimClalim) {
-          ElMessage.error("לא תארת את משפחתך");
-        } else if (!Form.Gender) {
-          ElMessage.error("לא תארת מגדר");
+            ElMessage.error("לא מלאת שם");
+          } else if (!Form.phone) {
+            ElMessage.error("לא מלאת מספר טלפון");
+          } else if (!Form.IsuckOrMosadLimudim) {
+            ElMessage.error("לא מלאת עיסוק\\מוסד לימודים");
+          } else if (!Form.Age) {
+            ElMessage.error("לא מלאת גיל");
+          } else if (!Form.RamaDatit) {
+            ElMessage.error("לא מלאת רמה דתית");
+          } else if (!Form.Ofi) {
+            ElMessage.error("לא מלאת אופי");
+          } else if (!Form.Hobits) {
+            ElMessage.error("לא מלאת תחביבים");
+          } else if (!Form.MaMehapes) {
+            ElMessage.error("לא אמרת מה אתה מחפש");
+          } else if (!Form.KavimClalim) {
+            ElMessage.error("לא תארת את משפחתך");
+          } else if (!Form.Gender) {
+            ElMessage.error("לא תארת מגדר");
+          }
+          LoadingB.value = false;
         }
+      } catch (error) {
         LoadingB.value = false;
+        ElMessage.error("משהו השתבש");
       }
     };
     const GetPiccher = (url) => {
@@ -450,6 +454,7 @@ label {
       width: 100%;
     }
     .IMG {
+      display: none;
       width: 25%;
       height: 80%;
       position: absolute;
@@ -457,7 +462,6 @@ label {
       top: 50%;
       transform: translateY(-50%);
       border-radius: 50%;
-      display: none;
     }
   }
 }
