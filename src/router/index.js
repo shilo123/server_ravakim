@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import Admin from "@/views/AdminPage.vue";
+import shiduh from "@/views/ShiduhView.vue";
 const routes = [
   {
     path: "/",
@@ -11,6 +12,11 @@ const routes = [
     path: "/Admin",
     name: "Admin",
     component: Admin,
+  },
+  {
+    path: "/shiduh",
+    name: "shiduh",
+    component: shiduh,
   },
 ];
 

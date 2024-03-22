@@ -14,7 +14,7 @@ export default {
 </script>
 <style lang="scss">
 body {
-  background: #ffa9f154;
+  background: #035f62d7;
   overflow-x: hidden;
   width: 100%;
   // background: #ffa9f180;

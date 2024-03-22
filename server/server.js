@@ -23,6 +23,15 @@ let collection = null;
   const connection = await mongo.connect(url);
   const db = connection.db("Project-ravakim");
   collection = db.collection("Users-Ravakim");
+})();
+let collectionP = null;
+(async () => {
+  const url =
+    "mongodb+srv://hazshilo:1234@cluster1.ifbyw.mongodb.net/?tlsAllowInvalidCertificates=true";
+  const connection = await mongo.connect(url);
+  const db = connection.db("Project-ravakim");
+
+  collectionP = db.collection("potentzial");
   // collection.deleteMany({});
 })();
 function random(min, max) {
@@ -35,13 +44,7 @@ function random(min, max) {
 
 app.post("/postFilee", upload.single("file"), async (req, res) => {
   let File = req.file;
-  let nameFile = File.originalname;
-  if (nameFile.split(".")[1]) {
-    nameFile = nameFile.split(".")[0];
-  }
-  if (nameFile.split(" ")[1]) {
-    nameFile = nameFile.split(" ")[0];
-  }
+  let nameFile = `piki${random(0, 100)}`;
   nameFile += JSON.stringify(random(0, 1000)) + ".png";
   const filePath = path.join("UpFile", nameFile);
   fs.writeFile(filePath, req.file.buffer, (err) => {
@@ -112,6 +115,128 @@ app.post("/AddNote", async (req, res) => {
     }
     res.json(true);
   } catch (error) {
+    res.json(false);
+  }
+});
+app.get("/GetShiduhim", async (req, res) => {
+  let data = await collection
+    .aggregate([
+      {
+        $group: {
+          _id: null,
+          man: {
+            $push: {
+              $cond: [{ $eq: ["$Gender", "זכר"] }, "$$ROOT", "$$REMOVE"],
+            },
+          },
+          woman: {
+            $push: {
+              $cond: [{ $eq: ["$Gender", "נקבה"] }, "$$ROOT", "$$REMOVE"],
+            },
+          },
+        },
+      },
+    ])
+    .toArray();
+  res.json(data[0]);
+});
+app.get("/GetShoduh", async (req, res) => {
+  let data = await collectionP
+    .aggregate([
+      {
+        $lookup: {
+          from: "Users-Ravakim", // שם הקולקשיין שממנו לצרף
+          let: { potentzialIds: "$Potentzial" }, // הגדרת משתנים לשימוש בפייפליין של ה-lookup
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $in: [
+                    "$_id",
+                    {
+                      $map: {
+                        input: "$$potentzialIds",
+                        as: "potId",
+                        in: { $toObjectId: "$$potId" },
+                      },
+                    },
+                  ], // השוואה בין ה-id של המשתמש למערך של ids שהומרו ל-ObjectId
+                },
+              },
+            },
+          ],
+          as: "Shiduh", // שם השדה שבו יאוחסנו התוצאות
+        },
+      },
+    ])
+    .toArray();
+  // console.log("data", data);
+  res.json(data);
+});
+app.put("/EditZog", async (req, res) => {
+  // console.log(req.body);
+  try {
+    const { newPoten, ID } = req.body;
+    await collectionP.updateOne(
+      {
+        _id: new ObjectId(ID),
+      },
+      {
+        $set: { Potentzial: newPoten },
+      }
+    );
+
+    let data = await collectionP
+      .aggregate([
+        {
+          $lookup: {
+            from: "Users-Ravakim", // שם הקולקשיין שממנו לצרף
+            let: { potentzialIds: "$Potentzial" }, // הגדרת משתנים לשימוש בפייפליין של ה-lookup
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $in: [
+                      "$_id",
+                      {
+                        $map: {
+                          input: "$$potentzialIds",
+                          as: "potId",
+                          in: { $toObjectId: "$$potId" },
+                        },
+                      },
+                    ], // השוואה בין ה-id של המשתמש למערך של ids שהומרו ל-ObjectId
+                  },
+                },
+              },
+            ],
+            as: "Shiduh", // שם השדה שבו יאוחסנו התוצאות
+          },
+        },
+      ])
+      .toArray();
+
+    res.json(data);
+  } catch (error) {
+    res.json(null);
+  }
+});
+app.post("/InsertShiduh", async (req, res) => {
+  try {
+    let Potentzial = req.body;
+    await collectionP.insertOne({ Potentzial });
+    res.json(true);
+  } catch (error) {
+    res.json(false);
+  }
+});
+app.delete("/DeleteShiduh/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    await collectionP.deleteOne({ _id: new ObjectId(id) });
+    res.json(true);
+  } catch (error) {
+    console.log(error);
     res.json(false);
   }
 });

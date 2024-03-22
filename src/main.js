@@ -2,8 +2,8 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
-import InputForm from "@/components/GlobalComponnent/InputForm.vue";
-import InputSerch from "@/components/GlobalComponnent/InputSerch.vue";
+import InputForm from "@/components/Home/InputForm.vue";
+import InputSerch from "@/components/Admin/Elements/InputSerch.vue";
 import router from "./router";
 import store from "./store";
 import "../FileTheFontAwemson/css/all.css"; // כולל את כל הסגנונות

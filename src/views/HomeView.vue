@@ -251,7 +251,8 @@ export default {
 </script>
 <style lang="scss" scoped>
 .Form {
-  background: #ff8fd842;
+  background: radial-gradient(#22ffd6, #45f9aeb5, #56ffe6);
+
   border-radius: 20px;
   position: absolute;
   top: 100px;
@@ -386,7 +387,6 @@ label {
 
 @media screen and (max-width: 400px) {
   .Form {
-    background: #ff8fd842;
     border-radius: 20px;
     position: absolute;
     top: 100px;

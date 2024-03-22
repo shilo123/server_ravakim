@@ -76,6 +76,7 @@ export default {
       left: 50%;
       transform: translateX(-50%);
       top: 0;
+      pointer-events: none;
     }
   }
 
@@ -126,7 +127,7 @@ export default {
   .el-row {
     position: absolute;
     top: 160px;
-    right: 13% !important;
+    right: 6%;
     width: 90%;
   }
   .el-col {

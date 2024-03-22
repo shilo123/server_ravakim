@@ -58,6 +58,7 @@
       />
       <label for="javascript" class="label">הכל</label>
     </div>
+    <Dropdown class="DropDown" />
   </div>
 </template>
 
@@ -67,8 +68,10 @@ import "@/views/cssOfRedyElements.scss";
 import axios from "axios";
 import { URL } from "@/URL/url";
 import { useStore } from "vuex";
+import Dropdown from "./Elements/DropdownComp.vue";
 
 export default {
+  components: { Dropdown },
   setup(props, { emit }) {
     const Store = useStore();
 
