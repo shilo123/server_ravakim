@@ -457,6 +457,7 @@ label {
       top: 50%;
       transform: translateY(-50%);
       border-radius: 50%;
+      display: none;
     }
   }
 }
