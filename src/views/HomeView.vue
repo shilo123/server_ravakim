@@ -392,8 +392,6 @@ label {
     top: 100px;
     left: 50%;
     transform: translateX(-50%);
-    // width: 45%;
-    // height: 45%;
     width: 55%;
     height: auto;
     border: 3px solid black;
@@ -429,9 +427,9 @@ label {
       display: flex;
       justify-items: center;
       align-items: center;
-      display: none;
+      // display: none;
       .el-button {
-        display: none;
+        // display: none;
         position: absolute;
         right: 170%;
         top: 0px;
