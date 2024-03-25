@@ -30,6 +30,8 @@ const s3 = new AWS.S3({
   const db = connection.db("Project-ravakim");
   collection = db.collection("Users-Ravakim");
 })();
+{
+}
 let collectionP = null;
 (async () => {
   const url =
