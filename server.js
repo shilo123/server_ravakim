@@ -50,6 +50,7 @@ function random(min, max) {
 app.get("/", async (req, res) => {
   res.json({ stuts: "shcoyeh" });
 });
+
 app.post("/postFilee", upload.single("file"), async (req, res) => {
   // let File = req.file;
   // let nameFile = `piki${random(0, 100)}`;
