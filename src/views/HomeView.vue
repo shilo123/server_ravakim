@@ -115,11 +115,11 @@
           </label>
         </div>
       </div>
-      <!-- action="https://server-ravakim-10c1effbda77.herokuapp.com/postFilee" -->
+      <!-- action="http://localhost:3006/postFilee" -->
       <el-upload
         v-if="!AfterUpload"
         class="Uploados"
-        action="http://localhost:3006/postFilee"
+        action="https://server-ravakim-10c1effbda77.herokuapp.com/postFilee"
         multiple
         :on-success="GetPiccher"
       >
