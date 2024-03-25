@@ -12,7 +12,6 @@ const path = require("path");
 const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-const AWS = require("aws-sdk");
 app.use("/UpFile", express.static("UpFile"));
 app.use(bodyParser.json());
 app.use(cors());
