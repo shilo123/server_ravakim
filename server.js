@@ -47,7 +47,7 @@ function random(min, max) {
 
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 app.get("/", async (req, res) => {
   res.json({ stuts: "shcoyeh" });
