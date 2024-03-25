@@ -14,8 +14,9 @@
             {{ ish.Name + "/" + ish.Age
             }}<span>
               <img
+                @error="error[`itemMan-${i}`] = true"
                 v-if="ish.picURL"
-                :src="ish.picURL"
+                :src="!error[`itemMan-${i}`] ? ish.picURL : imageError"
                 alt="אין תמונה"
                 width="30px"
                 height="30px"
@@ -38,9 +39,10 @@
             {{ ish.Name + "/" + ish.Age
             }}<span>
               <img
+                @error="error[`itemWoman-${i}`] = true"
                 v-if="ish.picURL"
-                :src="ish.picURL"
                 alt="אין תמונה"
+                :src="!error[`itemWoman-${i}`] ? ish.picURL : imageError"
                 width="30px"
                 height="30px"
               />
@@ -51,7 +53,11 @@
     </div>
     <!-- class="contaner-Finish" -->
     <div class="contiiin" v-if="newShi">
-      <draggable v-model="newSHiduh" :group="{ name: 'people' }">
+      <draggable
+        v-model="newSHiduh"
+        group="people"
+        style="width: 100%; height: 100%"
+      >
         <div v-for="(sod, i) in newSHiduh" :key="i">
           <div class="icon">
             <i
@@ -64,8 +70,9 @@
               {{ sod.Name + "/" + sod.Age
               }}<span>
                 <img
+                  @error="error[`itemNewShid-${i}`] = true"
                   v-if="sod.picURL"
-                  :src="sod.picURL"
+                  :src="!error[`itemNewShid-${i}`] ? sod.picURL : imageError"
                   alt="אין תמונה"
                   width="30px"
                   height="30px"
@@ -101,6 +108,7 @@
             v-model="itmem.Shiduh"
             group="people"
             @add="evntos($event, itmem)"
+            style="width: 100%; height: 100%"
           >
             <div
               v-for="(S, indo) in itmem.Shiduh"
@@ -114,8 +122,9 @@
                 {{ S.Name + "/" + S.Age
                 }}<span :id="S.Gender === 'זכר' ? 'man' : 'woman'">
                   <img
+                    @error="error[`item-${S._id}`] = true"
                     v-if="S.picURL"
-                    :src="S.picURL"
+                    :src="!error[`item-${S._id}`] ? S.picURL : imageError"
                     alt="אין תמונה"
                     :id="S.Gender === 'זכר' ? 'man' : 'woman'"
                   />
@@ -147,7 +156,7 @@ import { URL } from "@/URL/url";
 import { VueDraggableNext } from "vue-draggable-next";
 import { ElMessage } from "element-plus";
 import axios from "axios";
-
+import profil from "@/assets/Profil.jpg";
 export default {
   components: {
     draggable: VueDraggableNext,
@@ -156,8 +165,10 @@ export default {
 
   setup(props) {
     // const {data} = toRefs(this.data)
+    const imageError = ref(profil);
     const ifDOM = ref(true);
     const newShi = ref(false);
+    const error = reactive({});
     const newSHiduh = ref([]);
     const { data, isFinished } = useAxios(URL + "GetShiduhim");
     const { data: resonse, isFinished: finsih } = useAxios(URL + "GetShoduh");
@@ -179,6 +190,8 @@ export default {
       newShi,
       newSHiduh,
       ifSubmit,
+      error,
+      imageError,
     };
   },
   methods: {
@@ -202,6 +215,14 @@ export default {
     },
     Evenetdraggable(e) {
       const { newIndex } = e;
+      const OOO = this.newSHiduh.findIndex((e, i) => i !== newIndex);
+      // console.log("new", this.newSHiduh[newIndex], "Old", this.newSHiduh[OOO]);
+      if (
+        this.newSHiduh[OOO] &&
+        this.newSHiduh[newIndex].Gender === this.newSHiduh[OOO].Gender
+      ) {
+        this.newSHiduh.splice(0, 1);
+      }
       if (this.newShi && this.newSHiduh.length > 2) {
         let gendro = this.newSHiduh[newIndex].Gender;
         let index = this.newSHiduh.findIndex((e) => e.Gender === gendro);
@@ -285,6 +306,7 @@ export default {
       height: 80%;
       overflow-y: auto;
       border-radius: 5px;
+      width: 35%;
       .title {
         text-align: center;
       }
@@ -298,6 +320,8 @@ export default {
         flex-wrap: nowrap;
         align-items: center;
         justify-content: center;
+        width: 90%;
+        overflow-x: auto;
         &:hover {
           cursor: all-scroll;
         }
@@ -322,6 +346,7 @@ export default {
       height: 80%;
       overflow-y: auto;
       border-radius: 5px;
+      width: 35%;
       .title {
         text-align: center;
       }
@@ -335,6 +360,9 @@ export default {
         flex-wrap: nowrap;
         align-items: center;
         justify-content: center;
+        overflow-x: auto;
+
+        width: 90%;
         &:hover {
           cursor: all-scroll;
         }
@@ -434,8 +462,8 @@ export default {
     img {
       display: none;
     }
-    .Add {
-    }
+    // .Add {
+    // }
     .container-S {
       display: none;
     }
@@ -501,7 +529,10 @@ export default {
           font-size: 13px;
           // background: #000;
         }
-
+        .icon {
+          position: absolute;
+          left: 50%;
+        }
         .newItem {
           width: 80%;
           height: 2em;
