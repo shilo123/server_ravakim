@@ -18,11 +18,6 @@ app.use(bodyParser.json());
 app.use(cors());
 const URL = "https://server-ravakim-10c1effbda77.herokuapp.com";
 let collection = null;
-// const s3 = new AWS.S3({
-//   accessKeyId: "AKIASWXFMBWARBBNHUMG", // המפתח הציבורי שלך מ-AWS
-//   secretAccessKey: "l0VinJ7A39RXxPZBIxxlGFGTyBOqLtMbS4TW50cu", // המפתח הפרטי שלך מ-AWS
-//   region: "us-east-1", // האזור בו הדלי שלך ממוקם, לדוגמה: 'us-west-2'
-// });
 (async () => {
   const url =
     "mongodb+srv://hazshilo:1234@cluster1.ifbyw.mongodb.net/?tlsAllowInvalidCertificates=true";
@@ -64,24 +59,7 @@ app.get("/", async (req, res) => {
 // //  }
 // //  res.json(`${URL}/UpFile/${nameFile}`);
 // //});
-// app.post("/postFilee", upload.single("file"), async (req, res) => {
-//   const params = {
-//     Bucket: "dagmusht",
-//     Key: req.file.originalname,
-//     Body: req.file.buffer, // גוף הבקשה אמור להכיל את הקובץ עצמו
-//   };
-//   s3.upload(params, (err, data) => {
-//     if (err) {
-//       return res
-//         .status(500)
-//         .send({ message: "שגיאה בהעלאת הקובץ ל-S3.", error: err.message });
-//     }
-//     // console.log(data.Location);
-//     const publicUrl = `https://${params.Bucket}.s3.amazonaws.com/${params.Key}`;
-//     // console.log("publicUrl", publicUrl);
-//     res.send(publicUrl);
-//   });
-// });
+app.post("/postFilee", upload.single("file"), async (req, res) => {});
 //
 app.post("/ADDForm", async (req, res) => {
   try {
