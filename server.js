@@ -12,9 +12,15 @@ const path = require("path");
 const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+const AWS = require("aws-sdk");
 app.use("/UpFile", express.static("UpFile"));
 app.use(bodyParser.json());
 app.use(cors());
+const s3 = new AWS.S3({
+  accessKeyId: "AKIASWXFMBWARBBNHUMG",
+  secretAccessKey: "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",
+  region: "us-east-1",
+});
 const URL = "https://server-ravakim-10c1effbda77.herokuapp.com";
 let collection = null;
 (async () => {
@@ -58,6 +64,24 @@ app.get("/", async (req, res) => {
 // //  }
 // //  res.json(`${URL}/UpFile/${nameFile}`);
 // //});
+app.post("/postFilee", upload.single("file"), async (req, res) => {
+  const params = {
+    Bucket: "dagmusht",
+    Key: req.file.originalname,
+    Body: req.file.buffer, // גוף הבקשה אמור להכיל את הקובץ עצמו
+  };
+  s3.upload(params, (err, data) => {
+    if (err) {
+      return res
+        .status(500)
+        .send({ message: "שגיאה בהעלאת הקובץ ל-S3.", error: err.message });
+    }
+    // console.log(data.Location);
+    const publicUrl = `https://${params.Bucket}.s3.amazonaws.com/${params.Key}`;
+    // console.log("publicUrl", publicUrl);
+    res.send(publicUrl);
+  });
+});
 //
 app.post("/ADDForm", async (req, res) => {
   try {
