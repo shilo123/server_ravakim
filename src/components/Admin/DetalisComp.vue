@@ -420,4 +420,204 @@ export default {
 ::-webkit-scrollbar-thumb:hover {
   background-color: #999;
 }
+@media screen and (max-width: 400px) {
+  .Sahor {
+    background: #000000a5;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: 20;
+    .Detalis {
+      position: absolute;
+      left: 10%;
+      top: 100px;
+      width: 89%;
+      min-height: 75%;
+      //   background: #9029ffcd;
+      animation: expandAnimation 0.8s;
+      border-radius: 20px;
+      padding-bottom: 3%;
+      z-index: 30;
+
+      .Note {
+        position: absolute;
+        bottom: -30px;
+        width: 98%;
+        height: 25px;
+        left: -5px;
+        background: #5b5b5b;
+        z-index: 200;
+        text-align: center;
+        padding: 1%;
+        padding-bottom: 10px;
+        border-radius: 0 0 10px 10px;
+        transition: all 0.4s;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+
+        &:hover {
+          color: white;
+          font-size: 17px;
+          cursor: pointer;
+          // background: #5b5b5bdc;
+        }
+        .Title {
+          font-size: 25px;
+          position: absolute;
+          top: 0;
+          // padding: 10px;
+        }
+        .iconPlus {
+          position: absolute;
+          left: 30px;
+          top: 50%;
+        }
+        &Expend {
+          transition: all 0.4s;
+          position: absolute;
+          bottom: -70px;
+          width: 98%;
+          height: 195px;
+          background: #5b5b5b;
+          z-index: 200;
+          text-align: center;
+          padding: 1%;
+          padding-bottom: 10px;
+          border-radius: 0 0 10px 10px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          text-align: center;
+          left: -5px;
+
+          .Title {
+            font-size: 19px;
+            padding: 10px;
+            position: absolute;
+            top: 0;
+
+            &:hover {
+              color: white;
+              cursor: pointer;
+            }
+          }
+          .ButtonUpdate {
+            font-size: 19px;
+            padding: 10px;
+            position: absolute;
+            top: 0;
+            width: 200px;
+            right: 10%;
+          }
+          .AddNote {
+            background: #ff4e4ecc;
+            width: 90%;
+            height: 60%;
+            border-radius: 20px;
+            position: relative;
+            // right: 200px;
+            right: 0px;
+            font-size: 20px;
+            margin: 10px;
+            direction: rtl;
+          }
+          .SubmitNote {
+            position: absolute;
+            left: 40px;
+            bottom: 80px;
+          }
+          .NoteContent {
+            font-size: 25px;
+          }
+        }
+      }
+      .ParentsImg {
+        // border: 3px solid black;
+        width: 40%;
+        min-height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        display: none;
+        img {
+          border-radius: 50%;
+          height: 140px;
+          width: 140px;
+          display: none;
+        }
+      }
+      .closeIcon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        margin: 5px;
+        border-radius: 30%;
+        z-index: 500;
+        &:hover {
+          background: #0000007e;
+          padding: 20px;
+          top: 0px;
+          right: 0px;
+          margin: 5px;
+          cursor: pointer;
+        }
+      }
+      .content {
+        position: absolute;
+        right: 0;
+        top: 0px;
+        // font-size: 30px;
+        font-size: 90%;
+        border: 3px solid black;
+        height: 100%;
+        // width: 60%;
+        width: 100%;
+        border-radius: 20px;
+        background: #ffffff69;
+        overflow-y: auto;
+
+        .Container-Key-value {
+          display: flex;
+          width: 80%;
+          margin-bottom: 10px;
+          box-shadow: 0 0 8px 3px #0000007d;
+          max-height: 100px;
+          overflow-y: auto;
+          position: relative;
+          .key {
+            background: #c95dff;
+            padding: 5px;
+            width: 30%;
+            border-radius: 0 10px 10px 0;
+            height: 100%;
+          }
+          .value {
+            padding: 5px;
+            background: #ba91ff;
+            border-radius: 10px 0 0 10px;
+            width: 80%;
+            height: 100%;
+          }
+        }
+      }
+    }
+  }
+  @keyframes expandAnimation {
+    from {
+      opacity: 0;
+      transform: scale(0);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
 </style>

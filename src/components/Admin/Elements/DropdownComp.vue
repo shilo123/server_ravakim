@@ -7,9 +7,11 @@
         ><i class="fa-light fa-restroom"></i>התחל לשדך
       </a>
       <a href="#" @click="Evnent"
-        ><i class="fa-duotone fa-pen-to-square"></i>עריכת פרטים
+        ><i class="fa-duotone fa-pen-to-square"></i>עוד משהו
       </a>
-      <a href="#" @click="Evnent"><i class="fa-duotone fa-trash"></i>מחיקה </a>
+      <a href="#" @click="Evnent"
+        ><i class="fa-duotone fa-trash"></i>עוד משהו2
+      </a>
     </div>
   </div>
 </template>

@@ -2,8 +2,8 @@
   <div>
     <div dir="rtl">
       <div class="container-All" v-if="isFinished">
-        <el-row :gutter="70">
-          <el-col :span="5" v-for="(Item, i) in data" :key="i">
+        <el-row :gutter="ifPhone ? 70 : 20">
+          <el-col :span="ifPhone ? 5 : 11" v-for="(Item, i) in data" :key="i">
             <div class="card">
               <img :src="Item.picURL" />
 
@@ -42,7 +42,9 @@ export default {
     const isFinished = computed(() => {
       return Store.state.isFinished;
     });
-    return { isFinished, GetPratim };
+    const ifPhone = computed(() => window.innerWidth > 400);
+
+    return { isFinished, GetPratim, ifPhone };
   },
 };
 </script>
@@ -132,6 +134,96 @@ export default {
   }
   .el-col {
     margin-bottom: 30px;
+  }
+}
+@media screen and (max-width: 400px) {
+  .container-All {
+    .card {
+      width: 110px;
+      height: 164px;
+      border-radius: 20px;
+      background: #f5f5f5;
+      position: relative;
+      padding: 1.8rem;
+      border: 2px solid #c3c6ce;
+      transition: 0.5s ease-out;
+      overflow: visible;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: 0px 0px 1px 1px #828282;
+
+      &:hover {
+        cursor: pointer;
+      }
+      img {
+        margin-top: 30px;
+        margin-bottom: 30px;
+        width: 50%;
+        height: 37%;
+        border-radius: 60%;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 0;
+        pointer-events: none;
+      }
+    }
+
+    .card-details {
+      color: black;
+      height: 100%;
+      gap: 0.5em;
+      display: grid;
+      place-content: center;
+    }
+
+    .card-button {
+      transform: translate(-50%, 125%);
+      width: 60%;
+      border-radius: 1rem;
+      border: none;
+      background-color: #008bf8;
+      color: #fff;
+      font-size: 1rem;
+      padding: 0.5rem 1rem;
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      opacity: 0;
+      transition: 0.3s ease-out;
+    }
+
+    /*Text*/
+    .text-title {
+      font-size: 1.5em;
+      font-weight: bold;
+      position: absolute;
+      text-align: center;
+      bottom: 0;
+    }
+
+    /*Hover*/
+    .card:hover {
+      border-color: #008bf8;
+      box-shadow: 0 4px 18px 0 rgba(0, 0, 0, 0.25);
+    }
+
+    .card:hover .card-button {
+      transform: translate(-50%, 50%);
+      opacity: 1;
+    }
+    // $
+    .el-row {
+      position: absolute;
+      top: 40px;
+      right: 3%;
+      width: 100%;
+    }
+    .el-col {
+      margin-bottom: 30px;
+      margin-left: 10px;
+    }
   }
 }
 </style>
