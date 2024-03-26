@@ -16,13 +16,13 @@ const AWS = require("aws-sdk");
 app.use("/UpFile", express.static("UpFile"));
 app.use(bodyParser.json());
 app.use(cors());
+const s3 = new AWS.S3({
+  accessKeyId: "AKIASWXFMBWARBBNHUMG",
+  secretAccessKey: "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",
+  region: "us-east-1",
+});
 const URL = "https://server-ravakim-10c1effbda77.herokuapp.com";
 let collection = null;
-const s3 = new AWS.S3({
-  accessKeyId: "AKIASWXFMBWARBBNHUMG", // המפתח הציבורי שלך מ-AWS
-  secretAccessKey: "l0VinJ7A39RXxPZBIxxlGFGTyBOqLtMbS4TW50cu", // המפתח הפרטי שלך מ-AWS
-  region: "us-east-1", // האזור בו הדלי שלך ממוקם, לדוגמה: 'us-west-2'
-});
 (async () => {
   const url =
     "mongodb+srv://hazshilo:1234@cluster1.ifbyw.mongodb.net/?tlsAllowInvalidCertificates=true";
@@ -53,18 +53,18 @@ app.get("/", async (req, res) => {
   res.json({ stuts: "shcoyeh" });
 });
 
+// //let File = req.file;
+// //let nameFile = `piki${random(0, 100)}`;
+// //nameFile += JSON.stringify(random(0, 1000)) + ".png";
+// //const filePath = path.join("UpFile", nameFile);
+// //fs.writeFile(filePath, req.file.buffer, (err) => {
+// //  if (err) {
+// //    console.error(err);
+// //    return res.status(500).send("Error saving the file.");
+// //  }
+// //  res.json(`${URL}/UpFile/${nameFile}`);
+// //});
 app.post("/postFilee", upload.single("file"), async (req, res) => {
-  // let File = req.file;
-  // let nameFile = `piki${random(0, 100)}`;
-  // nameFile += JSON.stringify(random(0, 1000)) + ".png";
-  // const filePath = path.join("UpFile", nameFile);
-  // fs.writeFile(filePath, req.file.buffer, (err) => {
-  //   if (err) {
-  //     console.error(err);
-  //     return res.status(500).send("Error saving the file.");
-  //   }
-  //   res.json(`${URL}/UpFile/${nameFile}`);
-  // });
   const params = {
     Bucket: "dagmusht",
     Key: req.file.originalname,
