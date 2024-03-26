@@ -1,7 +1,5 @@
 <template>
-  <div class="Maala" v-if="$route.path === '/'">
-    ברוכים הבאים לאתר בלה בלה בלה
-  </div>
+  <div class="Maala" v-if="$route.path === '/'">ברוכים הבאים לאתר</div>
   <router-view />
 </template>
 <script>
@@ -14,7 +12,9 @@ export default {
 </script>
 <style lang="scss">
 body {
-  background: #035f62d7;
+  // background: #035f62d7;
+  background: radial-gradient(circle at center, #ffb4a4, #f1efef);
+
   overflow-x: hidden;
   width: 100%;
   // background: #ffa9f180;
