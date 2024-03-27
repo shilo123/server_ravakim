@@ -51,7 +51,7 @@
         </draggable>
       </div>
     </div>
-    <!-- class="contaner-Finish" -->
+    <!--/ -->
     <div class="contiiin" v-if="newShi">
       <draggable
         v-model="newSHiduh"
@@ -90,6 +90,7 @@
         >שמור</el-button
       >
     </div>
+    <!-- / -->
     <div :class="{ newShi: newShi, 'contaner-Finish': !newShi }">
       <el-button type="success" class="Add" @click="AddNewShiduh">{{
         !newShi ? "צור" : "חזור"
@@ -98,12 +99,20 @@
       <div class="container-S">
         <div class="conton" v-for="(itmem, i) in resonse" :key="i">
           <!-- <div class="newItem" v-if="i === 0">sdf</div> -->
-          <el-button
-            type="danger"
-            class="Button-Delete"
-            @click="DeleteShiduh(itmem._id)"
-            >מחיקה</el-button
-          >
+          <div class="buttons">
+            <el-button
+              type="danger"
+              class="Button-Delete"
+              @click="DeleteShiduh(itmem._id)"
+              >מחיקה</el-button
+            >
+            <el-button
+              type="primary"
+              class="Add-or-ReadNote"
+              :class="{ 'Add-or-ReadNoteYeshNote': itmem.Note }"
+              >{{ itmem.Note ? "ראה הערה" : "הוסף הערה" }}</el-button
+            >
+          </div>
           <draggable
             v-model="itmem.Shiduh"
             group="people"
@@ -147,6 +156,7 @@
       </div>
     </div>
   </div>
+  <AddNote v-if="ParamsOfAddNote" />
 </template>
 
 <script>
@@ -157,14 +167,17 @@ import { VueDraggableNext } from "vue-draggable-next";
 import { ElMessage } from "element-plus";
 import axios from "axios";
 import profil from "@/assets/Profil.jpg";
+import AddNote from "./Add-or-read-Note.vue";
 export default {
   components: {
     draggable: VueDraggableNext,
+    AddNote,
   },
   // props: ["isFinished"],
 
   setup(props) {
     // const {data} = toRefs(this.data)
+    const ParamsOfAddNote = ref(null);
     const imageError = ref(profil);
     const ifDOM = ref(true);
     const newShi = ref(false);
@@ -507,8 +520,11 @@ export default {
       border-radius: 10px;
       padding: 5px;
       overflow-y: auto;
+      // overflow-x: hidden;
+      position: relative;
       .conton {
         border: 2px solid black;
+        // width: 80%;
         width: 80%;
         position: relative;
         display: flex;
@@ -521,13 +537,31 @@ export default {
         left: 10%;
         padding: 3px;
         border-radius: 10px;
-        .Button-Delete {
+        margin-top: 50px;
+        .buttons {
           position: absolute;
-          left: -55px;
-          // transform: rotate(270deg);
-          width: 50px;
-          font-size: 13px;
-          // background: #000;
+          top: -34px;
+          width: 100%;
+          background: #00000056;
+          .Button-Delete {
+            position: absolute;
+            left: 0;
+            width: 50%;
+            font-size: 13px;
+            top: 0;
+          }
+          .Add-or-ReadNote {
+            position: absolute;
+            right: 0;
+            width: 50%;
+            top: 0;
+            &YeshNote {
+              background: #5779ff;
+              :hover {
+                background: #5779ffc5;
+              }
+            }
+          }
         }
         .icon {
           position: absolute;
@@ -554,7 +588,8 @@ export default {
               flex-wrap: nowrap;
               align-items: center;
               justify-content: center;
-              width: 100%;
+              // width: 100%;
+              width: 120px;
               height: 100%;
               &:hover {
                 cursor: all-scroll;
@@ -571,7 +606,8 @@ export default {
           }
           &Woman {
             position: absolute;
-            right: 20px;
+            // right: 20px;
+            right: 0px;
             top: 0;
             margin-right: 11px;
             margin-top: 12px;
@@ -585,7 +621,8 @@ export default {
               flex-wrap: nowrap;
               align-items: center;
               justify-content: center;
-              width: 100%;
+              // width: 100%;
+              width: 120px;
               height: 100%;
               &:hover {
                 cursor: all-scroll;

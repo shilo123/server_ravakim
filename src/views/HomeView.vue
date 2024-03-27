@@ -239,7 +239,7 @@ export default {
         }, 100);
       }
     };
-    const widthphone = computed(() => window.innerWidth < 400);
+    const widthphone = computed(() => window.innerWidth < 500);
 
     return {
       Switchty,
@@ -390,7 +390,7 @@ label {
   }
 }
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 500px) {
   .Form {
     border-radius: 20px;
     position: absolute;

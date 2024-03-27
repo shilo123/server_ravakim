@@ -327,9 +327,6 @@ export default {
       justify-content: center;
       img {
         border-radius: 50%;
-        // position: absolute;
-        // left: 6%;
-        // top: 9%;
         height: 300px;
         width: 300px;
       }
@@ -371,6 +368,7 @@ export default {
         max-height: 100px;
         overflow-y: auto;
         position: relative;
+        height: auto;
         .key {
           background: #c95dff;
           padding: 5px;
