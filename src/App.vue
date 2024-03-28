@@ -28,9 +28,9 @@ html {
   left: 0;
   width: 100%;
   height: 40px;
-  background: #000;
   text-align: center;
-  color: aliceblue;
+  background: aliceblue;
+  color: #000;
   font-size: 32px;
 }
 input {

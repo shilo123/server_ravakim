@@ -145,6 +145,7 @@ import { computed, onMounted, reactive, ref, watch, watchEffect } from "vue";
 import { URL } from "@/URL/url";
 import axios from "axios";
 import { ElMessage } from "element-plus";
+// import sdf from "@/assets/Baner.jpeg"
 export default {
   setup() {
     const Switchty = ref(null);
@@ -256,15 +257,14 @@ export default {
 </script>
 <style lang="scss" scoped>
 .Form {
-  background: radial-gradient(#22ffd6, #45f9aeb5, #56ffe6);
-
+  // background: radial-gradient(#22ffd6, #45f9aeb5, #56ffe6);
+  background-image: url("@/assets/Baner.jpeg");
+  background-size: cover;
   border-radius: 20px;
   position: absolute;
   top: 100px;
   left: 50%;
   transform: translateX(-50%);
-  // width: 45%;
-  // height: 45%;
   width: 55%;
   height: 60%;
   border: 3px solid black;

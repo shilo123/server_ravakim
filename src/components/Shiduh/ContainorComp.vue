@@ -104,13 +104,17 @@
               type="danger"
               class="Button-Delete"
               @click="DeleteShiduh(itmem._id)"
-              >מחיקה</el-button
+              ><i class="fa-duotone fa-trash"></i>מחיקה</el-button
             >
             <el-button
               type="primary"
               class="Add-or-ReadNote"
               :class="{ 'Add-or-ReadNoteYeshNote': itmem.Note }"
-              >{{ itmem.Note ? "ראה הערה" : "הוסף הערה" }}</el-button
+              @click="AddNoteee(itmem)"
+            >
+              <i class="fa-duotone fa-notes-medical" v-if="!itmem.Note"></i>
+              <i class="fa-duotone fa-notes" v-else></i>
+              {{ itmem.Note ? "ראה הערה" : "הוסף הערה" }}</el-button
             >
           </div>
           <draggable
@@ -156,11 +160,11 @@
       </div>
     </div>
   </div>
-  <AddNote v-if="ParamsOfAddNote" />
+  <AddNote v-if="ifparamsNote" @sgor="ifparamsNote = false" />
 </template>
 
 <script>
-import { computed, reactive, ref, toRef, toRefs, watch } from "vue";
+import { computed, provide, reactive, ref, toRef, toRefs, watch } from "vue";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { URL } from "@/URL/url";
 import { VueDraggableNext } from "vue-draggable-next";
@@ -173,11 +177,11 @@ export default {
     draggable: VueDraggableNext,
     AddNote,
   },
-  // props: ["isFinished"],
 
   setup(props) {
-    // const {data} = toRefs(this.data)
-    const ParamsOfAddNote = ref(null);
+    const ifparamsNote = ref(false);
+    const pramso = ref(null);
+
     const imageError = ref(profil);
     const ifDOM = ref(true);
     const newShi = ref(false);
@@ -185,9 +189,12 @@ export default {
     const newSHiduh = ref([]);
     const { data, isFinished } = useAxios(URL + "GetShiduhim");
     const { data: resonse, isFinished: finsih } = useAxios(URL + "GetShoduh");
-    watch(resonse, (val) => {
-      // console.log(val);
-    });
+    provide("containor_params", pramso);
+    const AddNoteee = (itemem) => {
+      const { Note, _id } = itemem;
+      pramso.value = { Note, _id };
+      ifparamsNote.value = true;
+    };
     const AddNewShiduh = () => {
       newShi.value = !newShi.value;
       newSHiduh.value = [];
@@ -205,6 +212,9 @@ export default {
       ifSubmit,
       error,
       imageError,
+      AddNoteee,
+      ifparamsNote,
+      pramso,
     };
   },
   methods: {
@@ -542,18 +552,23 @@ export default {
           position: absolute;
           top: -34px;
           width: 100%;
+          left: 50%;
+          transform: translateX(-50%);
           background: #00000056;
+          i {
+            margin-right: 5px;
+          }
           .Button-Delete {
             position: absolute;
             left: 0;
-            width: 50%;
+            width: 30%;
             font-size: 13px;
             top: 0;
           }
           .Add-or-ReadNote {
             position: absolute;
             right: 0;
-            width: 50%;
+            width: 30%;
             top: 0;
             &YeshNote {
               background: #5779ff;
