@@ -97,10 +97,10 @@ export default {
       position: absolute;
       right: 0;
       top: 0;
-      margin: 5px;
+      margin: 15px;
       &:hover {
-        padding: 5px;
-        margin: 0;
+        padding: 7px;
+        margin: 8px;
         background: #858282;
         border-radius: 7px;
         cursor: pointer;
