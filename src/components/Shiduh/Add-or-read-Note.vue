@@ -93,6 +93,8 @@ export default {
     height: 50%;
     background: white;
     border-radius: 20px;
+    // animation: expandAnimation 0.4s;
+    animation: expandAnimation 1.4s;
     i {
       position: absolute;
       right: 0;
@@ -131,5 +133,44 @@ export default {
 }
 .el-button {
   margin: 5px;
+}
+// @keyframes expandAnimation {
+//   from {
+//     opacity: 0;
+//     transform: scale(0);
+//   }
+//   to {
+//     opacity: 1;
+//     transform: scale(1);
+//     position: absolute;
+//     left: 30%;
+//     top: 50%;
+//     transform: translateY(-50%);
+//   }
+// }
+@keyframes expandAnimation {
+  from {
+    opacity: 0;
+    transform: scale(0);
+    position: absolute;
+    left: 0%;
+    top: 0%;
+    width: 0%;
+    height: 0%;
+    background: white;
+    border-radius: 0px;
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    position: absolute;
+    left: 30%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50%;
+    height: 50%;
+    background: white;
+    border-radius: 20px;
+  }
 }
 </style>
