@@ -77,7 +77,7 @@
             style="width: 240px; margin-top: 10px"
             :autosize="{ minRows: 2, maxRows: 4 }"
             type="textarea"
-            placeholder="כתוב נא את תחביבך"
+            placeholder="כתוב מה אתה מחפש  "
             :input-style="{ background: 'none', border: '1px solid black' }"
           />
         </el-col>
