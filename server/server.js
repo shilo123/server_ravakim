@@ -53,17 +53,6 @@ app.get("/", async (req, res) => {
   res.json({ stuts: "shcoyeh" });
 });
 
-// //let File = req.file;
-// //let nameFile = `piki${random(0, 100)}`;
-// //nameFile += JSON.stringify(random(0, 1000)) + ".png";
-// //const filePath = path.join("UpFile", nameFile);
-// //fs.writeFile(filePath, req.file.buffer, (err) => {
-// //  if (err) {
-// //    console.error(err);
-// //    return res.status(500).send("Error saving the file.");
-// //  }
-// //  res.json(`${URL}/UpFile/${nameFile}`);
-// //});
 app.post("/postFilee", upload.single("file"), async (req, res) => {
   const params = {
     Bucket: "dagmusht",
@@ -146,6 +135,9 @@ app.post("/AddNote", async (req, res) => {
   }
 });
 app.get("/GetShiduhim", async (req, res) => {
+  if (!collection) {
+    while (!collection) {}
+  }
   let data = await collection
     .aggregate([
       {
@@ -264,6 +256,20 @@ app.delete("/DeleteShiduh/:id", async (req, res) => {
     res.json(true);
   } catch (error) {
     console.log(error);
+    res.json(false);
+  }
+});
+app.post("/AddNoteT", async (req, res) => {
+  try {
+    const { id, note } = req.body;
+    // res.json({ requ: req.body });
+    await collectionP.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { Note: note } }
+    );
+
+    res.json(true);
+  } catch (error) {
     res.json(false);
   }
 });
