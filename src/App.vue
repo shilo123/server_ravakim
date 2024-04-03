@@ -1,5 +1,5 @@
 <template>
-  <div class="Maala" v-if="$route.path === '/'">ברוכים הבאים לאתר</div>
+  <div class="Maala" v-if="$route.path === '/' && false"></div>
   <router-view />
 </template>
 <script>
@@ -13,10 +13,14 @@ export default {
 <style lang="scss">
 body {
   // background: #035f62d7;
-  background: radial-gradient(circle at center, #ffb4a4, #f1efef);
+  // background-image: url("@/assets/Baner.jpeg");
+  background-image: url("@/assets/Baner.jpeg");
+  background-size: cover;
+  // background: radial-gradient(circle at center, #ffb4a4, #f1efef);
 
   overflow-x: hidden;
   width: 100%;
+  padding-bottom: 1260px;
   // background: #ffa9f180;
 }
 html {
@@ -27,7 +31,8 @@ html {
   top: 0;
   left: 0;
   width: 100%;
-  height: 40px;
+  // height: 40px;
+  height: 60px;
   text-align: center;
   background: aliceblue;
   color: #000;

@@ -258,14 +258,15 @@ export default {
 <style lang="scss" scoped>
 .Form {
   // background: radial-gradient(#22ffd6, #45f9aeb5, #56ffe6);
-  background-image: url("@/assets/Baner.jpeg");
   background-size: cover;
   border-radius: 20px;
   position: absolute;
-  top: 100px;
+  // top: 100px;
+  top: 360px;
   left: 50%;
   transform: translateX(-50%);
-  width: 55%;
+  // width: 55%;
+  width: 61%;
   height: 60%;
   border: 3px solid black;
   padding: 20px;
