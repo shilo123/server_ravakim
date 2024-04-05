@@ -1,5 +1,6 @@
 <template>
-  <div class="Maala" v-if="$route.path === '/'"></div>
+  <!-- <div class="Maala" v-if="$route.path === '/'"></div> -->
+  <img src="@/assets/Baner-Maala.jpeg" class="Maala" alt="" />
   <router-view />
 </template>
 <script>
@@ -35,7 +36,7 @@ html {
   height: 40%;
   border-radius: 10px;
   text-align: center;
-  background: url("@/assets/Baner-Maala.jpeg");
+  // background: url("@/assets/Baner-Maala.jpeg");
   color: #000;
   font-size: 32px;
 }
