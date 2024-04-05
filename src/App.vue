@@ -1,5 +1,5 @@
 <template>
-  <div class="Maala" v-if="$route.path === '/' && false"></div>
+  <div class="Maala" v-if="$route.path === '/'"></div>
   <router-view />
 </template>
 <script>
@@ -28,13 +28,14 @@ html {
 }
 .Maala {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
+  top: 10px;
+  left: 10px;
+  width: 99%;
   // height: 40px;
-  height: 60px;
+  height: 40%;
+  border-radius: 10px;
   text-align: center;
-  background: aliceblue;
+  background: url("@/assets/Baner-Maala.jpeg");
   color: #000;
   font-size: 32px;
 }
@@ -54,9 +55,20 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
-// @media screen and (max-width: 1560px) {
-//   // body {
-//   //   background: #000;
-//   // }
-// }
+@media screen and (max-width: 500px) {
+  .Maala {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 95%;
+    // height: 40px;
+    height: 7%;
+    border-radius: 10px;
+    text-align: center;
+    background: url("@/assets/Baner-Maala.jpeg");
+    background-size: cover;
+    color: #000;
+    font-size: 32px;
+  }
+}
 </style>
