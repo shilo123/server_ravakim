@@ -42,7 +42,7 @@ export default {
     const isFinished = computed(() => {
       return Store.state.isFinished;
     });
-    const ifPhone = computed(() => window.innerWidth > 400);
+    const ifPhone = computed(() => window.innerWidth > 500);
 
     return { isFinished, GetPratim, ifPhone };
   },
@@ -136,7 +136,7 @@ export default {
     margin-bottom: 30px;
   }
 }
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 500px) {
   .container-All {
     .card {
       width: 110px;
