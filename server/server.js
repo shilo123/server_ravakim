@@ -21,11 +21,14 @@ const s3 = new AWS.S3({
   secretAccessKey: "l0VinJ7A39RXxPZBIxxlGFGTyBOqLtMbS4TW50cu",
   region: "us-east-1",
 });
-const URL = "https://server-ravakim-10c1effbda77.herokuapp.com";
+// const URL = "https://server-ravakim-10c1effbda77.herokuapp.com";
+const URL = "http://localhost:3006/";
 let collection = null;
 (async () => {
   const url =
-    "mongodb+srv://hazshilo:1234@cluster1.ifbyw.mongodb.net/?tlsAllowInvalidCertificates=true";
+    "mongodb+srv://hazshilo:1234@cluster0.0yzklos.mongodb.net/?tlsAllowInvalidCertificates=true";
+  // const url =
+  //   "mongodb+srv://hazshilo:1234@cluster1.ifbyw.mongodb.net/?tlsAllowInvalidCertificates=true";
   const connection = await mongo.connect(url);
   const db = connection.db("Project-ravakim");
   collection = db.collection("Users-Ravakim");
@@ -33,7 +36,9 @@ let collection = null;
 let collectionP = null;
 (async () => {
   const url =
-    "mongodb+srv://hazshilo:1234@cluster1.ifbyw.mongodb.net/?tlsAllowInvalidCertificates=true";
+    "mongodb+srv://hazshilo:1234@cluster0.0yzklos.mongodb.net/?tlsAllowInvalidCertificates=true";
+  // const url =
+  //   "mongodb+srv://hazshilo:1234@cluster1.ifbyw.mongodb.net/?tlsAllowInvalidCertificates=true";
   const connection = await mongo.connect(url);
   const db = connection.db("Project-ravakim");
 
