@@ -297,7 +297,7 @@ export default {
         formData.append("file", file);
 
         const { data } = await axios.post(
-          "http://localhost:3006",
+          "/postFilee",
           // "https://server-ravakim-10c1effbda77.herokuapp.com/postFilee",
           formData,
           {
