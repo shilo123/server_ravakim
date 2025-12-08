@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --no-warnings"
+    "start": "node server.js"
   },
   "author": "",
   "license": "ISC",
@@ -22,5 +22,8 @@
     "nodemon": "^3.0.1",
     "objectid": "^3.2.1",
     "path": "^0.12.7"
+  },
+  "engines": {
+    "node": "22.x"
   }
 }

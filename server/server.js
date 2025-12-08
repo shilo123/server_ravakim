@@ -1,6 +1,5 @@
 const express = require("express");
 const app = express();
-const port = process.env.PORT || 3006;
 const cors = require("cors");
 let mongo = require("mongodb").MongoClient;
 const ObjectId = require("mongodb").ObjectId;
@@ -13,6 +12,8 @@ const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const AWS = require("aws-sdk");
+const PORT = process.env.PORT || 3006;
+
 app.use("/UpFile", express.static("UpFile"));
 app.use(bodyParser.json());
 app.use(cors());
@@ -21,8 +22,8 @@ const s3 = new AWS.S3({
   secretAccessKey: "l0VinJ7A39RXxPZBIxxlGFGTyBOqLtMbS4TW50cu",
   region: "us-east-1",
 });
-// const URL = "https://server-ravakim-10c1effbda77.herokuapp.com";
-const URL = "http://localhost:3006/";
+const URL = "https://server-ravakim-10c1effbda77.herokuapp.com";
+// const URL = "http://localhost:3006/";
 let collection = null;
 (async () => {
   const url =
@@ -278,6 +279,6 @@ app.post("/AddNoteT", async (req, res) => {
     res.json(false);
   }
 });
-app.listen(port, () => {
-  console.log(`http://localhost:${port}/`);
+app.listen(PORT, () => {
+  console.log(`http://localhost:${PORT}/`);
 });
