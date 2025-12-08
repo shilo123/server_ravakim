@@ -222,7 +222,8 @@ export default {
     const LoadingB = ref(false);
 
     const showError = (msg) => {
-      alert(msg);
+      window.$toast && window.$toast("העלאת התמונה נכשלה ❌ ", "error");
+      msg;
     };
 
     const Submit = async () => {

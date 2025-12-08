@@ -1,184 +1,257 @@
 <template>
-  <div class="container-All" v-if="ifDOM">
-    <div class="container-ManAndWuman" v-if="isFinished">
-      <div class="list-Man">
-        <h2 class="title">גברים</h2>
-        <draggable
-          v-model="data.man"
-          :group="{ name: 'people', pull: 'clone' }"
-          @end="Evenetdraggable"
-          id="man"
-        >
-          <!-- :group="{ name: 'people', pull: 'clone', put: true }" -->
-          <div class="item" v-for="(ish, i) in data.man" :key="i" id="man">
-            {{ ish.Name + "/" + ish.Age
-            }}<span>
-              <img
-                @error="error[`itemMan-${i}`] = true"
-                v-if="ish.picURL"
-                :src="!error[`itemMan-${i}`] ? ish.picURL : imageError"
-                alt="אין תמונה"
-                width="30px"
-                height="30px"
-              />
-            </span>
-          </div>
-        </draggable>
+  <div class="shidduch-container" v-if="ifDOM" dir="rtl">
+    <!-- צד שמאל: מאגר גברים ונשים -->
+    <section class="people-panel">
+      <div class="panel-header">
+        <h2>מאגר מועמדים</h2>
+        <p>גרור גבר ואישה ליצירת שידוך חדש או לשידוך קיים</p>
       </div>
-      <div class="list-Wooman">
-        <h2 class="title">נשים</h2>
+
+      <div class="people-columns">
+        <!-- גברים -->
+        <div class="people-list men">
+          <div class="people-list-header">
+            <span class="tag tag-men">גברים</span>
+          </div>
+
+          <draggable
+            v-model="men"
+            :group="{ name: 'people', pull: 'clone' }"
+            @end="Evenetdraggable"
+            class="people-draggable"
+          >
+            <div
+              class="person-item"
+              v-for="(ish, i) in men"
+              :key="'m-' + (ish._id || i)"
+            >
+              <div class="avatar">
+                <img
+                  v-if="ish.picURL"
+                  @error="error[`itemMan-${i}`] = true"
+                  :src="!error[`itemMan-${i}`] ? ish.picURL : imageError"
+                  alt="תמונה"
+                />
+                <div v-else class="avatar-placeholder">
+                  {{ ish.Name?.charAt(0) || "מ" }}
+                </div>
+              </div>
+              <div class="person-info">
+                <div class="name">{{ ish.Name }}</div>
+                <div class="meta">גיל {{ ish.Age }}</div>
+              </div>
+            </div>
+          </draggable>
+        </div>
+
+        <!-- נשים -->
+        <div class="people-list women">
+          <div class="people-list-header">
+            <span class="tag tag-women">נשים</span>
+          </div>
+
+          <draggable
+            v-model="women"
+            :group="{ name: 'people', pull: 'clone' }"
+            @end="Evenetdraggable"
+            class="people-draggable"
+          >
+            <div
+              class="person-item"
+              v-for="(ish, i) in women"
+              :key="'w-' + (ish._id || i)"
+            >
+              <div class="avatar">
+                <img
+                  v-if="ish.picURL"
+                  @error="error[`itemWoman-${i}`] = true"
+                  :src="!error[`itemWoman-${i}`] ? ish.picURL : imageError"
+                  alt="תמונה"
+                />
+                <div v-else class="avatar-placeholder">
+                  {{ ish.Name?.charAt(0) || "נ" }}
+                </div>
+              </div>
+              <div class="person-info">
+                <div class="name">{{ ish.Name }}</div>
+                <div class="meta">גיל {{ ish.Age }}</div>
+              </div>
+            </div>
+          </draggable>
+        </div>
+      </div>
+    </section>
+
+    <!-- צד ימין: יצירת שידוך + שידוכים קיימים -->
+    <section :class="['matches-panel', { 'matches-panel--compact': newShi }]">
+      <div class="matches-header">
+        <div>
+          <h2>פוטנציאל לשידוך</h2>
+          <p v-if="!newShi">בחר שידוך קיים או צור חדש בעזרת גרירה מהמאגר</p>
+          <p v-else>גרור גבר ואישה לאזור למטה ואז שמור שידוך</p>
+        </div>
+        <button class="primary-btn" @click="AddNewShiduh">
+          {{ !newShi ? "צור שידוך חדש" : "סגור יצירת שידוך" }}
+        </button>
+      </div>
+
+      <!-- יצירת שידוך חדש -->
+      <div v-if="newShi" class="new-match-card">
+        <div class="new-match-title">שידוך חדש</div>
+        <div class="new-match-description">
+          גרור גבר מצד שמאל ואישה מצד ימין לאזור זה
+        </div>
 
         <draggable
-          v-model="data.woman"
-          :group="{ name: 'people', pull: 'clone' }"
-          @end="Evenetdraggable"
-          id="woman"
+          v-model="newSHiduh"
+          group="people"
+          class="new-match-dropzone"
         >
-          <!-- :group="{ name: 'people', pull: 'clone', put: true }" -->
-          <div class="item" v-for="(ish, i) in data.woman" :key="i" id="woman">
-            {{ ish.Name + "/" + ish.Age
-            }}<span>
+          <div
+            v-for="(sod, i) in newSHiduh"
+            :key="'new-' + (sod._id || i)"
+            class="new-match-person"
+            :class="sod.Gender === 'זכר' ? 'new-man' : 'new-woman'"
+          >
+            <div class="avatar small">
               <img
-                @error="error[`itemWoman-${i}`] = true"
-                v-if="ish.picURL"
-                alt="אין תמונה"
-                :src="!error[`itemWoman-${i}`] ? ish.picURL : imageError"
-                width="30px"
-                height="30px"
+                v-if="sod.picURL"
+                @error="error[`itemNewShid-${i}`] = true"
+                :src="!error[`itemNewShid-${i}`] ? sod.picURL : imageError"
+                alt="תמונה"
               />
-            </span>
-          </div>
-        </draggable>
-      </div>
-    </div>
-    <!--/ -->
-    <div class="contiiin" v-if="newShi">
-      <draggable
-        v-model="newSHiduh"
-        group="people"
-        style="width: 100%; height: 100%"
-      >
-        <div v-for="(sod, i) in newSHiduh" :key="i">
-          <div class="icon">
-            <i
-              class="fa-duotone fa-heart fa-xl"
-              style="--fa-secondary-color: #ce2c2c"
-            ></i>
-          </div>
-          <div :class="sod.Gender === 'זכר' ? 'man' : 'woman'">
-            <div class="item">
-              {{ sod.Name + "/" + sod.Age
-              }}<span>
-                <img
-                  @error="error[`itemNewShid-${i}`] = true"
-                  v-if="sod.picURL"
-                  :src="!error[`itemNewShid-${i}`] ? sod.picURL : imageError"
-                  alt="אין תמונה"
-                  width="30px"
-                  height="30px"
-                />
-              </span>
+              <div v-else class="avatar-placeholder">
+                {{ sod.Name?.charAt(0) || "?" }}
+              </div>
+            </div>
+            <div class="person-info">
+              <div class="name">{{ sod.Name }}</div>
+              <div class="meta">גיל {{ sod.Age }}</div>
             </div>
           </div>
-        </div>
-      </draggable>
-      <el-button
-        type="success"
-        v-if="ifSubmit"
-        class="SubMit"
-        @click="InsertNewSHid"
-        >שמור</el-button
-      >
-    </div>
-    <!-- / -->
-    <div :class="{ newShi: newShi, 'contaner-Finish': !newShi }">
-      <el-button type="success" class="Add" @click="AddNewShiduh">{{
-        !newShi ? "צור" : "חזור"
-      }}</el-button>
-      <h2>פוטנציאל לשידוך</h2>
-      <div class="container-S">
-        <div class="conton" v-for="(itmem, i) in resonse" :key="i">
-          <!-- <div class="newItem" v-if="i === 0">sdf</div> -->
-          <div class="buttons">
-            <el-button
-              type="danger"
-              class="Button-Delete"
-              @click="DeleteShiduh(itmem._id)"
-              ><i class="fa-duotone fa-trash"></i>מחיקה</el-button
-            >
-            <el-button
-              type="primary"
-              class="Add-or-ReadNote"
-              :class="{ 'Add-or-ReadNoteYeshNote': itmem.Note }"
-              @click="AddNoteee(itmem)"
-            >
-              <i class="fa-duotone fa-notes-medical" v-if="!itmem.Note"></i>
-              <i class="fa-duotone fa-notes" v-else></i>
-              {{ itmem.Note ? "ראה הערה" : "הוסף הערה" }}</el-button
-            >
+        </draggable>
+
+        <div class="new-match-footer">
+          <div class="pair-status" :class="{ 'pair-status--ready': ifSubmit }">
+            <i class="fa-duotone fa-heart"></i>
+            <span>
+              {{
+                ifSubmit ? "זוג מוכן לשמירה" : "נדרש לבחור גבר אחד ואישה אחת"
+              }}
+            </span>
           </div>
+          <button
+            class="primary-btn full-width"
+            :disabled="!ifSubmit"
+            @click="InsertNewSHid"
+          >
+            שמור שידוך
+          </button>
+        </div>
+      </div>
+
+      <!-- רשימת שידוכים קיימים -->
+      <div class="matches-list">
+        <article
+          class="match-card"
+          v-for="(itmem, i) in resonse"
+          :key="itmem._id || i"
+        >
+          <div class="match-card-header">
+            <div class="match-label">
+              <span class="chip">שידוך #{{ i + 1 }}</span>
+              <span v-if="itmem.Note" class="chip chip-note" title="קיימת הערה">
+                הערה קיימת
+              </span>
+            </div>
+            <div class="match-actions">
+              <button
+                class="ghost-btn"
+                @click="AddNoteee(itmem)"
+                :class="{ 'ghost-btn--highlight': itmem.Note }"
+              >
+                <i class="fa-duotone fa-notes-medical" v-if="!itmem.Note"></i>
+                <i class="fa-duotone fa-notes" v-else></i>
+                <span>{{ itmem.Note ? "ראה הערה" : "הוסף הערה" }}</span>
+              </button>
+
+              <button class="danger-btn" @click="DeleteShiduh(itmem._id)">
+                <i class="fa-duotone fa-trash"></i>
+                <span>מחיקה</span>
+              </button>
+            </div>
+          </div>
+
           <draggable
             v-model="itmem.Shiduh"
             group="people"
             @add="evntos($event, itmem)"
-            style="width: 100%; height: 100%"
+            class="match-draggable"
           >
             <div
               v-for="(S, indo) in itmem.Shiduh"
-              :key="indo"
+              :key="S._id || indo"
+              class="match-person"
               :class="{
-                listcomlitedMan: S.Gender === 'זכר',
-                listcomlitedWoman: S.Gender === 'נקבה',
+                'match-person--man': S.Gender === 'זכר',
+                'match-person--woman': S.Gender === 'נקבה',
               }"
             >
-              <div class="item" :id="S.Gender === 'זכר' ? 'man' : 'woman'">
-                {{ S.Name + "/" + S.Age
-                }}<span :id="S.Gender === 'זכר' ? 'man' : 'woman'">
-                  <img
-                    @error="error[`item-${S._id}`] = true"
-                    v-if="S.picURL"
-                    :src="!error[`item-${S._id}`] ? S.picURL : imageError"
-                    alt="אין תמונה"
-                    :id="S.Gender === 'זכר' ? 'man' : 'woman'"
-                  />
-                </span>
+              <div class="avatar medium">
+                <img
+                  v-if="S.picURL"
+                  @error="error[`item-${S._id}`] = true"
+                  :src="!error[`item-${S._id}`] ? S.picURL : imageError"
+                  alt="תמונה"
+                />
+                <div v-else class="avatar-placeholder">
+                  {{ S.Name?.charAt(0) || "?" }}
+                </div>
+              </div>
+              <div class="person-info">
+                <div class="name">{{ S.Name }}</div>
+                <div class="meta">
+                  {{ S.Gender === "זכר" ? "חתן" : "כלה" }} · גיל {{ S.Age }}
+                </div>
               </div>
             </div>
           </draggable>
 
-          <div class="icon">
+          <div class="match-heart">
             <i
               class="fa-duotone fa-heart"
               style="
                 --fa-primary-color: #ffffff;
                 --fa-secondary-color: #ffffff;
-                --fa-secondary-opacity: 0.5;
+                --fa-secondary-opacity: 0.6;
               "
             ></i>
           </div>
-        </div>
+        </article>
       </div>
-    </div>
+    </section>
+
+    <!-- מודאל הערות -->
+    <AddNote v-if="ifparamsNote" @sgor="ifparamsNote = false" />
   </div>
-  <AddNote v-if="ifparamsNote" @sgor="ifparamsNote = false" />
 </template>
 
 <script>
-import { computed, provide, reactive, ref, toRef, toRefs, watch } from "vue";
+import { computed, provide, reactive, ref, watch } from "vue";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { URL } from "@/URL/url";
 import { VueDraggableNext } from "vue-draggable-next";
-import { ElMessage } from "element-plus";
 import axios from "axios";
 import profil from "@/assets/Profil.jpg";
 import AddNote from "./Add-or-read-Note.vue";
+
 export default {
   components: {
     draggable: VueDraggableNext,
     AddNote,
   },
 
-  setup(props) {
+  setup() {
     const ifparamsNote = ref(false);
     const pramso = ref(null);
 
@@ -187,19 +260,40 @@ export default {
     const newShi = ref(false);
     const error = reactive({});
     const newSHiduh = ref([]);
+
+    // מאגר גברים/נשים – תמיד מערך, כדי שלא יהיה undefined
+    const men = ref([]);
+    const women = ref([]);
+
     const { data, isFinished } = useAxios(URL + "GetShiduhim");
     const { data: resonse, isFinished: finsih } = useAxios(URL + "GetShoduh");
+
+    // כשמגיעים נתונים מהשרת – מעדכן את המערכים
+    watch(
+      () => data.value,
+      (val) => {
+        if (!val) return;
+        men.value = Array.isArray(val.man) ? val.man : [];
+        women.value = Array.isArray(val.woman) ? val.woman : [];
+      },
+      { immediate: true }
+    );
+
     provide("containor_params", pramso);
+
     const AddNoteee = (itemem) => {
       const { Note, _id } = itemem;
       pramso.value = { Note, _id };
       ifparamsNote.value = true;
     };
+
     const AddNewShiduh = () => {
       newShi.value = !newShi.value;
       newSHiduh.value = [];
     };
+
     const ifSubmit = computed(() => newSHiduh.value.length === 2);
+
     return {
       resonse,
       finsih,
@@ -215,82 +309,81 @@ export default {
       AddNoteee,
       ifparamsNote,
       pramso,
+      men,
+      women,
     };
   },
+
   methods: {
     async InsertNewSHid() {
-      let arrids = this.newSHiduh.map((e) => e._id);
-      let { data } = await axios.post(URL + "InsertShiduh", arrids);
+      const arrids = this.newSHiduh.map((e) => e._id);
+      const { data } = await axios.post(URL + "InsertShiduh", arrids);
       if (data) {
         this.AddNewShiduh();
-        let res = await axios.get(URL + "GetShoduh");
+        const res = await axios.get(URL + "GetShoduh");
         this.resonse = res.data;
+        window.alert("השידוך נשמר בהצלחה");
+      } else {
+        window.alert("משהו השתבש בשמירת השידוך");
       }
     },
-    consolelll(val) {
-      console.log(`val`, val);
-    },
-    findMan(val) {
-      return val.find((e) => e.Gender === "זכר");
-    },
-    findWoman(val) {
-      return val.find((e) => e.Gender === "נקבה");
-    },
+
     Evenetdraggable(e) {
       const { newIndex } = e;
-      const OOO = this.newSHiduh.findIndex((e, i) => i !== newIndex);
-      // console.log("new", this.newSHiduh[newIndex], "Old", this.newSHiduh[OOO]);
+      const OOO = this.newSHiduh.findIndex((_, i) => i !== newIndex);
+
       if (
         this.newSHiduh[OOO] &&
         this.newSHiduh[newIndex].Gender === this.newSHiduh[OOO].Gender
       ) {
         this.newSHiduh.splice(0, 1);
       }
+
       if (this.newShi && this.newSHiduh.length > 2) {
-        let gendro = this.newSHiduh[newIndex].Gender;
-        let index = this.newSHiduh.findIndex((e) => e.Gender === gendro);
+        const gendro = this.newSHiduh[newIndex].Gender;
+        const index = this.newSHiduh.findIndex((e) => e.Gender === gendro);
         this.newSHiduh.splice(index, 1);
       }
     },
+
     async DeleteShiduh(id) {
-      console.log(id);
-      let { data } = await axios.delete(URL + "DeleteShiduh/" + id);
-      console.log(data);
+      const { data } = await axios.delete(URL + "DeleteShiduh/" + id);
       if (data) {
-        let res = await axios.get(URL + "GetShoduh");
+        const res = await axios.get(URL + "GetShoduh");
         this.resonse = res.data;
+        window.alert("השידוך נמחק");
+      } else {
+        window.alert("מחיקה נכשלה");
       }
     },
+
     async evntos(e, val) {
       const ID = val._id;
-      let arr = val.Shiduh;
-      // console.log("arr", arr);
+      const arr = val.Shiduh || [];
       const { newIndex } = e;
-      let originalArr = arr;
+      const originalArr = arr;
+
       if (arr.length === 3) {
-        let MyGend;
-        if (originalArr[newIndex].Gender === "זכר") {
-          MyGend = "זכר";
-        } else {
-          MyGend = "נקבה";
-        }
+        const MyGend = originalArr[newIndex].Gender === "זכר" ? "זכר" : "נקבה";
         const index = arr.findIndex(
           (e, i) => e.Gender === MyGend && i !== newIndex
         );
-        originalArr.splice(index, 1);
+        if (index !== -1) originalArr.splice(index, 1);
       } else {
         originalArr.push(originalArr[newIndex]);
       }
-      let newPoten = originalArr.map((e) => e._id);
-      // console.log({ newPoten, originalArr });
-      let { data } = await axios.put(URL + "EditZog", { newPoten, ID });
+
+      const newPoten = originalArr.map((e) => e._id);
+      const { data } = await axios.put(URL + "EditZog", { newPoten, ID });
+
       if (data) {
         this.resonse = data;
-        ElMessage.success("בוצע");
+        window.alert("השידוך עודכן");
       } else {
-        ElMessage.error("משהו השתבש");
+        window.alert("עדכון נכשל");
       }
     },
+
     rafreshDom() {
       this.ifDOM = false;
       setTimeout(() => {
@@ -300,387 +393,476 @@ export default {
   },
 };
 </script>
+
 <style lang="scss" scoped>
-.container-All {
-  position: absolute;
+.shidduch-container {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr);
+  gap: 1.5rem;
+  width: 100%;
+  height: calc(100vh - 120px);
+  box-sizing: border-box;
+}
+
+.people-panel,
+.matches-panel {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 18px;
+  padding: 1.2rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* מאגר מועמדים */
+.panel-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.panel-header p {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+.people-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+  min-height: 0;
+}
+
+.people-list {
+  background: #f5f5f7;
+  border-radius: 14px;
+  padding: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.people-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.tag-men {
+  background: rgba(54, 134, 255, 0.13);
+  color: #246bff;
+}
+
+.tag-women {
+  background: rgba(255, 92, 143, 0.14);
+  color: #ff3f7d;
+}
+
+.people-draggable {
+  overflow-y: auto;
+  padding-right: 0.2rem;
+  margin-top: 0.3rem;
+}
+
+.person-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: white;
+  border-radius: 12px;
+  padding: 0.45rem 0.6rem;
+  margin-bottom: 0.35rem;
+  cursor: grab;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s;
+}
+
+.person-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.06);
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #e2e2e2;
+}
+
+.avatar.small {
+  width: 28px;
+  height: 28px;
+}
+
+.avatar.medium {
+  width: 40px;
+  height: 40px;
+}
+
+.avatar img {
   width: 100%;
   height: 100%;
-  left: 0;
-  top: 10%;
-  .container-ManAndWuman {
-    width: 30%;
-    margin: 5%;
-    margin-top: 2%;
-    // background: #0000005a;
-    background: #d532325a;
-    position: absolute;
-    right: 0;
-    padding: 20px;
-    height: 470px;
-    border-radius: 30px;
-    box-shadow: 0 0 7px 1px #0000003a;
-    .list-Man {
-      position: absolute;
-      right: 20px;
-      top: 0;
-      margin: 20px;
-      box-shadow: 0 0 7px 3px #0000003a;
-      padding: 10px;
-      height: 80%;
-      overflow-y: auto;
-      border-radius: 5px;
-      width: 35%;
-      .title {
-        text-align: center;
-      }
-      .item {
-        margin-bottom: 8px;
-        border-radius: 5px;
-        padding: 10px;
-        background: #5cffe9;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        align-items: center;
-        justify-content: center;
-        width: 90%;
-        overflow-x: auto;
-        &:hover {
-          cursor: all-scroll;
-        }
-
-        img {
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          margin-left: 10px;
-          position: relative;
-          top: 2px;
-        }
-      }
-    }
-    .list-Wooman {
-      position: absolute;
-      left: 20px;
-      top: 0;
-      margin: 20px;
-      box-shadow: 0 0 7px 3px #0000003a;
-      padding: 10px;
-      height: 80%;
-      overflow-y: auto;
-      border-radius: 5px;
-      width: 35%;
-      .title {
-        text-align: center;
-      }
-      .item {
-        margin-bottom: 8px;
-        border-radius: 5px;
-        padding: 10px;
-        background: #5cffe9;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        align-items: center;
-        justify-content: center;
-        overflow-x: auto;
-
-        width: 90%;
-        &:hover {
-          cursor: all-scroll;
-        }
-
-        img {
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          margin-left: 10px;
-          position: relative;
-          top: 2px;
-        }
-      }
-    }
-  }
-  .contiiin {
-    border: 3px solid black;
-    border-radius: 20px;
-    width: 30%;
-    height: 6em;
-    position: absolute;
-    left: 30%;
-    top: 10%;
-    z-index: 2000;
-    .SubMit {
-      position: absolute;
-      bottom: -50px;
-      width: 100%;
-    }
-    .icon {
-      position: absolute;
-      left: 47%;
-      transform: translateX(-80%);
-      top: 50%;
-      transform: translateY(-50%);
-    }
-    .man {
-      position: absolute;
-      left: 0px;
-      top: 0;
-      width: 40%;
-      height: 90%;
-      // margin-top: 12px;
-
-      .item {
-        margin-bottom: 8px;
-        border-radius: 20px;
-        padding: 5px;
-        background: #5cffe9;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 100%;
-        img {
-          border-radius: 50%;
-        }
-      }
-    }
-    .woman {
-      position: absolute;
-      right: 10px;
-      top: 0;
-      width: 40%;
-      height: 90%;
-      // margin-right: 11px;
-      // margin-top: 12px;
-
-      .item {
-        margin-bottom: 8px;
-        border-radius: 20px;
-        padding: 5px;
-        background: #5cffe9;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 100%;
-        img {
-          border-radius: 50%;
-        }
-      }
-    }
-  }
-  .newShi {
-    width: 210px;
-    position: absolute;
-    left: 100px;
-    margin-top: 2%;
-    top: 0;
-    transition: all 0.5s;
-
-    img {
-      display: none;
-    }
-    // .Add {
-    // }
-    .container-S {
-      display: none;
-    }
-    h2 {
-      display: none;
-    }
-  }
-
-  .contaner-Finish {
-    border: 2px solid black;
-    background: #7b7b7b;
-    background: radial-gradient(#ff2222, #f96060b5, #ff8056);
-    width: 40%;
-    height: 80%;
-    position: absolute;
-    left: 100px;
-    margin-top: 2%;
-    top: 0;
-    border-radius: 20px;
-    box-shadow: 0 0 7px 2px #0000008e;
-    transition: all 0.5s ease-in-out;
-    h2 {
-      text-align: center;
-    }
-    .Add {
-      position: absolute;
-      right: 0;
-      top: 10px;
-      margin: 10px;
-      width: 130px;
-      background: #ff8e8e;
-      border: 1px solid #d45b48;
-    }
-    .container-S {
-      width: 80%;
-      margin-left: 8%;
-      height: 80%;
-      // border: 2px solid black;
-      box-shadow: 0 0 7px 2px #0000008e;
-
-      border-radius: 10px;
-      padding: 5px;
-      overflow-y: auto;
-      // overflow-x: hidden;
-      position: relative;
-      .conton {
-        border: 2px solid black;
-        // width: 80%;
-        width: 80%;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 15%;
-        margin: 5px;
-        margin-bottom: 15px;
-        left: 10%;
-        padding: 3px;
-        border-radius: 10px;
-        margin-top: 50px;
-        .buttons {
-          position: absolute;
-          top: -34px;
-          width: 100%;
-          left: 50%;
-          transform: translateX(-50%);
-          background: #00000056;
-          i {
-            margin-right: 5px;
-          }
-          .Button-Delete {
-            position: absolute;
-            left: 0;
-            width: 30%;
-            font-size: 13px;
-            top: 0;
-          }
-          .Add-or-ReadNote {
-            position: absolute;
-            right: 0;
-            width: 30%;
-            top: 0;
-            &YeshNote {
-              background: #5779ff;
-              :hover {
-                background: #5779ffc5;
-              }
-            }
-          }
-        }
-        .icon {
-          position: absolute;
-          left: 50%;
-        }
-        .newItem {
-          width: 80%;
-          height: 2em;
-          border: 3px solid black;
-        }
-        .listcomlited {
-          &Man {
-            position: absolute;
-            left: 20px;
-            top: 0;
-            margin-top: 12px;
-            .item {
-              margin-bottom: 8px;
-              border-radius: 5px;
-              padding: 5px;
-              background: #5cffe9;
-              display: flex;
-              flex-direction: row;
-              flex-wrap: nowrap;
-              align-items: center;
-              justify-content: center;
-              // width: 100%;
-              width: 120px;
-              height: 100%;
-              &:hover {
-                cursor: all-scroll;
-              }
-              img {
-                width: 30px;
-                height: 30px;
-                border-radius: 50%;
-                margin-left: 10px;
-                position: relative;
-                top: 2px;
-              }
-            }
-          }
-          &Woman {
-            position: absolute;
-            // right: 20px;
-            right: 0px;
-            top: 0;
-            margin-right: 11px;
-            margin-top: 12px;
-            .item {
-              margin-bottom: 8px;
-              border-radius: 5px;
-              padding: 5px;
-              background: #5cffe9;
-              display: flex;
-              flex-direction: row;
-              flex-wrap: nowrap;
-              align-items: center;
-              justify-content: center;
-              // width: 100%;
-              width: 120px;
-              height: 100%;
-              &:hover {
-                cursor: all-scroll;
-              }
-              img {
-                width: 30px;
-                height: 30px;
-                border-radius: 50%;
-                margin-left: 10px;
-                position: relative;
-                top: 2px;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+  object-fit: cover;
 }
-//
-//
-//
-//
-//
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #555;
+}
+
+.person-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.person-info .name {
+  font-size: 0.9rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.person-info .meta {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+/* צד השידוכים */
+.matches-panel {
+  min-height: 0;
+}
+
+.matches-panel--compact .matches-list {
+  margin-top: 0.75rem;
+}
+
+.matches-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.matches-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.matches-header p {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  opacity: 0.78;
+}
+
+/* כפתורים */
+.primary-btn,
+.danger-btn,
+.ghost-btn {
+  border-radius: 999px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: background 0.18s ease, transform 0.1s ease, box-shadow 0.15s ease,
+    opacity 0.2s;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #ff6b6b, #f99a4d);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(255, 107, 107, 0.35);
+  font-weight: 600;
+}
+
+.primary-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(255, 107, 107, 0.4);
+}
+
+.primary-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.primary-btn.full-width {
+  width: 100%;
+  justify-content: center;
+}
+
+.danger-btn {
+  background: #ff4d4f;
+  color: #fff;
+}
+
+.danger-btn:hover {
+  background: #e64345;
+}
+
+.ghost-btn {
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.ghost-btn:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.ghost-btn--highlight {
+  border-color: #5779ff;
+  color: #5779ff;
+}
+
+/* כרטיס יצירת שידוך חדש */
+.new-match-card {
+  border-radius: 14px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 235, 230, 0.9)
+  );
+  padding: 0.9rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255, 170, 140, 0.5);
+}
+
+.new-match-title {
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.new-match-description {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  margin-bottom: 0.6rem;
+}
+
+.new-match-dropzone {
+  border-radius: 12px;
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+  min-height: 72px;
+  padding: 0.5rem;
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  flex-wrap: wrap;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.new-match-person {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.new-match-person.new-man {
+  border: 1px solid #246bff33;
+}
+
+.new-match-person.new-woman {
+  border: 1px solid #ff3f7d33;
+}
+
+.new-match-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.pair-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.pair-status--ready {
+  color: #16a34a;
+  opacity: 1;
+}
+
+/* כרטיסי שידוך קיימים */
+.matches-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.3rem;
+  margin-top: 0.4rem;
+}
+
+.match-card {
+  position: relative;
+  background: #fdfdfd;
+  border-radius: 14px;
+  padding: 0.75rem 0.8rem 0.9rem;
+  margin-bottom: 0.7rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+}
+
+.match-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  gap: 0.5rem;
+}
+
+.match-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.05rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: #f1f1f1;
+}
+
+.chip-note {
+  background: rgba(87, 121, 255, 0.1);
+  color: #5779ff;
+}
+
+.match-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.match-draggable {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.match-person {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  background: #ffffff;
+  cursor: grab;
+}
+
+.match-person--man {
+  border: 1px solid rgba(36, 107, 255, 0.2);
+}
+
+.match-person--woman {
+  border: 1px solid rgba(255, 63, 125, 0.2);
+}
+
+.match-heart {
+  position: absolute;
+  left: 0.7rem;
+  bottom: 0.6rem;
+  opacity: 0.3;
+  font-size: 0.9rem;
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 2px;
+  width: 3px;
   height: 10px;
   background-color: #f9f9f9;
 }
 
-/* פס גלילה - ריחוף */
 ::-webkit-scrollbar:hover {
   background-color: #f5f5f5;
 }
 
-/* פס גלילה - ידית */
 ::-webkit-scrollbar-thumb {
   background-color: #ccc;
   border-radius: 5px;
 }
 
-/* פס גלילה - ידית - ריחוף */
 ::-webkit-scrollbar-thumb:hover {
   background-color: #999;
+}
+
+/* מובייל */
+@media (max-width: 900px) {
+  .shidduch-container {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    height: auto;
+  }
+
+  .people-panel,
+  .matches-panel {
+    height: auto;
+    max-height: 65vh;
+  }
+
+  .matches-panel {
+    order: -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .people-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .matches-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .matches-header p {
+    margin-bottom: 0.35rem;
+  }
+
+  .match-actions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .match-card {
+    padding-bottom: 1.4rem;
+  }
+
+  .match-heart {
+    bottom: 0.35rem;
+  }
 }
 </style>

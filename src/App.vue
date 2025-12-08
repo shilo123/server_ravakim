@@ -1,11 +1,17 @@
 <template>
   <div class="app-root">
     <router-view />
+    <GlobalToast />
   </div>
 </template>
 
 <script>
+import GlobalToast from "@/components/GlobalToast.vue";
+
 export default {
+  components: {
+    GlobalToast,
+  },
   setup() {
     return {};
   },

@@ -1,50 +1,60 @@
 <template>
-  <div class="OTFEF">
-    <div class="Addnote" dir="rtl">
-      <i class="fa-solid fa-xmark" @click="$emit('sgor')"></i>
-      <div v-if="params.Note" class="AddnoteY">
+  <div class="note-overlay" dir="rtl">
+    <div class="note-modal">
+      <button class="close-btn" @click="$emit('sgor')">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- יש הערה קיימת -->
+      <div v-if="params.Note" class="note-content">
         <h1>הערה</h1>
-        <p v-if="!Update">{{ params.Note }}</p>
-        <div v-if="Update">
-          <el-input
+
+        <p v-if="!Update" class="note-text">{{ params.Note }}</p>
+
+        <div v-if="Update" class="note-input-wrapper">
+          <textarea
             v-model="inputNote"
-            placeholder="הקלד הערה"
-            type="textarea"
-            :autosize="{ minRows: 9 }"
-            class="intut"
-          ></el-input>
+            class="note-textarea"
+            placeholder="עדכן את ההערה..."
+          ></textarea>
         </div>
-        <div class="buttons">
-          <el-button
+
+        <div class="note-buttons">
+          <button
             v-if="!Update"
-            type="primary"
+            class="primary-btn"
             @click="
               Update = true;
               inputNote = params.Note;
             "
-            >עדכן</el-button
           >
-          <el-button
+            עדכן
+          </button>
+          <button
             v-if="Update"
-            type="success"
+            class="primary-btn"
             @click="AddNote(params._id, inputNote)"
-            >שמור</el-button
           >
+            שמור
+          </button>
         </div>
       </div>
-      <div v-else class="AddnoteN">
+
+      <!-- אין הערה – יצירה -->
+      <div v-else class="note-content">
         <h1>הוסף הערה</h1>
-        <el-input
-          v-model="inputNote"
-          placeholder="הקלד הערה"
-          type="textarea"
-          :autosize="{ minRows: 9 }"
-          class="intut"
-        ></el-input>
-        <div class="button" v-if="inputNote">
-          <el-button type="success" @click="AddNote(params._id, inputNote)"
-            >שמור</el-button
-          >
+        <div class="note-input-wrapper">
+          <textarea
+            v-model="inputNote"
+            class="note-textarea"
+            placeholder="הקלד הערה על השידוך..."
+          ></textarea>
+        </div>
+
+        <div class="note-buttons" v-if="inputNote">
+          <button class="primary-btn" @click="AddNote(params._id, inputNote)">
+            שמור
+          </button>
         </div>
       </div>
     </div>
@@ -52,125 +62,146 @@
 </template>
 
 <script>
-import { inject, onMounted, ref } from "vue";
+import { inject, ref } from "vue";
 import axios from "axios";
 import { URL } from "@/URL/url";
 
 export default {
-  props: ["ParamsOfAddNote"],
-  setup(props, { emit }) {
+  setup() {
     const params = inject("containor_params");
     const inputNote = ref("");
     const Update = ref(false);
-    // onMounted(() => {
-    //   console.log({ ...params.value });
-    // });
+
     const AddNote = async (id, note) => {
       const paramas = { id, note };
-      let { data } = await axios.post(URL + "AddNoteT", paramas);
+      const { data } = await axios.post(URL + "AddNoteT", paramas);
       if (data) {
         window.location.reload();
+      } else {
+        window.alert("שמירת הערה נכשלה");
       }
     };
+
     return { params, inputNote, Update, AddNote };
   },
 };
 </script>
+
 <style lang="scss" scoped>
-.OTFEF {
+.note-overlay {
   position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.note-modal {
+  position: relative;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1.2rem 1.4rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  animation: modalIn 0.25s ease-out;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.close-btn {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: 999px;
+  transition: background 0.15s;
+}
+
+.close-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.note-content {
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.note-content h1 {
+  margin: 0 0 0.7rem;
+  font-size: 1.3rem;
+}
+
+.note-text {
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 0.7rem;
+  background: #f7f7f9;
+  border-radius: 12px;
+  max-height: 45vh;
+  overflow-y: auto;
+}
+
+.note-input-wrapper {
+  margin-top: 0.5rem;
+}
+
+.note-textarea {
   width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
-  background: #00000058;
-  .Addnote {
-    position: absolute;
-    left: 30%;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 50%;
-    height: 50%;
-    background: white;
-    border-radius: 20px;
-    // animation: expandAnimation 0.4s;
-    animation: expandAnimation 1.4s;
-    i {
-      position: absolute;
-      right: 0;
-      top: 0;
-      margin: 15px;
-      &:hover {
-        padding: 7px;
-        margin: 8px;
-        background: #858282;
-        border-radius: 7px;
-        cursor: pointer;
-      }
-    }
-    &Y {
-      text-align: center;
-      p {
-        font-weight: 700;
-      }
-      .intut {
-        width: 80%;
-      }
-    }
-    &N {
-      text-align: center;
-      .intut {
-        width: 80%;
-      }
-      .button {
-        position: absolute;
-        right: 50%;
-        transform: translateX(50%);
-        bottom: 20px;
-      }
-    }
-  }
+  min-height: 150px;
+  resize: vertical;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  padding: 0.7rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  transition: border 0.15s, box-shadow 0.15s;
 }
-.el-button {
-  margin: 5px;
+
+.note-textarea:focus {
+  border-color: #ff8e8e;
+  box-shadow: 0 0 0 2px rgba(255, 142, 142, 0.25);
 }
-// @keyframes expandAnimation {
-//   from {
-//     opacity: 0;
-//     transform: scale(0);
-//   }
-//   to {
-//     opacity: 1;
-//     transform: scale(1);
-//     position: absolute;
-//     left: 30%;
-//     top: 50%;
-//     transform: translateY(-50%);
-//   }
-// }
-@keyframes expandAnimation {
+
+.note-buttons {
+  margin-top: 0.8rem;
+  display: flex;
+  justify-content: center;
+}
+
+.primary-btn {
+  border-radius: 999px;
+  border: none;
+  padding: 0.45rem 1.2rem;
+  background: linear-gradient(135deg, #ff6b6b, #f99a4d);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.35);
+  transition: transform 0.12s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.primary-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(255, 107, 107, 0.45);
+}
+
+@keyframes modalIn {
   from {
     opacity: 0;
-    transform: scale(0);
-    position: absolute;
-    left: 0%;
-    top: 0%;
-    width: 0%;
-    height: 0%;
-    background: white;
-    border-radius: 0px;
+    transform: translateY(12px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: scale(1);
-    position: absolute;
-    left: 30%;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 50%;
-    height: 50%;
-    background: white;
-    border-radius: 20px;
+    transform: translateY(0) scale(1);
   }
 }
 </style>

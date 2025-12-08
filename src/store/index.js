@@ -3,7 +3,12 @@ import axios from "axios";
 import { URL } from "@/URL/url";
 
 export default createStore({
-  state: { isFinished: false, activeIsh: null },
+  state: {
+    isFinished: false,
+    activeIsh: null,
+    isDelete: false,
+    isUpdate: false,
+  },
   getters: {},
   mutations: {
     updateisFinished(state, val) {
@@ -11,6 +16,13 @@ export default createStore({
     },
     UpdateActiveIsh(state, val) {
       state.activeIsh = val;
+    },
+    UpdateState(state, val) {
+      if (val === "Delete") {
+        state.isDelete = val;
+      } else if (val === "Update") {
+        state.isUpdate = val;
+      }
     },
   },
   //
