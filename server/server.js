@@ -17,6 +17,8 @@ const PORT = process.env.PORT || 3006;
 app.use("/UpFile", express.static("UpFile"));
 app.use(bodyParser.json());
 app.use(cors());
+app.use(express.static(path.join(__dirname, "client")));
+
 const s3 = new AWS.S3({
   accessKeyId: "AKIASWXFMBWARBBNHUMG",
   secretAccessKey: "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",
@@ -55,9 +57,9 @@ function random(min, max) {
 }
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-app.get("/", async (req, res) => {
-  res.json({ stuts: "shcoyeh" });
-});
+// app.get("/", async (req, res) => {
+//   res.json({ stuts: "shcoyeh" });
+// });
 
 app.post("/postFilee", upload.single("file"), async (req, res) => {
   const params = {
@@ -279,6 +281,10 @@ app.post("/AddNoteT", async (req, res) => {
     res.json(false);
   }
 });
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "index.html"));
+});
+
 app.listen(PORT, () => {
   console.log(`http://localhost:${PORT}/`);
 });

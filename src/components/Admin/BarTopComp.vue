@@ -1,69 +1,99 @@
 <template>
-  <div>
-    <div class="Maala" dir="rtl">
-      <input-Serch class="input-Serch" v-model="Filters.Name" />
-      <select v-model="Filters.RamaDatit" class="FilterOfRamaDatit">
-        <option label="כולם" value=""></option>
-        <option value="לא דתי" label="לא דתי" align="right"></option>
-        <option value=" מסורתי" label=" מסורתי" align="right"></option>
-        <option value="דתי לאומי" label="דתי לאומי" align="right"></option>
-        <option value="דתי" label="דתי" align="right"></option>
-        <option value="תורני" label="תורני" align="right"></option>
-        <option value="חרדי" label="חרדי" align="right"></option>
-      </select>
-      <div class="filterAges">
-        <label>מגיל:</label>
-        <div class="selectStartAge">
-          <select v-model="Filters.AgeStart">
-            <option v-for="n in 50" :key="n" :value="n" :label="n"></option>
+  <header class="bar-top" dir="rtl">
+    <div class="bar-top__inner">
+      <!-- שורה עליונה: חיפוש + מגדר + אפשרויות -->
+      <div class="bar-top__row bar-top__row--top">
+        <!-- חיפוש -->
+        <div class="bar-top__search-wrapper">
+          <input-Serch v-model="Filters.Name" />
+        </div>
+
+        <!-- מגדר + אפשרויות -->
+        <div class="bar-top__right-side">
+          <!-- מגדר -->
+          <div class="bar-top__gender">
+            <span class="bar-top__label">מגדר</span>
+            <div class="bar-top__gender-tabs">
+              <label class="bar-top__tab">
+                <input type="radio" value="זכר" v-model="Filters.Gender" />
+                <span>גבר</span>
+              </label>
+              <label class="bar-top__tab">
+                <input type="radio" value="נקבה" v-model="Filters.Gender" />
+                <span>אישה</span>
+              </label>
+              <label class="bar-top__tab">
+                <input type="radio" value="" v-model="Filters.Gender" />
+                <span>הכל</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- אפשרויות -->
+          <div class="bar-top__dropdown">
+            <Dropdown />
+          </div>
+        </div>
+      </div>
+
+      <!-- שורה תחתונה: רמה דתית + טווח גילאים -->
+      <div class="bar-top__row bar-top__row--bottom">
+        <!-- רמה דתית -->
+        <div class="bar-top__field bar-top__field--rama">
+          <label class="bar-top__label">רמה דתית</label>
+          <select v-model="Filters.RamaDatit" class="bar-top__select">
+            <option label="כולם" value=""></option>
+            <option value="לא דתי" label="לא דתי"></option>
+            <option value=" מסורתי" label="מסורתי"></option>
+            <option value="דתי לאומי" label="דתי לאומי"></option>
+            <option value="דתי" label="דתי"></option>
+            <option value="תורני" label="תורני"></option>
+            <option value="חרדי" label="חרדי"></option>
           </select>
         </div>
-        <label>עד גיל:</label>
-        <div class="selectEndAge">
-          <select v-model="Filters.AgeEnd">
-            <option v-for="n in 100" :key="n" :value="n" :label="n"></option>
-          </select>
+
+        <!-- טווח גילאים -->
+        <div class="bar-top__field bar-top__field--ages">
+          <label class="bar-top__label">טווח גילאים</label>
+          <div class="bar-top__ages">
+            <div class="bar-top__age-group">
+              <span class="bar-top__age-label">מגיל</span>
+              <select
+                v-model="Filters.AgeStart"
+                class="bar-top__select bar-top__select--age"
+              >
+                <option
+                  v-for="n in 50"
+                  :key="`age-start-${n}`"
+                  :value="n"
+                  :label="n"
+                ></option>
+              </select>
+            </div>
+
+            <div class="bar-top__age-group">
+              <span class="bar-top__age-label">עד גיל</span>
+              <select
+                v-model="Filters.AgeEnd"
+                class="bar-top__select bar-top__select--age"
+              >
+                <option
+                  v-for="n in 100"
+                  :key="`age-end-${n}`"
+                  :value="n"
+                  :label="n"
+                ></option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <div class="body">
-    <div class="tabs">
-      <input
-        checked=""
-        value="זכר"
-        name="fav_language"
-        id="html"
-        type="radio"
-        class="input"
-        v-model="Filters.Gender"
-      />
-      <label for="html" class="label">גבר</label>
-      <input
-        value="נקבה"
-        name="fav_language"
-        id="css"
-        type="radio"
-        class="input"
-        v-model="Filters.Gender"
-      />
-      <label for="css" class="label">אישה</label>
-      <input
-        value=""
-        name="fav_language"
-        id="javascript"
-        type="radio"
-        class="input"
-        v-model="Filters.Gender"
-      />
-      <label for="javascript" class="label">הכל</label>
-    </div>
-    <Dropdown class="DropDown" />
-  </div>
+  </header>
 </template>
 
 <script>
-import { computed, reactive, ref, watch } from "vue";
+import { computed, reactive, watch } from "vue";
 import "@/views/cssOfRedyElements.scss";
 import axios from "axios";
 import { URL } from "@/URL/url";
@@ -82,148 +112,256 @@ export default {
       AgeEnd: 100,
       Gender: "",
     });
-    watch(Filters, async (val) => {
+
+    watch(Filters, async () => {
       setTimeout(async () => {
         emit("updateisFinished", false);
-        let result = await axios.post(URL + "FilterData", Filters);
+        const result = await axios.post(URL + "FilterData", Filters);
         emit("updateisFinished", true);
         emit("UpdateData", result.data);
       }, 200);
     });
-    const isFinished = computed(() => {
-      return Store.state.isFinished;
-    });
+
+    const isFinished = computed(() => Store.state.isFinished);
 
     return { Filters, isFinished };
   },
 };
 </script>
+
 <style lang="scss" scoped>
-.Maala {
-  // background: #ffd622;
-  background: #22bdff;
-  background: radial-gradient(circle at center, #22bdff, #4554f9, #56ccff);
+$bg1: #1a0318;
+$bg2: #2b0630;
+$accent-gold: #ffb703;
+$accent-pink: #ff4d6d;
+$accent-purple: #c77dff;
+$text-main: #ffffff;
+$text-muted: rgba(255, 255, 255, 0.7);
 
-  position: absolute;
+.bar-top {
+  position: sticky;
   top: 0;
-  right: 0;
+  z-index: 15;
+  backdrop-filter: blur(10px);
+  background: linear-gradient(135deg, $bg1, $bg2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65);
+}
+
+.bar-top__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.7rem 1.25rem 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.bar-top__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.bar-top__row--top {
+  align-items: center;
+}
+
+.bar-top__row--bottom {
+  align-items: center;
+}
+
+/* חיפוש – רוחב קבוע, לא משתלט */
+.bar-top__search-wrapper {
+  flex: 0 0 260px;
+  max-width: 260px;
+  width: 260px;
+}
+
+/* צד ימין (מגדר + אפשרויות) */
+.bar-top__right-side {
+  flex: 1;
+  min-width: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* לייבלים */
+.bar-top__label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $text-muted;
+  margin-bottom: 0.2rem;
+}
+
+/* מגדר */
+.bar-top__gender {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.bar-top__gender-tabs {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 0.18rem;
+  background: rgba(10, 0, 18, 0.9);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+
+.bar-top__tab {
+  position: relative;
+  border-radius: 999px;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.85rem;
+  color: $text-muted;
+  cursor: pointer;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+
+  input {
+    display: none;
+  }
+
+  span {
+    position: relative;
+    z-index: 1;
+  }
+
+  input:checked + span {
+    font-weight: 700;
+  }
+
+  &:has(input:checked) {
+    background: linear-gradient(135deg, $accent-gold, $accent-pink);
+    color: #1a0312;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+
+  &:hover:not(:has(input:checked)) {
+    background: rgba(255, 255, 255, 0.08);
+    color: $text-main;
+  }
+}
+
+/* Dropdown */
+.bar-top__dropdown {
+  display: flex;
+  align-items: center;
+}
+
+/* שורה תחתונה – שדות */
+.bar-top__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.bar-top__field--rama {
+  flex: 1;
+  min-width: 200px;
+}
+
+.bar-top__field--ages {
+  flex: 1.3;
+  min-width: 260px;
+}
+
+/* סלקטים */
+.bar-top__select {
   width: 100%;
-  height: 100px;
-  border-bottom: 3px solid black;
-  .input-Serch {
-    position: absolute;
-    right: 40%;
-    top: 10px;
-    width: 20%;
+  height: 38px;
+  border-radius: 999px;
+  border: none;
+  padding: 0 1rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: rgba(24, 4, 35, 0.96);
+  color: $text-main;
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(255, 200, 255, 0.4);
+  transition: box-shadow 0.18s ease, background 0.18s ease, transform 0.08s ease;
+
+  &:hover {
+    background: rgba(31, 6, 46, 0.98);
+    box-shadow: 0 0 0 2px rgba(255, 183, 3, 0.7);
   }
-  .FilterOfRamaDatit {
-    position: absolute;
-    left: 20%;
-    width: 14%;
-    top: 30px;
-    padding: 10px;
-    background: #2f3640;
-    color: white;
+
+  &:focus {
+    box-shadow: 0 0 0 2px $accent-gold;
+    transform: translateY(-1px);
   }
-  // $select:
-  /* בחירת סגנון כללי */
-  .filterAges {
-    position: absolute;
-    right: 20px;
-    top: 30px;
-    display: flex;
-    flex-direction: row;
-    color: #000;
-    label {
-      margin: 0 20px;
-      font-size: 16px;
-    }
-    .selectStartAge {
-      select {
-        /* גודל ורוחב */
-        width: 180px;
-        height: 40px;
-        font-size: 20px;
-        /* משפחת גופן */
-        font-family: Arial, sans-serif;
 
-        /* צבע טקסט */
-        color: #333;
+  &--age {
+    max-width: 140px;
+  }
+}
 
-        /* מרווח פנימי */
-        padding: 0 5px;
+/* טווח גילאים */
+.bar-top__ages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.8rem;
+  align-items: center;
+}
 
-        /* גבול */
-        border: 1px solid #ccc;
-        border-radius: 5px;
+.bar-top__age-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
 
-        /* מראה רך */
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+.bar-top__age-label {
+  font-size: 0.8rem;
+  color: $text-muted;
+  white-space: nowrap;
+}
 
-        /* הופעה בריחוף */
-        &:hover {
-          border-color: #999;
-        }
-      }
-      &:focus,
-      &:active {
-        /* צבע רקע */
-        background-color: #f9f9f9;
+/* רספונסיביות */
+@media (max-width: 900px) {
+  .bar-top__inner {
+    padding-inline: 0.75rem;
+  }
+}
 
-        /* צבע גבול */
-        border-color: #999;
-      }
-      option:checked {
-        /* צבע רקע */
-        background-color: #ccc;
+@media (max-width: 700px) {
+  .bar-top__inner {
+    padding-top: 0.5rem;
+    padding-bottom: 0.6rem;
+    gap: 0.5rem;
+  }
 
-        /* צבע טקסט */
-        color: #000;
-      }
-    }
-    .selectEndAge {
-      select {
-        /* גודל ורוחב */
-        width: 180px;
-        height: 40px;
-        font-size: 20px;
-        /* משפחת גופן */
-        font-family: Arial, sans-serif;
+  .bar-top__row {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-        /* צבע טקסט */
-        color: #333;
+  .bar-top__search-wrapper,
+  .bar-top__right-side,
+  .bar-top__field--rama,
+  .bar-top__field--ages {
+    flex: initial;
+    min-width: 100%;
+  }
 
-        /* מרווח פנימי */
-        padding: 0 5px;
+  .bar-top__right-side {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
 
-        /* גבול */
-        border: 1px solid #ccc;
-        border-radius: 5px;
-
-        /* מראה רך */
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-
-        /* הופעה בריחוף */
-        &:hover {
-          border-color: #999;
-        }
-      }
-      &:focus,
-      &:active {
-        /* צבע רקע */
-        background-color: #f9f9f9;
-
-        /* צבע גבול */
-        border-color: #999;
-      }
-      option:checked {
-        /* צבע רקע */
-        background-color: #ccc;
-
-        /* צבע טקסט */
-        color: #000;
-      }
-    }
+  .bar-top__ages {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 </style>

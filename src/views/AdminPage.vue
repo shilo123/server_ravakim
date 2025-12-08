@@ -1,12 +1,14 @@
 <template>
-  <BarTop
-    @updateisFinished="isFinished = $event"
-    @UpdateData="data = $event"
-    class="BarTop"
-    v-if="!ifPhone"
-  />
-  <Allgrid :data="data" :isFinished="isFinished" @GetPratim="GetPratim" />
-  <DetalisCompVue />
+  <div class="ravakim-page">
+    <BarTop
+      @updateisFinished="isFinished = $event"
+      @UpdateData="data = $event"
+      class="BarTop"
+      v-if="!ifPhone"
+    />
+    <Allgrid :data="data" :isFinished="isFinished" @GetPratim="GetPratim" />
+    <DetalisCompVue />
+  </div>
 </template>
 
 <script>
@@ -57,7 +59,13 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-body {
-  background: #4da0ff2a;
+.ravakim-page {
+  min-height: 100vh;
+  padding-top: 1rem;
+  padding-inline: 0.75rem;
+  background: radial-gradient(circle at 15% 15%, #2f0835, transparent 55%),
+    radial-gradient(circle at 80% 10%, #ff4d6d33, transparent 55%),
+    radial-gradient(circle at 50% 100%, #ffb70333, transparent 55%),
+    linear-gradient(135deg, #0b010f, #1a0318 40%, #120014);
 }
 </style>

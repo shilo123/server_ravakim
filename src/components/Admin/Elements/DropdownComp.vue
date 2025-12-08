@@ -1,56 +1,89 @@
 <template>
-  <div class="sec-center">
-    <input class="dropdown" type="checkbox" id="dropdown" name="dropdown" />
-    <label class="for-dropdown" for="dropdown"> אפשרויות </label>
-    <div class="section-dropdown">
-      <a href="#" @click="Evnent('Shiduh')"
-        ><i class="fa-light fa-restroom"></i>התחל לשדך
-      </a>
-      <a href="#" @click="Evnent"
-        ><i class="fa-duotone fa-pen-to-square"></i>עוד משהו
-      </a>
-      <a href="#" @click="Evnent"
-        ><i class="fa-duotone fa-trash"></i>עוד משהו2
-      </a>
-    </div>
+  <div class="actions-dropdown" dir="rtl">
+    <button type="button" class="actions-dropdown__trigger" @click="toggleOpen">
+      <span>אפשרויות</span>
+      <i
+        class="fa-solid fa-chevron-down actions-dropdown__chevron"
+        :class="{ 'is-open': isOpen }"
+      ></i>
+    </button>
+
+    <transition name="actions-dropdown-fade">
+      <div v-if="isOpen" class="actions-dropdown__menu">
+        <button
+          type="button"
+          class="actions-dropdown__item"
+          @click="Evnent('Shiduh')"
+        >
+          <span class="actions-dropdown__item-text">
+            <i class="fa-light fa-restroom"></i>
+            התחל לשדך
+          </span>
+        </button>
+
+        <button type="button" class="actions-dropdown__item" @click="Evnent()">
+          <span class="actions-dropdown__item-text">
+            <i class="fa-duotone fa-pen-to-square"></i>
+            עוד משהו
+          </span>
+        </button>
+
+        <button type="button" class="actions-dropdown__item" @click="Evnent()">
+          <span class="actions-dropdown__item-text">
+            <i class="fa-duotone fa-trash"></i>
+            עוד משהו2
+          </span>
+        </button>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script>
 import { ref } from "vue";
-import router from "@/router";
+import { useRouter } from "vue-router";
 
 export default {
   setup() {
-    return {};
-  },
-  methods: {
-    Evnent(val) {
+    const router = useRouter();
+    const isOpen = ref(false);
+
+    const toggleOpen = () => {
+      isOpen.value = !isOpen.value;
+    };
+
+    const Evnent = (val) => {
+      // לסגור תפריט אחרי לחיצה
+      isOpen.value = false;
       if (typeof val === "string") {
         router.push(`/${val}`);
       }
-    },
+    };
+
+    return {
+      isOpen,
+      toggleOpen,
+      Evnent,
+    };
   },
 };
 </script>
+
 <style lang="scss" scoped>
-/* Please ❤ this if you like it! */
+$bg-dark: #150218;
+$accent-gold: #ffb703;
+$accent-pink: #ff4d6d;
+$accent-purple: #c77dff; // ← זה היה חסר
+$text-main: #ffffff;
+$text-dark: #16020e;
 
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap");
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
 .sec-center {
-  position: absolute;
-  left: 0%;
-  top: 100px;
+  position: relative;
   max-width: 100%;
   text-align: center;
   z-index: 10;
 }
+
 [type="checkbox"]:checked,
 [type="checkbox"]:not(:checked) {
   position: absolute;
@@ -58,42 +91,29 @@ export default {
   opacity: 0;
   pointer-events: none;
 }
+
 .dropdown:checked + label,
 .dropdown:not(:checked) + label {
   position: relative;
-  font-family: "Roboto", sans-serif;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 2;
-  height: 50px;
+  height: 40px;
   transition: all 200ms linear;
-  border-radius: 4px;
-  width: 220px;
-  letter-spacing: 1px;
-  display: -webkit-inline-flex;
-  display: -ms-inline-flexbox;
+  border-radius: 999px;
+  width: 170px;
+  letter-spacing: 0.5px;
   display: inline-flex;
-  -webkit-align-items: center;
-  -moz-align-items: center;
-  -ms-align-items: center;
   align-items: center;
-  -webkit-justify-content: center;
-  -moz-justify-content: center;
-  -ms-justify-content: center;
   justify-content: center;
-  -ms-flex-pack: center;
-  text-align: center;
   border: none;
-  background-color: #ffeba7;
   cursor: pointer;
-  color: #102770;
-  box-shadow: 0 12px 35px 0 rgba(255, 235, 167, 0.15);
+
+  background: linear-gradient(135deg, $accent-purple, $accent-pink);
+  color: $text-dark;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.6);
 }
-.dark-light:checked ~ .sec-center .for-dropdown {
-  background-color: #102770;
-  color: #ffeba7;
-  box-shadow: 0 12px 35px 0 rgba(16, 39, 112, 0.25);
-}
+
 .dropdown:checked + label:before,
 .dropdown:not(:checked) + label:before {
   position: fixed;
@@ -106,55 +126,34 @@ export default {
   cursor: auto;
   pointer-events: none;
 }
+
 .dropdown:checked + label:before {
   pointer-events: auto;
 }
-.dropdown:not(:checked) + label .uil {
-  font-size: 24px;
-  margin-left: 10px;
-  transition: transform 200ms linear;
-}
-.dropdown:checked + label .uil {
-  transform: rotate(180deg);
-  font-size: 24px;
-  margin-left: 10px;
-  transition: transform 200ms linear;
-}
+
 .section-dropdown {
   position: absolute;
   padding: 5px;
-  background-color: #111;
-  top: 70px;
-  left: 0;
-  width: 100%;
-  border-radius: 4px;
+  background: linear-gradient(145deg, #1b0522, #2f0835);
+  top: 50px;
+  right: 0;
+  width: 190px;
+  border-radius: 12px;
   display: block;
-  box-shadow: 0 14px 35px 0 rgba(9, 9, 12, 0.4);
-  //   z-index: 2;
+  box-shadow: 0 14px 35px 0 rgba(0, 0, 0, 0.75);
   opacity: 0;
   pointer-events: none;
-  transform: translateY(20px);
+  transform: translateY(12px);
   transition: all 200ms linear;
+  border: 1px solid rgba(255, 200, 255, 0.45);
 }
-.dark-light:checked ~ .sec-center .section-dropdown {
-  background-color: #fff;
-  box-shadow: 0 14px 35px 0 rgba(9, 9, 12, 0.15);
-}
+
 .dropdown:checked ~ .section-dropdown {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
 }
-.section-dropdown:before {
-  position: absolute;
-  top: -20px;
-  left: 0;
-  width: 100%;
-  height: 20px;
-  content: "";
-  display: block;
-  z-index: 1;
-}
+
 .section-dropdown:after {
   position: absolute;
   top: -7px;
@@ -163,130 +162,34 @@ export default {
   height: 0;
   border-left: 8px solid transparent;
   border-right: 8px solid transparent;
-  border-bottom: 8px solid #111;
+  border-bottom: 8px solid #2f0835;
   content: "";
   display: block;
   z-index: 2;
-  transition: all 200ms linear;
-}
-.dark-light:checked ~ .sec-center .section-dropdown:after {
-  border-bottom: 8px solid #fff;
 }
 
-a {
+.section-dropdown a {
   position: relative;
-  color: #fff;
+  color: $text-main;
   transition: all 200ms linear;
-  font-family: "Roboto", sans-serif;
   font-weight: 500;
-  font-size: 15px;
-  border-radius: 2px;
-  padding: 5px 0;
-  padding-left: 20px;
-  padding-right: 15px;
+  font-size: 14px;
+  border-radius: 8px;
+  padding: 5px 10px;
   margin: 2px 0;
   text-align: right;
   text-decoration: none;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-align-items: center;
-  -moz-align-items: center;
-  -ms-align-items: center;
   align-items: center;
   justify-content: space-between;
-  -ms-flex-pack: distribute;
-}
-.dark-light:checked ~ .sec-center .section-dropdown a {
-  color: #102770;
-}
-a:hover {
-  color: #102770;
-  background-color: #ffeba7;
-}
-.dark-light:checked ~ .sec-center .section-dropdown a:hover {
-  color: #ffeba7;
-  background-color: #102770;
-}
-a .uil {
-  font-size: 22px;
-}
-.dropdown-sub:checked + label,
-.dropdown-sub:not(:checked) + label {
-  position: relative;
-  color: #fff;
-  transition: all 200ms linear;
-  font-family: "Roboto", sans-serif;
-  font-weight: 500;
-  font-size: 15px;
-  border-radius: 2px;
-  padding: 5px 0;
-  padding-left: 20px;
-  padding-right: 15px;
-  text-align: left;
-  text-decoration: none;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-align-items: center;
-  -moz-align-items: center;
-  -ms-align-items: center;
-  align-items: center;
-  justify-content: space-between;
-  -ms-flex-pack: distribute;
-  cursor: pointer;
-}
-.dropdown-sub:checked + label .uil,
-.dropdown-sub:not(:checked) + label .uil {
-  font-size: 22px;
-}
-.dropdown-sub:not(:checked) + label .uil {
-  transition: transform 200ms linear;
-}
-.dropdown-sub:checked + label .uil {
-  transform: rotate(135deg);
-  transition: transform 200ms linear;
-}
-.dropdown-sub:checked + label:hover,
-.dropdown-sub:not(:checked) + label:hover {
-  color: #102770;
-  background-color: #ffeba7;
-}
-.dark-light:checked ~ .sec-center .section-dropdown .for-dropdown-sub {
-  color: #102770;
-}
-.dark-light:checked ~ .sec-center .section-dropdown .for-dropdown-sub:hover {
-  color: #ffeba7;
-  background-color: #102770;
-}
 
-.section-dropdown-sub {
-  position: relative;
-  display: block;
-  width: 100%;
-  pointer-events: none;
-  opacity: 0;
-  max-height: 0;
-  padding-left: 10px;
-  padding-right: 3px;
-  overflow: hidden;
-  transition: all 200ms linear;
-}
-.dropdown-sub:checked ~ .section-dropdown-sub {
-  pointer-events: auto;
-  opacity: 1;
-  max-height: 999px;
-}
-.section-dropdown-sub a {
-  font-size: 14px;
-}
-.section-dropdown-sub a .uil {
-  font-size: 20px;
-}
+  i {
+    margin-left: 8px;
+  }
 
-@media screen and (max-width: 991px) {
-  .dark-light:checked + label,
-  .dark-light:not(:checked) + label {
-    top: 20px;
-    right: 20px;
+  &:hover {
+    color: $text-dark;
+    background: linear-gradient(135deg, $accent-gold, $accent-pink);
   }
 }
 </style>

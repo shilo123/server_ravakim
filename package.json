@@ -5,7 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "start": "npm start --prefix server",
+    "heroku-postbuild": "npm install --prefix server && npm run build && cp -r dist/. server/client"
   },
   "dependencies": {
     "@vueuse/integrations": "^10.9.0",

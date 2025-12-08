@@ -4,8 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node server/server.js",
-    "heroku-postbuild": "npm --prefix server install && npm --prefix server run build"
+    "start": "node server.js"
   },
   "author": "",
   "license": "ISC",

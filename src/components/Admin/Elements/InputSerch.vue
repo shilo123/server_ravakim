@@ -1,11 +1,19 @@
 <template>
-  <div>
+  <div class="search-root" dir="rtl">
     <div class="searchBox">
-      <button class="searchButton" href="#">
+      <input
+        class="searchInput"
+        type="text"
+        placeholder="חיפוש לפי שם"
+        :value="modelValue"
+        @input="emito($event.target.value)"
+      />
+
+      <button class="searchButton" type="button">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="29"
-          height="29"
+          width="18"
+          height="18"
           viewBox="0 0 29 29"
           fill="none"
         >
@@ -68,15 +76,6 @@
           </defs>
         </svg>
       </button>
-
-      <input
-        class="searchInput"
-        type="text"
-        name=""
-        placeholder="סנן לפי שם"
-        :value="modelValue"
-        @input="emito($event.target.value)"
-      />
     </div>
   </div>
 </template>
@@ -93,53 +92,96 @@ export default {
   },
 };
 </script>
+
 <style lang="scss" scoped>
-.searchBox {
-  display: flex;
-  //   max-width: 230px;
+$bg-input: rgba(24, 4, 35, 0.96);
+$accent-gold: #ffb703;
+$accent-pink: #ff4d6d;
+$text-main: #ffffff;
+$text-muted: rgba(255, 255, 255, 0.7);
+
+.search-root {
   width: 100%;
+  display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  background: #2f3640;
-  border-radius: 50px;
+}
+
+/* קופסת החיפוש */
+.searchBox {
   position: relative;
+  width: 100%;
+  max-width: 260px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+
+  padding-inline: 0.75rem 2.2rem;
+  border-radius: 999px;
+
+  background: $bg-input;
+  box-shadow: 0 0 0 1px rgba(255, 200, 255, 0.4), 0 6px 16px rgba(0, 0, 0, 0.6);
+
+  transition: box-shadow 0.2s ease, transform 0.1s ease, background 0.2s ease;
+
+  &:focus-within {
+    box-shadow: 0 0 0 2px $accent-gold, 0 8px 22px rgba(0, 0, 0, 0.7);
+    transform: translateY(-1px);
+    background: rgba(31, 6, 46, 0.98);
+  }
 }
 
-.searchButton {
-  color: white;
-  position: absolute;
-  left: 8px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: var(
-    --gradient-2,
-    linear-gradient(90deg, #2af598 0%, #009efd 100%)
-  );
-  border: 0;
-  display: inline-block;
-  transition: all 300ms cubic-bezier(0.23, 1, 0.32, 1);
-}
-/*hover effect*/
-button:hover {
-  color: #fff;
-  background-color: #1a1a1a;
-  box-shadow: rgba(0, 0, 0, 0.5) 0 10px 20px;
-  transform: translateY(-3px);
-}
-/*button pressing effect*/
-button:active {
-  box-shadow: none;
-  transform: translateY(0);
-}
-
+/* אינפוט */
 .searchInput {
+  flex: 1;
+  height: 100%;
   border: none;
-  background: none;
+  background: transparent;
   outline: none;
+  color: $text-main;
+  font-size: 0.85rem;
+  direction: rtl;
+
+  &::placeholder {
+    color: $text-muted;
+  }
+}
+
+/* כפתור האייקון */
+.searchButton {
+  position: absolute;
+  left: 5px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(135deg, $accent-gold, $accent-pink);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.7);
   color: white;
-  font-size: 15px;
-  padding: 24px 46px 24px 26px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    display: block;
+  }
+
+  &:hover {
+    filter: brightness(1.05);
+    box-shadow: 0 7px 18px rgba(0, 0, 0, 0.8);
+    transform: translateY(-1px) scale(1.02);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.97);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.7);
+  }
 }
 </style>

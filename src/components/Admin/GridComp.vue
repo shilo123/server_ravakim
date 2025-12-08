@@ -1,229 +1,270 @@
 <template>
-  <div>
-    <div dir="rtl">
-      <div class="container-All" v-if="isFinished">
-        <el-row :gutter="ifPhone ? 70 : 20">
-          <el-col :span="ifPhone ? 5 : 11" v-for="(Item, i) in data" :key="i">
-            <div class="card">
-              <img :src="Item.picURL" />
+  <div class="grid-wrapper" dir="rtl">
+    <!-- מצב טעינה -->
+    <div v-if="!isFinished" class="grid-loading">
+      <div class="grid-loading__spinner"></div>
+      <div class="grid-loading__text">טוען נתונים...</div>
+    </div>
 
-              <div class="card-details" @click="GetPratim(Item._id)">
-                <p class="text-title">{{ Item.Name }}/{{ Item.Age }}</p>
-                <!-- <p class="text-body">{{ Item.Age }}</p> -->
+    <!-- מצב נתונים -->
+    <div v-else class="grid-container">
+      <template v-if="data && data.length">
+        <div class="grid">
+          <div
+            v-for="(Item, i) in data"
+            :key="Item._id || i"
+            class="grid__item"
+          >
+            <article class="profile-card" @click="GetPratim(Item._id)">
+              <div class="profile-card__image-wrapper">
+                <img
+                  :src="Item.picURL"
+                  alt="תמונה"
+                  class="profile-card__image"
+                />
               </div>
-              <button class="card-button" @click="GetPratim(Item._id)">
-                מידע נוסף
-              </button>
-            </div>
-          </el-col>
-        </el-row>
-      </div>
 
-      <div v-else class="Loading"><div class="spinner"></div></div>
+              <div class="profile-card__body">
+                <h3 class="profile-card__title">
+                  {{ Item.Name || "ללא שם" }}
+                  <span v-if="Item.Age" class="profile-card__age">
+                    / {{ Item.Age }}
+                  </span>
+                </h3>
+
+                <p v-if="Item.RamaDatit" class="profile-card__subtitle">
+                  {{ Item.RamaDatit }}
+                </p>
+
+                <button
+                  type="button"
+                  class="profile-card__button"
+                  @click.stop="GetPratim(Item._id)"
+                >
+                  מידע נוסף
+                </button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </template>
+
+      <!-- כשאין בכלל נתונים -->
+      <div v-else class="grid-empty">
+        <p class="grid-empty__text">לא נמצאו תוצאות בהתאם לסינון.</p>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { computed, reactive, ref, toRefs, watch } from "vue";
+import { computed } from "vue";
 import "@/views/cssOfRedyElements.scss";
-import axios from "axios";
-import { URL } from "@/URL/url";
-import { useAxios } from "@vueuse/integrations/useAxios";
 import { useStore } from "vuex";
 
 export default {
   props: ["data"],
   setup(props, { emit }) {
     const Store = useStore();
+
     const GetPratim = (id) => {
       emit("GetPratim", id);
     };
-    const isFinished = computed(() => {
-      return Store.state.isFinished;
-    });
-    const ifPhone = computed(() => window.innerWidth > 500);
 
-    return { isFinished, GetPratim, ifPhone };
+    const isFinished = computed(() => Store.state.isFinished);
+
+    return { isFinished, GetPratim };
   },
 };
 </script>
+
 <style lang="scss" scoped>
-.container-All {
-  .card {
-    width: 190px;
-    height: 254px;
-    border-radius: 20px;
-    background: #f5f5f5;
-    position: relative;
-    padding: 1.8rem;
-    border: 2px solid #c3c6ce;
-    transition: 0.5s ease-out;
-    overflow: visible;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    box-shadow: 0px 0px 1px 1px #828282;
+$card-bg1: #1d0624;
+$card-bg2: #2b0835;
+$accent-gold: #ffb703;
+$accent-pink: #ff4d6d;
+$text-main: #ffffff;
+$text-muted: rgba(255, 255, 255, 0.75);
 
-    &:hover {
-      cursor: pointer;
-    }
-    img {
-      margin-top: 30px;
-      margin-bottom: 30px;
-      width: 50%;
-      height: 37%;
-      border-radius: 60%;
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      top: 0;
-      pointer-events: none;
-    }
-  }
+.grid-wrapper {
+  max-width: 1200px;
+  margin: 1.5rem auto 3rem;
+  padding: 0 1rem;
+}
 
-  .card-details {
-    color: black;
-    height: 100%;
-    gap: 0.5em;
-    display: grid;
-    place-content: center;
+/* מצב טעינה */
+.grid-loading {
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: $text-main;
+
+  &__spinner {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 4px solid rgba(255, 255, 255, 0.15);
+    border-top-color: $accent-gold;
+    animation: grid-spin 0.8s linear infinite;
   }
 
-  .card-button {
-    transform: translate(-50%, 125%);
-    width: 60%;
-    border-radius: 1rem;
-    border: none;
-    background-color: #008bf8;
-    color: #fff;
-    font-size: 1rem;
-    padding: 0.5rem 1rem;
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    opacity: 0;
-    transition: 0.3s ease-out;
-  }
-
-  /*Text*/
-  .text-title {
-    font-size: 1.5em;
-    font-weight: bold;
-    position: absolute;
-    text-align: center;
-    bottom: 0;
-  }
-
-  /*Hover*/
-  .card:hover {
-    border-color: #008bf8;
-    box-shadow: 0 4px 18px 0 rgba(0, 0, 0, 0.25);
-  }
-
-  .card:hover .card-button {
-    transform: translate(-50%, 50%);
-    opacity: 1;
-  }
-  // $
-  .el-row {
-    position: absolute;
-    top: 160px;
-    right: 6%;
-    width: 90%;
-  }
-  .el-col {
-    margin-bottom: 30px;
+  &__text {
+    font-size: 0.95rem;
+    color: $text-muted;
   }
 }
-@media screen and (max-width: 500px) {
-  .container-All {
-    .card {
-      width: 110px;
-      height: 164px;
-      border-radius: 20px;
-      background: #f5f5f5;
-      position: relative;
-      padding: 1.8rem;
-      border: 2px solid #c3c6ce;
-      transition: 0.5s ease-out;
-      overflow: visible;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      box-shadow: 0px 0px 1px 1px #828282;
 
-      &:hover {
-        cursor: pointer;
-      }
-      img {
-        margin-top: 30px;
-        margin-bottom: 30px;
-        width: 50%;
-        height: 37%;
-        border-radius: 60%;
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        top: 0;
-        pointer-events: none;
-      }
-    }
+@keyframes grid-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
-    .card-details {
-      color: black;
-      height: 100%;
-      gap: 0.5em;
-      display: grid;
-      place-content: center;
-    }
+/* רשת כרטיסים */
+.grid-container {
+  width: 100%;
+}
 
-    .card-button {
-      transform: translate(-50%, 125%);
-      width: 60%;
-      border-radius: 1rem;
-      border: none;
-      background-color: #008bf8;
-      color: #fff;
-      font-size: 1rem;
-      padding: 0.5rem 1rem;
-      position: absolute;
-      left: 50%;
-      bottom: 0;
-      opacity: 0;
-      transition: 0.3s ease-out;
-    }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.5rem 1.2rem;
+}
 
-    /*Text*/
-    .text-title {
-      font-size: 1.5em;
-      font-weight: bold;
-      position: absolute;
-      text-align: center;
-      bottom: 0;
-    }
+.grid__item {
+  display: flex;
+  justify-content: center;
+}
 
-    /*Hover*/
-    .card:hover {
-      border-color: #008bf8;
-      box-shadow: 0 4px 18px 0 rgba(0, 0, 0, 0.25);
-    }
+/* כרטיס */
+.profile-card {
+  width: 210px;
+  height: 270px;
+  border-radius: 20px;
+  background: linear-gradient(145deg, $card-bg1, $card-bg2);
+  padding: 1.2rem 1rem 1.3rem;
+  border: 1px solid rgba(255, 200, 255, 0.4);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.85);
+  color: $text-main;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out,
+    border-color 0.2s ease-out;
+}
 
-    .card:hover .card-button {
-      transform: translate(-50%, 50%);
-      opacity: 1;
-    }
-    // $
-    .el-row {
-      position: absolute;
-      top: 40px;
-      right: 3%;
-      width: 100%;
-    }
-    .el-col {
-      margin-bottom: 30px;
-      margin-left: 10px;
-    }
+.profile-card:hover {
+  cursor: pointer;
+  transform: translateY(-5px);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.95);
+  border-color: $accent-gold;
+}
+
+/* תמונה */
+.profile-card__image-wrapper {
+  margin-top: 0.2rem;
+}
+
+.profile-card__image {
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.9);
+  border: 3px solid rgba(255, 200, 255, 0.8);
+}
+
+/* גוף הכרטיס */
+.profile-card__body {
+  margin-top: 1.2rem;
+  text-align: center;
+  width: 100%;
+}
+
+/* כותרת + גיל */
+.profile-card__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  color: $accent-gold;
+}
+
+.profile-card__age {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: $text-main;
+}
+
+/* תת כותרת (רמה דתית) */
+.profile-card__subtitle {
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
+  color: $text-muted;
+}
+
+/* כפתור "מידע נוסף" */
+.profile-card__button {
+  margin-top: auto;
+  margin-bottom: 0.1rem;
+  width: 80%;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, $accent-gold, $accent-pink);
+  color: #1a0312;
+  font-size: 0.9rem;
+  padding: 0.45rem 0.7rem;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.75);
+  transform: translateY(8px);
+  opacity: 0;
+  transition: 0.22s ease-out;
+}
+
+.profile-card:hover .profile-card__button {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* כשאין נתונים */
+.grid-empty {
+  min-height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid-empty__text {
+  color: $text-muted;
+  font-size: 0.95rem;
+}
+
+/* מובייל */
+@media screen and (max-width: 600px) {
+  .grid-wrapper {
+    margin-top: 1rem;
+    padding: 0 0.5rem;
+  }
+
+  .profile-card {
+    width: 170px;
+    height: 230px;
+  }
+
+  .profile-card__image {
+    width: 70px;
+    height: 70px;
+  }
+
+  .profile-card__title {
+    font-size: 1rem;
+  }
+
+  .profile-card__button {
+    width: 85%;
+    font-size: 0.85rem;
   }
 }
 </style>
