@@ -234,18 +234,12 @@ export default {
       }
     };
 
-    const calculateAgeFromBirthdate = (birthDateStr) => {
+    const normalizeBirthDate = (birthDateStr) => {
       if (!birthDateStr) return null;
-      const birth = new Date(birthDateStr);
-      if (isNaN(birth.getTime())) return null;
-
-      const today = new Date();
-      let age = today.getFullYear() - birth.getFullYear();
-      const m = today.getMonth() - birth.getMonth();
-      if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
-        age--;
-      }
-      return age;
+      const d = new Date(birthDateStr);
+      if (isNaN(d.getTime())) return null;
+      // שולחים בתור ISO מלא – השרת כבר יחתוך/יטפל
+      return d.toISOString();
     };
 
     const Submit = async () => {
@@ -267,12 +261,16 @@ export default {
 
         if (bool) {
           if (Form.phone.length === 10) {
-            // מכין payload לשרת, כולל חישוב גיל מתאריך לידה
+            // מכינים payload לשרת
             const payload = { ...Form };
-            const age = calculateAgeFromBirthdate(Form.BirthDate);
-            if (age !== null) {
-              payload.Age = age;
+
+            const normalizedBirthDate = normalizeBirthDate(Form.BirthDate);
+            if (normalizedBirthDate) {
+              payload.BirthDate = normalizedBirthDate;
             }
+
+            // לא שולחים Age בכלל – רק BirthDate
+            delete payload.Age;
 
             const { data } = await axios.post(URL + "ADDForm", payload);
             LoadingB.value = false;
@@ -354,7 +352,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-/* כל ה-CSS כמו שהיה אצלך, לא נגעתי בו */
 .page-wrapper {
   min-height: 100vh;
   padding: 40px 16px;
