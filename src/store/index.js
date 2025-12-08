@@ -18,9 +18,9 @@ export default createStore({
       state.activeIsh = val;
     },
     UpdateState(state, val) {
-      if (val === "Delete") {
+      if (val["Delete"]) {
         state.isDelete = val;
-      } else if (val === "Update") {
+      } else if (val["Update"]) {
         state.isUpdate = val;
       }
     },

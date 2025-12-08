@@ -50,48 +50,53 @@
               </div>
 
               <div class="field">
-                <label>גיל</label>
+                <label>תאריך לידה</label>
                 <input
-                  v-model="Form.Age"
-                  type="number"
-                  placeholder="הקלד גיל"
+                  v-model="Form.BirthDate"
+                  type="date"
+                  placeholder="בחר תאריך לידה"
                 />
               </div>
             </div>
           </section>
 
-          <!-- סקשן 2: רקע דתי ואופי -->
+          <!-- סקשן 2: רקע דתי, סטטוס ואופי -->
           <section class="form-section">
             <div class="section-header">
               <div class="section-pill">2</div>
               <div class="section-text">
-                <h2>רקע ואופי</h2>
-                <p>רמה דתית ותכונות אופי</p>
+                <h2>רקע, סטטוס ואופי</h2>
+                <p>רמה דתית, סטטוס ותכונות אופי</p>
               </div>
             </div>
 
             <div class="grid-2">
               <div class="field">
-                <label>רמה דתית</label>
-                <select v-model="Form.RamaDatit">
-                  <option disabled value="">בחר רמה דתית</option>
-                  <option value="לא דתי">לא דתי</option>
-                  <option value="מסורתי">מסורתי</option>
-                  <option value="דתי לאומי">דתי לאומי</option>
-                  <option value="דתי">דתי</option>
-                  <option value="תורני">תורני</option>
-                  <option value="חרדי">חרדי</option>
-                </select>
+                <label>רמה דתית (טקסט חופשי)</label>
+                <input
+                  v-model="Form.RamaDatit"
+                  type="text"
+                  placeholder="לדוגמה: דתי לאומי, מסורתי, חרדי מודרני..."
+                />
               </div>
 
               <div class="field">
-                <label>תכונות אופי</label>
-                <textarea
-                  v-model="Form.Ofi"
-                  rows="3"
-                  placeholder="כתוב בקצרה איך היית מתאר את האופי שלך"
-                ></textarea>
+                <label>סטטוס</label>
+                <input
+                  v-model="Form.Status"
+                  type="text"
+                  placeholder="לדוגמה: רווק, גרוש, אלמן..."
+                />
               </div>
+            </div>
+
+            <div class="field" style="margin-top: 8px">
+              <label>תכונות אופי</label>
+              <textarea
+                v-model="Form.Ofi"
+                rows="3"
+                placeholder="כתוב בקצרה איך היית מתאר את האופי שלך"
+              ></textarea>
             </div>
           </section>
 
@@ -222,8 +227,25 @@ export default {
     const LoadingB = ref(false);
 
     const showError = (msg) => {
-      window.$toast && window.$toast("העלאת התמונה נכשלה ❌ ", "error");
-      msg;
+      if (window.$toast) {
+        window.$toast(msg || "משהו השתבש ❌", "error");
+      } else {
+        alert(msg || "משהו השתבש ❌");
+      }
+    };
+
+    const calculateAgeFromBirthdate = (birthDateStr) => {
+      if (!birthDateStr) return null;
+      const birth = new Date(birthDateStr);
+      if (isNaN(birth.getTime())) return null;
+
+      const today = new Date();
+      let age = today.getFullYear() - birth.getFullYear();
+      const m = today.getMonth() - birth.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+        age--;
+      }
+      return age;
     };
 
     const Submit = async () => {
@@ -234,8 +256,9 @@ export default {
           Form.Name &&
           Form.phone &&
           Form.IsuckOrMosadLimudim &&
-          Form.Age &&
+          Form.BirthDate &&
           Form.RamaDatit &&
+          Form.Status &&
           Form.Ofi &&
           Form.Hobits &&
           Form.MaMehapes &&
@@ -244,7 +267,14 @@ export default {
 
         if (bool) {
           if (Form.phone.length === 10) {
-            const { data } = await axios.post(URL + "ADDForm", Form);
+            // מכין payload לשרת, כולל חישוב גיל מתאריך לידה
+            const payload = { ...Form };
+            const age = calculateAgeFromBirthdate(Form.BirthDate);
+            if (age !== null) {
+              payload.Age = age;
+            }
+
+            const { data } = await axios.post(URL + "ADDForm", payload);
             LoadingB.value = false;
 
             if (data) {
@@ -263,8 +293,9 @@ export default {
           else if (!Form.phone) showError("לא מלאת מספר טלפון");
           else if (!Form.IsuckOrMosadLimudim)
             showError("לא מלאת עיסוק\\מוסד לימודים");
-          else if (!Form.Age) showError("לא מלאת גיל");
+          else if (!Form.BirthDate) showError("לא מלאת תאריך לידה");
           else if (!Form.RamaDatit) showError("לא מלאת רמה דתית");
+          else if (!Form.Status) showError("לא מלאת סטטוס");
           else if (!Form.Ofi) showError("לא מלאת אופי");
           else if (!Form.Hobits) showError("לא מלאת תחביבים");
           else if (!Form.MaMehapes) showError("לא אמרת מה אתה מחפש");
@@ -297,14 +328,9 @@ export default {
         const formData = new FormData();
         formData.append("file", file);
 
-        const { data } = await axios.post(
-          "/postFilee",
-          // "https://server-ravakim-10c1effbda77.herokuapp.com/postFilee",
-          formData,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
-        );
+        const { data } = await axios.post("/postFilee", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
 
         GetPiccher(data);
       } catch (e) {
@@ -328,6 +354,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+/* כל ה-CSS כמו שהיה אצלך, לא נגעתי בו */
 .page-wrapper {
   min-height: 100vh;
   padding: 40px 16px;
@@ -342,7 +369,6 @@ export default {
   );
 }
 
-/* כרטיס הטופס */
 .form-card {
   width: 100%;
   max-width: 1100px;
@@ -355,7 +381,6 @@ export default {
   color: #e5e7eb;
 }
 
-/* כותרת */
 .form-header {
   border-bottom: 1px solid rgba(75, 85, 99, 0.7);
   padding-bottom: 14px;
@@ -375,7 +400,6 @@ export default {
   color: #9ca3af;
 }
 
-/* תוכן – גריד */
 .form-content {
   display: grid;
   grid-template-columns: minmax(0, 2.3fr) minmax(260px, 1.1fr);
@@ -383,14 +407,12 @@ export default {
   margin-top: 10px;
 }
 
-/* צד שמאל – עיצוב חדש */
 .form-main {
   display: flex;
   flex-direction: column;
   gap: 18px;
 }
 
-/* סקשנים */
 .form-section {
   background: radial-gradient(
     circle at top right,
@@ -403,7 +425,6 @@ export default {
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.7);
 }
 
-/* כותרת של כל סקשן */
 .section-header {
   display: flex;
   align-items: center;
@@ -438,7 +459,6 @@ export default {
   color: #9ca3af;
 }
 
-/* גריד שדות */
 .grid-2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -446,7 +466,6 @@ export default {
   margin-top: 6px;
 }
 
-/* שדות */
 .field {
   display: flex;
   flex-direction: column;
@@ -491,7 +510,6 @@ export default {
   resize: vertical;
 }
 
-/* צד ימין */
 .form-side {
   background: radial-gradient(circle at top, #1e293b, #020617);
   border-radius: 22px;
@@ -503,7 +521,6 @@ export default {
   gap: 18px;
 }
 
-/* תמונה */
 .avatar-section {
   width: 100%;
   display: flex;
@@ -535,7 +552,6 @@ export default {
   object-fit: cover;
 }
 
-/* upload */
 .upload-box {
   text-align: center;
 }
@@ -568,7 +584,6 @@ export default {
   color: #9ca3af;
 }
 
-/* מגדר */
 .gender-section {
   width: 100%;
 }
@@ -613,7 +628,6 @@ export default {
   box-shadow: 0 10px 24px rgba(56, 189, 248, 0.55);
 }
 
-/* כפתור שליחה */
 .submit-btn {
   margin-top: 4px;
   width: 100%;
@@ -642,7 +656,6 @@ export default {
   box-shadow: none;
 }
 
-/* מסך תודה */
 .thank-you {
   min-height: 100vh;
   padding: 40px 16px;
@@ -678,7 +691,6 @@ export default {
   color: #9ca3af;
 }
 
-/* רספונסיביות */
 @media (max-width: 900px) {
   .form-content {
     grid-template-columns: 1fr;

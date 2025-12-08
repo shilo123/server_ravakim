@@ -67,9 +67,9 @@ export default {
       if (typeof val === "string" && val === "Shiduh") {
         router.push(`/${val}`);
       } else if (val === "Delete") {
-        store.commit("UpdateState", true);
+        store.commit("UpdateState", { Delete: true });
       } else if (val === "Update") {
-        store.commit("UpdateState", true);
+        store.commit("UpdateState", { Update: true });
       }
     };
 
