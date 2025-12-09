@@ -7,8 +7,8 @@
       @updateisFinished="isFinished = $event"
       @UpdateData="data = $event"
       class="BarTop"
-      v-if="!ifPhone"
     />
+    <!-- v-if="!ifPhone" -->
 
     <!-- Allgrid מקבל מצב מחיקה + פונקציית מחיקה -->
     <Allgrid

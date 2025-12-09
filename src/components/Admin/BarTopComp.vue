@@ -148,6 +148,7 @@ $text-muted: rgba(255, 255, 255, 0.7);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65);
 }
 
+/* מעט ריווח כללי */
 .bar-top__inner {
   max-width: 1200px;
   margin: 0 auto;
@@ -173,7 +174,7 @@ $text-muted: rgba(255, 255, 255, 0.7);
   align-items: center;
 }
 
-/* חיפוש – רוחב קבוע, לא משתלט */
+/* חיפוש – רוחב קבוע בדסקטופ */
 .bar-top__search-wrapper {
   flex: 0 0 260px;
   max-width: 260px;
@@ -327,41 +328,112 @@ $text-muted: rgba(255, 255, 255, 0.7);
   white-space: nowrap;
 }
 
-/* רספונסיביות */
+/* ========== רספונסיביות ========== */
+
+/* טאבלטים – קצת פחות ריווח */
 @media (max-width: 900px) {
   .bar-top__inner {
     padding-inline: 0.75rem;
   }
 }
 
+/* מובייל (עד ~700px) – הכל בערימה, פול־ווית', מותאם אצבעות */
 @media (max-width: 700px) {
   .bar-top__inner {
     padding-top: 0.5rem;
     padding-bottom: 0.6rem;
-    gap: 0.5rem;
+    padding-inline: 0.75rem;
+    gap: 0.75rem;
   }
 
   .bar-top__row {
     flex-direction: column;
     align-items: stretch;
+    gap: 0.75rem;
   }
 
-  .bar-top__search-wrapper,
-  .bar-top__right-side,
+  /* חיפוש – בפול רוחב למעלה */
+  .bar-top__search-wrapper {
+    flex: initial;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  /* צד ימין – שורה מתחת, גם כן פול־ווית' */
+  .bar-top__right-side {
+    flex: initial;
+    min-width: 100%;
+    width: 100%;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 0.5rem;
+  }
+
+  /* כפתורי מגדר – שיהיו שווים ונוחים ללחיצה */
+  .bar-top__gender-tabs {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .bar-top__tab {
+    flex: 1;
+    padding: 0.25rem 0.4rem;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  /* דרופדאון – ירד שורה מתחת למגדר, מיושר לימין */
+  .bar-top__dropdown {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
   .bar-top__field--rama,
   .bar-top__field--ages {
     flex: initial;
     min-width: 100%;
   }
 
-  .bar-top__right-side {
-    align-items: flex-start;
-    justify-content: flex-start;
-  }
-
   .bar-top__ages {
     flex-direction: column;
     align-items: flex-start;
+    gap: 0.4rem;
+  }
+
+  .bar-top__age-group {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .bar-top__select--age {
+    max-width: 180px;
+    flex: 1;
+  }
+}
+
+/* מובייל קטן ממש (עד ~480px) – עוד כיווץ טיפוגרפי ורוחב מלא לסלקטים */
+@media (max-width: 480px) {
+  .bar-top__label {
+    font-size: 0.8rem;
+  }
+
+  .bar-top__age-label {
+    font-size: 0.75rem;
+  }
+
+  .bar-top__tab {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.3rem;
+  }
+
+  .bar-top__select--age {
+    max-width: 100%;
+  }
+
+  .bar-top__age-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
   }
 }
 </style>
