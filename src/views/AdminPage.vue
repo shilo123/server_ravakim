@@ -29,7 +29,7 @@
 
 <script>
 import { useAxios } from "@vueuse/integrations/useAxios";
-import axios from "axios";
+// import axios from "axios";
 import { computed, onMounted, ref, watch } from "vue";
 import { URL } from "@/URL/url";
 import { useStore } from "vuex";
@@ -91,8 +91,8 @@ export default {
         const success = await Store.dispatch("DelteUser", id);
 
         if (success) {
-          // רענון הדאטה מהשרת אחרי מחיקה
           await execute();
+          Store.commit("UpdateState", { isDelete: false });
         } else {
           console.warn("מחיקה נכשלה בשרת");
         }

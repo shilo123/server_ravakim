@@ -100,6 +100,21 @@ function GetAge(data) {
   // ✅ אם הגיע משהו לא צפוי
   return data;
 }
+function calcAge(birthDate) {
+  if (!birthDate) return null;
+
+  const d = new Date(birthDate); // עובד גם על Date וגם על string תקין
+
+  if (isNaN(d.getTime())) return null;
+
+  const today = new Date();
+  let age = today.getFullYear() - d.getFullYear();
+  const m = today.getMonth() - d.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < d.getDate())) {
+    age--;
+  }
+  return age;
+}
 
 app.post("/postFilee", upload.single("file"), async (req, res) => {
   const params = {
@@ -130,9 +145,9 @@ app.post("/ADDForm", async (req, res) => {
 //
 app.get("/GetRavakim", async (req, res) => {
   try {
-    console.log("aaaaaaa");
-
     let data = await collection.find({}).toArray();
+    // console.log(data);
+
     data = GetAge(data);
     res.json(data);
   } catch (error) {
@@ -141,21 +156,55 @@ app.get("/GetRavakim", async (req, res) => {
 });
 app.post("/FilterData", async (req, res) => {
   try {
-    const { Name, AgeStart, AgeEnd, Gender } = req.body;
-    let RamaDatit = req.body.RamaDatit;
-    const ContentQuery = {
-      Name: { $regex: `^${Name}`, $options: "i" },
-      RamaDatit: { $regex: `^${RamaDatit}`, $options: "i" },
-      Age: { $gt: +AgeStart, $lt: +AgeEnd },
-    };
-    if (Gender) {
+    let { Name, AgeStart, AgeEnd, Gender, RamaDatit } = req.body;
+
+    console.log("BODY:", { Name, AgeStart, AgeEnd, Gender, RamaDatit });
+
+    const ContentQuery = {};
+
+    if (Name && Name.trim() !== "") {
+      ContentQuery.Name = { $regex: `^${Name}`, $options: "i" };
+    }
+
+    if (RamaDatit && RamaDatit.trim() !== "") {
+      ContentQuery.RamaDatit = { $regex: `^${RamaDatit}`, $options: "i" };
+    }
+
+    if (Gender && Gender.trim() !== "") {
       ContentQuery.Gender = Gender;
     }
+
+    // ✅ פה בכוונה אין BirthDate בכלל
+    console.log(
+      "MONGO QUERY (WITHOUT AGE):",
+      JSON.stringify(ContentQuery, null, 2)
+    );
+
     let data = await collection.find(ContentQuery).toArray();
-    data = GetAge(data);
+
+    console.log("FOUND BEFORE AGE FILTER:", data.length);
+
+    // ✅ סינון גיל אך ורק בצד שרת
+    if (
+      AgeStart != null &&
+      AgeEnd != null &&
+      AgeStart !== "" &&
+      AgeEnd !== ""
+    ) {
+      AgeStart = +AgeStart;
+      AgeEnd = +AgeEnd;
+
+      data = data.filter((doc) => {
+        const age = calcAge(doc.BirthDate);
+        return age != null && age >= AgeStart && age <= AgeEnd;
+      });
+    }
+
+    console.log("FOUND AFTER AGE FILTER:", data.length);
 
     res.json(data);
   } catch (error) {
+    console.error(error);
     res.json(false);
   }
 });
