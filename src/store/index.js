@@ -17,8 +17,6 @@ export default createStore({
     UpdateActiveIsh(state, val) {
       state.activeIsh = val;
     },
-    // מצב כללי של Delete/Update
-    // מצפה לאובייקט כזה: { Delete: true } או { Update: true } או {}
     UpdateState(state, val) {
       state.isDelete = !!val.Delete;
       state.isUpdate = !!val.Update;

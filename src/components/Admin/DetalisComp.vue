@@ -21,7 +21,6 @@
           </div>
 
           <div class="top-text">
-            <!-- {{ LOGUSER(user) }} -->
             <h2>{{ user.Name }}</h2>
             <p class="sub">{{ user.age }} · {{ user.Gender }}</p>
             <p class="job">{{ user.IsuckOrMosadLimudim }}</p>
@@ -34,30 +33,45 @@
         <div class="grid">
           <div class="block" v-if="user.RamaDatit">
             <h3>רמה דתית</h3>
-            <p>{{ user.RamaDatit }}</p>
+            <p class="row">
+              <span>{{ user.RamaDatit }}</span>
+              <i class="fa-solid fa-pen edit-icon"></i>
+            </p>
           </div>
 
           <div class="block" v-if="user.Ofi">
             <h3>אופי</h3>
-            <p>{{ user.Ofi }}</p>
+            <p class="row">
+              <span>{{ user.Ofi }}</span>
+              <i class="fa-solid fa-pen edit-icon"></i>
+            </p>
           </div>
 
           <div class="block" v-if="user.Hobits">
             <h3>תחביבים</h3>
-            <p>{{ user.Hobits }}</p>
+            <p class="row">
+              <span>{{ user.Hobits }}</span>
+              <i class="fa-solid fa-pen edit-icon"></i>
+            </p>
           </div>
 
           <div class="block" v-if="user.MaMehapes">
             <h3>מה מחפש</h3>
-            <p>{{ user.MaMehapes }}</p>
+            <p class="row">
+              <span>{{ user.MaMehapes }}</span>
+              <i class="fa-solid fa-pen edit-icon"></i>
+            </p>
           </div>
 
           <div class="block" v-if="user.KavimClalim">
             <h3>משפחה</h3>
-            <p>{{ user.KavimClalim }}</p>
+            <p class="row">
+              <span>{{ user.KavimClalim }}</span>
+              <i class="fa-solid fa-pen edit-icon"></i>
+            </p>
           </div>
 
-          <!-- הערה + עריכה -->
+          <!-- הערה -->
           <div class="block">
             <h3>הערה</h3>
             <textarea v-model="noteDraft" placeholder="כתוב הערה..."></textarea>
@@ -132,25 +146,29 @@ export default {
     const exportDetails = async () => {
       if (!user.value) return;
 
+      const imageUrl = user.value.picURL || "";
+
       const content = `
-שם: ${user.value.Name || ""}
-גיל: ${user.value.Age || ""}
-מגדר: ${user.value.Gender || ""}
-עיסוק: ${user.value.IsuckOrMosadLimudim || ""}
-רמה דתית: ${user.value.RamaDatit || ""}
-אופי: ${user.value.Ofi || ""}
-תחביבים: ${user.value.Hobits || ""}
-מה מחפש: ${user.value.MaMehapes || ""}
-משפחה: ${user.value.KavimClalim || ""}
-הערה: ${user.value.Note || ""}
-  `.trim();
+${imageUrl ? "🖼️ תמונה:\n" + imageUrl + "\n\n" : ""}🧑‍💼 *כרטיס מועמד*
+
+👤 *שם:* ${user.value.Name || "—"}
+🎂 *גיל:* ${user.value.Age || "—"}
+🚻 *מגדר:* ${user.value.Gender || "—"}
+💼 *עיסוק:* ${user.value.IsuckOrMosadLimudim || "—"}
+🕍 *רמה דתית:* ${user.value.RamaDatit || "—"}
+🧠 *אופי:* ${user.value.Ofi || "—"}
+🎯 *תחביבים:* ${user.value.Hobits || "—"}
+❤️ *מה מחפש:* ${user.value.MaMehapes || "—"}
+👨‍👩‍👧‍👦 *משפחה:* ${user.value.KavimClalim || "—"}
+
+📌 נשלח דרך https://server-ravakim-10c1effbda77.herokuapp.com/ 
+`.trim();
 
       try {
         if (navigator.clipboard && navigator.clipboard.writeText) {
           await navigator.clipboard.writeText(content);
-          window.$toast && window.$toast("✅ הפרטים הועתקו ללוח", "success");
+          window.$toast && window.$toast("✅ הפרטים הועתקו לווצאפ", "success");
         } else {
-          // fallback לדפדפנים ישנים
           const temp = document.createElement("textarea");
           temp.value = content;
           temp.style.position = "fixed";
@@ -159,10 +177,10 @@ export default {
           temp.select();
           document.execCommand("copy");
           document.body.removeChild(temp);
-          window.$toast && window.$toast("✅ הפרטים הועתקו ללוח", "success");
+          window.$toast && window.$toast("✅ הפרטים הועתקו לווצאפ", "success");
         }
       } catch (e) {
-        window.$toast && window.$toast("❌ לא הצלחתי להעתיק ללוח", "error");
+        window.$toast && window.$toast("❌ לא הצלחתי להעתיק לווצאפ", "error");
       }
     };
 
@@ -191,6 +209,8 @@ export default {
 
 <style scoped lang="scss">
 .details-overlay {
+  overflow: hidden;
+
   position: fixed;
   inset: 0;
   background: rgba(2, 6, 23, 0.88);
@@ -227,16 +247,133 @@ export default {
 }
 
 .export-btn {
+  overflow: hidden;
+
   position: absolute;
   top: 10px;
   left: 10px;
+
   background: linear-gradient(135deg, #059669, #10b981);
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 5px 10px;
-  font-size: 0.75rem;
+  border-radius: 12px;
+
+  padding: 10px 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+
   cursor: pointer;
+  overflow: visible;
+
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45);
+
+  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+
+  animation: exportBreath 2.5s infinite ease-in-out;
+
+  &:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 10px 28px rgba(16, 185, 129, 0.75);
+    filter: brightness(1.15);
+  }
+
+  &:active {
+    transform: scale(0.95);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  }
+
+  // ברק שעובר
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -130%;
+    width: 130%;
+    height: 100%;
+
+    background: linear-gradient(
+      120deg,
+      transparent,
+      rgba(255, 255, 255, 0.45),
+      transparent
+    );
+
+    transition: left 0.7s ease;
+    border-radius: 12px;
+  }
+
+  &:hover::after {
+    left: 130%;
+  }
+
+  // ✅ הפס שנפתח למטה
+  .export-hover {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -38px;
+
+    background: rgba(5, 150, 105, 0.98);
+    color: white;
+
+    font-size: 0.7rem;
+    padding: 7px 8px;
+    text-align: center;
+
+    border-radius: 0 0 12px 12px;
+
+    opacity: 0;
+    transform: translateY(-8px) scale(0.92);
+    transition: opacity 0.25s ease, transform 0.25s ease, bottom 0.25s ease;
+  }
+
+  &:hover .export-hover {
+    overflow: hidden;
+
+    opacity: 1;
+    bottom: -44px;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// ✅ אנימציית "נשימה"
+@keyframes exportBreath {
+  0% {
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  }
+  50% {
+    box-shadow: 0 8px 22px rgba(16, 185, 129, 0.7);
+  }
+  100% {
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  }
+}
+
+// אנימציית נשימה
+@keyframes exportBreath {
+  0% {
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  }
+  50% {
+    box-shadow: 0 7px 20px rgba(16, 185, 129, 0.65);
+  }
+  100% {
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  }
+}
+
+// אנימציית "נשימה"
+@keyframes exportBreath {
+  0% {
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  }
+  50% {
+    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.6);
+  }
+  100% {
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  }
 }
 
 /* עליון */
@@ -352,5 +489,24 @@ textarea {
 
 .state-msg.error {
   color: #fecaca;
+}
+/* === תוספת בלבד לאייקון עריכה === */
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.edit-icon {
+  font-size: 0.75rem;
+  color: #60a5fa;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.edit-icon:hover {
+  color: #93c5fd;
+  transform: scale(1.2);
 }
 </style>

@@ -39,7 +39,7 @@
       <!-- שורה תחתונה: רמה דתית + טווח גילאים -->
       <div class="bar-top__row bar-top__row--bottom">
         <!-- רמה דתית -->
-        <div class="bar-top__field bar-top__field--rama">
+        <!-- <div class="bar-top__field bar-top__field--rama">
           <label class="bar-top__label">רמה דתית</label>
           <select v-model="Filters.RamaDatit" class="bar-top__select">
             <option label="כולם" value=""></option>
@@ -50,7 +50,7 @@
             <option value="תורני" label="תורני"></option>
             <option value="חרדי" label="חרדי"></option>
           </select>
-        </div>
+        </div> -->
 
         <!-- טווח גילאים -->
         <div class="bar-top__field bar-top__field--ages">

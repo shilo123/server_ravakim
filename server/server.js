@@ -146,7 +146,6 @@ app.post("/ADDForm", async (req, res) => {
 app.get("/GetRavakim", async (req, res) => {
   try {
     let data = await collection.find({}).toArray();
-    // console.log(data);
 
     data = GetAge(data);
     res.json(data);
@@ -157,8 +156,6 @@ app.get("/GetRavakim", async (req, res) => {
 app.post("/FilterData", async (req, res) => {
   try {
     let { Name, AgeStart, AgeEnd, Gender, RamaDatit } = req.body;
-
-    console.log("BODY:", { Name, AgeStart, AgeEnd, Gender, RamaDatit });
 
     const ContentQuery = {};
 
@@ -175,14 +172,8 @@ app.post("/FilterData", async (req, res) => {
     }
 
     // ✅ פה בכוונה אין BirthDate בכלל
-    console.log(
-      "MONGO QUERY (WITHOUT AGE):",
-      JSON.stringify(ContentQuery, null, 2)
-    );
 
     let data = await collection.find(ContentQuery).toArray();
-
-    console.log("FOUND BEFORE AGE FILTER:", data.length);
 
     // ✅ סינון גיל אך ורק בצד שרת
     if (
@@ -199,8 +190,6 @@ app.post("/FilterData", async (req, res) => {
         return age != null && age >= AgeStart && age <= AgeEnd;
       });
     }
-
-    console.log("FOUND AFTER AGE FILTER:", data.length);
 
     res.json(data);
   } catch (error) {
@@ -364,6 +353,7 @@ app.delete("/DeleteShiduh/:id", async (req, res) => {
 app.post("/AddNoteT", async (req, res) => {
   try {
     const { id, note } = req.body;
+    console.log({ id, note });
     // res.json({ requ: req.body });
     await collectionP.updateOne(
       { _id: new ObjectId(id) },
