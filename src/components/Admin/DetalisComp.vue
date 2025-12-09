@@ -21,8 +21,9 @@
           </div>
 
           <div class="top-text">
+            <!-- {{ LOGUSER(user) }} -->
             <h2>{{ user.Name }}</h2>
-            <p class="sub">{{ user.Age }} · {{ user.Gender }}</p>
+            <p class="sub">{{ user.age }} · {{ user.Gender }}</p>
             <p class="job">{{ user.IsuckOrMosadLimudim }}</p>
           </div>
         </div>
@@ -125,7 +126,9 @@ export default {
         window.$toast && window.$toast("❌ שגיאה בשמירת הערה", "error");
       }
     };
-
+    const LOGUSER = (user) => {
+      console.log({ ...user });
+    };
     const exportDetails = async () => {
       if (!user.value) return;
 
@@ -179,6 +182,7 @@ export default {
       saveNote,
       exportDetails,
       close,
+      LOGUSER,
       initials,
     };
   },

@@ -60,6 +60,46 @@ function random(min, max) {
 // app.get("/", async (req, res) => {
 //   res.json({ stuts: "shcoyeh" });
 // });
+function GetAge(data) {
+  const calculateAge = (obj) => {
+    let Age = null;
+
+    if (obj && obj.BirthDate) {
+      const birth =
+        obj.BirthDate instanceof Date ? obj.BirthDate : new Date(obj.BirthDate);
+
+      if (!isNaN(birth.getTime())) {
+        const today = new Date();
+        let years = today.getFullYear() - birth.getFullYear();
+        const m = today.getMonth() - birth.getMonth();
+
+        if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+          years--;
+        }
+
+        Age = years;
+      }
+    }
+
+    return {
+      ...obj,
+      Age,
+    };
+  };
+
+  // ✅ אם זה מערך
+  if (Array.isArray(data)) {
+    return data.map((item) => calculateAge(item));
+  }
+
+  // ✅ אם זה אובייקט יחיד
+  if (typeof data === "object" && data !== null) {
+    return calculateAge(data);
+  }
+
+  // ✅ אם הגיע משהו לא צפוי
+  return data;
+}
 
 app.post("/postFilee", upload.single("file"), async (req, res) => {
   const params = {
@@ -73,16 +113,14 @@ app.post("/postFilee", upload.single("file"), async (req, res) => {
         .status(500)
         .send({ message: "שגיאה בהעלאת הקובץ ל-S3.", error: err.message });
     }
-    // console.log(data.Location);
     const publicUrl = `https://${params.Bucket}.s3.amazonaws.com/${params.Key}`;
-    // console.log("publicUrl", publicUrl);
     res.send(publicUrl);
   });
 });
 //
 app.post("/ADDForm", async (req, res) => {
   try {
-    req.body.Age = parseInt(req.body.Age);
+    // req.body.Age = parseInt(req.body.Age);
     await collection.insertOne(req.body);
     res.json(true);
   } catch (error) {
@@ -92,7 +130,10 @@ app.post("/ADDForm", async (req, res) => {
 //
 app.get("/GetRavakim", async (req, res) => {
   try {
+    console.log("aaaaaaa");
+
     let data = await collection.find({}).toArray();
+    data = GetAge(data);
     res.json(data);
   } catch (error) {
     res.json(false);
@@ -100,7 +141,6 @@ app.get("/GetRavakim", async (req, res) => {
 });
 app.post("/FilterData", async (req, res) => {
   try {
-    // console.log(req.body);
     const { Name, AgeStart, AgeEnd, Gender } = req.body;
     let RamaDatit = req.body.RamaDatit;
     const ContentQuery = {
@@ -112,7 +152,8 @@ app.post("/FilterData", async (req, res) => {
       ContentQuery.Gender = Gender;
     }
     let data = await collection.find(ContentQuery).toArray();
-    // console.log(data);
+    data = GetAge(data);
+
     res.json(data);
   } catch (error) {
     res.json(false);
@@ -122,8 +163,9 @@ app.get("/GetDetalis/:id", async (req, res) => {
   try {
     const id = req.params.id;
     let data = await collection.find({ _id: new ObjectId(id) }).toArray();
-    // console.log(data);
-    res.json(data[0]);
+    data = GetAge(data[0]);
+
+    res.json(data);
   } catch (error) {
     res.json(false);
   }
@@ -165,7 +207,9 @@ app.get("/GetShiduhim", async (req, res) => {
       },
     ])
     .toArray();
-  res.json(data[0]);
+  data = GetAge(data[0]);
+
+  res.json(data);
 });
 app.get("/GetShoduh", async (req, res) => {
   let data = await collectionP
@@ -197,11 +241,11 @@ app.get("/GetShoduh", async (req, res) => {
       },
     ])
     .toArray();
-  // console.log("data", data);
+  data = GetAge(data);
+
   res.json(data);
 });
 app.put("/EditZog", async (req, res) => {
-  // console.log(req.body);
   try {
     const { newPoten, ID } = req.body;
     await collectionP.updateOne(
@@ -242,6 +286,7 @@ app.put("/EditZog", async (req, res) => {
         },
       ])
       .toArray();
+    data = GetAge(data);
 
     res.json(data);
   } catch (error) {
@@ -280,6 +325,19 @@ app.post("/AddNoteT", async (req, res) => {
   } catch (error) {
     res.json(false);
   }
+});
+app.get("/DeleteUser/:id", async (req, res) => {
+  try {
+    const ID = req.params.id;
+    const result = await collection.deleteOne({ _id: new ObjectId(ID) });
+    if (result.deletedCount === 1) {
+      let data = await collection.find({}).toArray();
+      data = GetAge(data);
+      res.json(true);
+    } else {
+      res.json(false);
+    }
+  } catch (error) {}
 });
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "client", "index.html"));

@@ -1,12 +1,23 @@
 <template>
-  <div class="ravakim-page">
+  <div class="ravakim-page" :class="{ 'ravakim-page--delete-mode': isDelete }">
+    <!-- overlay כהה בזמן מחיקה -->
+    <div v-if="isDelete" class="ravakim-page__overlay"></div>
+
     <BarTop
       @updateisFinished="isFinished = $event"
       @UpdateData="data = $event"
       class="BarTop"
       v-if="!ifPhone"
     />
-    <Allgrid :data="data" :isFinished="isFinished" @GetPratim="GetPratim" />
+
+    <!-- Allgrid מקבל מצב מחיקה + פונקציית מחיקה -->
+    <Allgrid
+      :data="data"
+      :isFinished="isFinished"
+      :isDeleteMode="isDelete"
+      @GetPratim="GetPratim"
+      @DelteUser="DelteUser"
+    />
 
     <DetalisCompVue
       v-if="showDetails && selectedId"
@@ -18,6 +29,7 @@
 
 <script>
 import { useAxios } from "@vueuse/integrations/useAxios";
+import axios from "axios";
 import { computed, onMounted, ref, watch } from "vue";
 import { URL } from "@/URL/url";
 import { useStore } from "vuex";
@@ -30,7 +42,14 @@ export default {
   components: { BarTop, Allgrid, DetalisCompVue },
   setup() {
     const Store = useStore();
-    const { data, isFinished } = useAxios(URL + "GetRavakim");
+
+    // קריאה לשרת + פונקציית רענון
+    const { data, isFinished, execute } = useAxios(
+      URL + "GetRavakim",
+      { method: "GET" },
+      { immediate: true } // רץ פעם אחת כשהדף נטען
+    );
+
     const ifPhone = computed(() => window.innerWidth < 400);
     const isDelete = computed(() => Store.state.isDelete);
     const isUpdate = computed(() => Store.state.isUpdate);
@@ -38,24 +57,20 @@ export default {
     const showDetails = ref(false);
     const selectedId = ref(null);
 
+    // עדכון סטטוס טעינה ב-Vuex (אם אתה משתמש בזה במקום אחר)
     watch(isFinished, (val) => {
       Store.commit("updateisFinished", val);
     });
+
+    // אם נכנסים למצב מחיקה – נסגור את דף הפרטים
     watch(isDelete, (val) => {
-      console.log("watch isDelete:", val);
       if (val) {
-        alert("isDelete");
-        // חשוב: לאפס כדי שברגע הבא יהיה שינוי שוב
-        // Store.commit("setIsDelete", false);
+        showDetails.value = false;
       }
     });
 
     watch(isUpdate, (val) => {
-      console.log("watch isUpdate:", val);
-      if (val) {
-        alert("isUpdate");
-        // Store.commit("setIsUpdate", false);
-      }
+      // אם תרצה לעשות משהו כשנכנסים למצב עדכון – תוסיף פה
     });
 
     onMounted(() => {
@@ -63,10 +78,27 @@ export default {
     });
 
     const GetPratim = (id) => {
+      // אם במצב מחיקה – אל תפתח פירוט
+      if (isDelete.value) return;
+
       selectedId.value = id;
       showDetails.value = true;
-      // אם אתה עדיין רוצה לשמור גם ב־Vuex:
       Store.dispatch("GetDetalis", id);
+    };
+
+    const DelteUser = async (id) => {
+      try {
+        const success = await Store.dispatch("DelteUser", id);
+
+        if (success) {
+          // רענון הדאטה מהשרת אחרי מחיקה
+          await execute();
+        } else {
+          console.warn("מחיקה נכשלה בשרת");
+        }
+      } catch (err) {
+        console.error("DeleteUser error:", err);
+      }
     };
 
     return {
@@ -76,7 +108,27 @@ export default {
       showDetails,
       selectedId,
       GetPratim,
+      isDelete,
+      DelteUser,
     };
   },
 };
 </script>
+
+<style scoped lang="scss">
+.ravakim-page {
+  position: relative;
+  padding: 1rem;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* overlay כהה מאחורי הכרטיסיות */
+.ravakim-page__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.75); /* שחור-כחלחל שקוף */
+  pointer-events: none; /* כדי שהכרטיסיות עדיין יהיו קליקביליות */
+  z-index: 5;
+}
+</style>

@@ -1,5 +1,9 @@
 <template>
-  <div class="grid-wrapper" dir="rtl">
+  <div
+    class="grid-wrapper"
+    :class="{ 'grid-wrapper--delete-mode': isDelete }"
+    dir="rtl"
+  >
     <!-- מצב טעינה -->
     <div v-if="!isFinished" class="grid-loading">
       <div class="grid-loading__spinner"></div>
@@ -15,7 +19,19 @@
             :key="Item._id || i"
             class="grid__item"
           >
-            <article class="profile-card" @click="GetPratim(Item._id)">
+            <article
+              class="profile-card"
+              :class="{ 'profile-card-DeleteMode': isDelete }"
+              @click="GetPratim(Item._id)"
+            >
+              <div
+                v-if="isDelete"
+                class="delete-x"
+                @click="DelteUser(Item._id)"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </div>
+
               <div class="profile-card__image-wrapper">
                 <img
                   :src="Item.picURL"
@@ -37,6 +53,7 @@
                 </p>
 
                 <button
+                  v-show="!isDelete"
                   type="button"
                   class="profile-card__button"
                   @click.stop="GetPratim(Item._id)"
@@ -70,10 +87,15 @@ export default {
     const GetPratim = (id) => {
       emit("GetPratim", id);
     };
+    const DelteUser = (id) => {
+      emit("DelteUser", id);
+    };
+    const isDelete = computed(() => Store.state.isDelete);
+    const isUpdate = computed(() => Store.state.isUpdate);
 
     const isFinished = computed(() => Store.state.isFinished);
 
-    return { isFinished, GetPratim };
+    return { isFinished, GetPratim, isUpdate, isDelete, DelteUser };
   },
 };
 </script>
@@ -154,6 +176,62 @@ $text-muted: rgba(255, 255, 255, 0.75);
   align-items: center;
   transition: transform 0.2s ease-out, box-shadow 0.2s ease-out,
     border-color 0.2s ease-out;
+  z-index: 50;
+  &-DeleteMode {
+    border: 2px solid rgba(239, 68, 68, 0.9); // אדום חזק
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.35),
+      0 12px 30px rgba(0, 0, 0, 0.85), 0 0 18px rgba(239, 68, 68, 0.7); // זוהר אדום
+    transform: translateY(-2px) scale(1.015);
+
+    animation: deleteCardPulse 1.3s infinite ease-in-out;
+  }
+  .delete-x {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ff6b6b, #b91c1c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 20;
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.7),
+      0 0 0 2px rgba(255, 255, 255, 0.8);
+    transition: all 0.18s ease;
+    animation: deletePulse 1.4s infinite ease-in-out;
+
+    i {
+      color: white;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    &:hover {
+      animation: deleteBounce 0.4s ease-in-out;
+      transform: scale(1.35) rotate(8deg);
+      box-shadow: 0 12px 30px rgba(220, 38, 38, 0.95), 0 0 0 2px white;
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+
+  /* פולס שקט כזה */
+  @keyframes deletePulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
+  }
 }
 
 .profile-card:hover {
@@ -265,6 +343,22 @@ $text-muted: rgba(255, 255, 255, 0.75);
   .profile-card__button {
     width: 85%;
     font-size: 0.85rem;
+  }
+}
+@keyframes deleteCardPulse {
+  0% {
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.35),
+      0 12px 30px rgba(0, 0, 0, 0.85), 0 0 12px rgba(239, 68, 68, 0.6);
+  }
+
+  50% {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.5), 0 14px 34px rgba(0, 0, 0, 0.9),
+      0 0 22px rgba(239, 68, 68, 0.9);
+  }
+
+  100% {
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.35),
+      0 12px 30px rgba(0, 0, 0, 0.85), 0 0 12px rgba(239, 68, 68, 0.6);
   }
 }
 </style>

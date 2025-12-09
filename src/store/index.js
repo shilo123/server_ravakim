@@ -17,21 +17,28 @@ export default createStore({
     UpdateActiveIsh(state, val) {
       state.activeIsh = val;
     },
+    // מצב כללי של Delete/Update
+    // מצפה לאובייקט כזה: { Delete: true } או { Update: true } או {}
     UpdateState(state, val) {
-      if (val["Delete"]) {
-        state.isDelete = val;
-      } else if (val["Update"]) {
-        state.isUpdate = val;
-      }
+      state.isDelete = !!val.Delete;
+      state.isUpdate = !!val.Update;
     },
   },
-  //
 
   actions: {
     async GetDetalis({ commit }, id) {
-      let { data } = await axios.get(URL + "GetDetalis/" + id);
+      const { data } = await axios.get(URL + "GetDetalis/" + id);
       commit("UpdateActiveIsh", data);
     },
+
+    async DelteUser(_, id) {
+      // אם ה-API שלך באמת GET למחיקה, תשאיר GET
+      // אם תשנה בעתיד למחיקה אמיתית – תעשה axios.delete
+      const { data } = await axios.get(`${URL}DeleteUser/${id}`);
+      // נניח שהשרת מחזיר true/false
+      return data;
+    },
   },
+
   modules: {},
 });
