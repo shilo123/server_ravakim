@@ -163,6 +163,7 @@ $text-muted: rgba(255, 255, 255, 0.75);
 
 /* כרטיס */
 .profile-card {
+  position: relative;
   width: 210px;
   height: 270px;
   border-radius: 20px;
@@ -177,14 +178,15 @@ $text-muted: rgba(255, 255, 255, 0.75);
   transition: transform 0.2s ease-out, box-shadow 0.2s ease-out,
     border-color 0.2s ease-out;
   z-index: 50;
+
   &-DeleteMode {
     border: 2px solid rgba(239, 68, 68, 0.9); // אדום חזק
     box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.35),
       0 12px 30px rgba(0, 0, 0, 0.85), 0 0 18px rgba(239, 68, 68, 0.7); // זוהר אדום
     transform: translateY(-2px) scale(1.015);
-
     animation: deleteCardPulse 1.3s infinite ease-in-out;
   }
+
   .delete-x {
     position: absolute;
     top: -8px;
@@ -220,7 +222,6 @@ $text-muted: rgba(255, 255, 255, 0.75);
     }
   }
 
-  /* פולס שקט כזה */
   @keyframes deletePulse {
     0% {
       box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8);
@@ -319,32 +320,101 @@ $text-muted: rgba(255, 255, 255, 0.75);
   font-size: 0.95rem;
 }
 
-/* מובייל */
+/* ========= רספונסיביות ========= */
+
+/* טאבלט – קצת יותר צמוד */
+@media screen and (max-width: 900px) {
+  .grid-wrapper {
+    margin: 1rem auto 2rem;
+    padding: 0 0.75rem;
+  }
+
+  .grid {
+    gap: 1.2rem 0.9rem;
+  }
+}
+
+/* מובייל כללי – כרטיסים קטנים יותר, שתי עמודות */
 @media screen and (max-width: 600px) {
   .grid-wrapper {
-    margin-top: 1rem;
+    margin-top: 0.75rem;
+    margin-bottom: 2rem;
     padding: 0 0.5rem;
   }
 
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem 0.5rem;
+  }
+
   .profile-card {
-    width: 170px;
-    height: 230px;
+    width: 100%;
+    max-width: 165px;
+    height: 215px;
+    padding: 0.9rem 0.7rem 1rem;
+    border-radius: 16px;
   }
 
   .profile-card__image {
-    width: 70px;
-    height: 70px;
+    width: 64px;
+    height: 64px;
+    border-width: 2px;
+  }
+
+  .profile-card__body {
+    margin-top: 0.8rem;
   }
 
   .profile-card__title {
-    font-size: 1rem;
+    font-size: 0.95rem;
+  }
+
+  .profile-card__age {
+    font-size: 0.85rem;
+  }
+
+  .profile-card__subtitle {
+    font-size: 0.8rem;
   }
 
   .profile-card__button {
-    width: 85%;
-    font-size: 0.85rem;
+    width: 90%;
+    font-size: 0.8rem;
+    padding: 0.35rem 0.6rem;
   }
 }
+
+/* מובייל קטן מאוד – ממש קומפקטי */
+@media screen and (max-width: 400px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem 0.4rem;
+  }
+
+  .profile-card {
+    max-width: 150px;
+    height: 200px;
+    padding: 0.8rem 0.6rem 0.9rem;
+  }
+
+  .profile-card__image {
+    width: 56px;
+    height: 56px;
+  }
+
+  .profile-card__title {
+    font-size: 0.9rem;
+  }
+
+  .profile-card__subtitle {
+    font-size: 0.78rem;
+  }
+
+  .profile-card__button {
+    font-size: 0.78rem;
+  }
+}
+
 @keyframes deleteCardPulse {
   0% {
     box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.35),
