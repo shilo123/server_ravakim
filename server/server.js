@@ -115,6 +115,16 @@ function calcAge(birthDate) {
   }
   return age;
 }
+function ageToBirthDate(age) {
+  if (!age || age < 0) return null;
+
+  const today = new Date();
+  const birthYear = today.getFullYear() - age;
+
+  const birthDate = new Date(birthYear, today.getMonth(), today.getDate());
+
+  return birthDate;
+}
 
 app.post("/postFilee", upload.single("file"), async (req, res) => {
   const params = {
@@ -204,20 +214,6 @@ app.get("/GetDetalis/:id", async (req, res) => {
     data = GetAge(data[0]);
 
     res.json(data);
-  } catch (error) {
-    res.json(false);
-  }
-});
-app.post("/AddNote", async (req, res) => {
-  try {
-    const { val, id } = req.body;
-    if (collection) {
-      await collection.updateOne(
-        { _id: new ObjectId(id) },
-        { $set: { Note: val } }
-      );
-    }
-    res.json(true);
   } catch (error) {
     res.json(false);
   }
@@ -377,6 +373,38 @@ app.get("/DeleteUser/:id", async (req, res) => {
       res.json(false);
     }
   } catch (error) {}
+});
+app.put("/UpdateNote/:id", async (req, res) => {
+  const { id } = req.params;
+  const { Note } = req.body;
+  // console.log({ id, Note });
+  try {
+    await collection.updateOne({ _id: new ObjectId(id) }, { $set: { Note } });
+    res.json(true);
+  } catch (error) {
+    res.json(false);
+  }
+  res.json(true);
+});
+app.put("/EditUser", async (req, res) => {
+  const { id, field, value } = req.body;
+  try {
+    if (field !== "Age") {
+      await collection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { [field]: value } }
+      );
+    } else {
+      let valueAge = ageToBirthDate(value);
+      await collection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { BirthDate: valueAge } }
+      );
+    }
+    res.json(true);
+  } catch (error) {
+    res.json(false);
+  }
 });
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "client", "index.html"));

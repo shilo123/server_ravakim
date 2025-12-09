@@ -21,7 +21,7 @@
           </span>
         </button>
 
-        <button
+        <!-- <button
           type="button"
           class="actions-dropdown__item"
           @click="Evnent('Update')"
@@ -30,7 +30,7 @@
             <i class="fa-duotone fa-pen-to-square"></i>
             עדכן
           </span>
-        </button>
+        </button> -->
 
         <button
           type="button"

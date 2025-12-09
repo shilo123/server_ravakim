@@ -31,44 +31,139 @@
 
         <!-- פרטים -->
         <div class="grid">
+          <!-- גיל -->
+          <div class="block" v-if="user.Age || user.age">
+            <h3>גיל</h3>
+
+            <!-- מצב תצוגה -->
+            <p class="row" v-if="editField !== 'Age'">
+              <span>{{ user.Age ?? user.age }}</span>
+              <i
+                class="fa-solid fa-pen edit-icon"
+                @click="startEdit('Age')"
+              ></i>
+            </p>
+
+            <!-- מצב עריכה -->
+            <div class="edit-row" v-else>
+              <input
+                v-model="editDraft"
+                class="edit-input"
+                type="number"
+                min="0"
+              />
+              <button class="edit-save" @click="confirmEdit('Age')">
+                עדכון
+              </button>
+              <button class="edit-cancel" @click="cancelEdit">בטל</button>
+            </div>
+          </div>
+
+          <!-- רמה דתית -->
           <div class="block" v-if="user.RamaDatit">
             <h3>רמה דתית</h3>
-            <p class="row">
+
+            <!-- מצב תצוגה -->
+            <p class="row" v-if="editField !== 'RamaDatit'">
               <span>{{ user.RamaDatit }}</span>
-              <i class="fa-solid fa-pen edit-icon"></i>
+              <i
+                class="fa-solid fa-pen edit-icon"
+                @click="startEdit('RamaDatit')"
+              ></i>
             </p>
+
+            <!-- מצב עריכה -->
+            <div class="edit-row" v-else>
+              <input v-model="editDraft" class="edit-input" type="text" />
+              <button class="edit-save" @click="confirmEdit('RamaDatit')">
+                עדכון
+              </button>
+              <button class="edit-cancel" @click="cancelEdit">בטל</button>
+            </div>
           </div>
 
+          <!-- אופי -->
           <div class="block" v-if="user.Ofi">
             <h3>אופי</h3>
-            <p class="row">
+
+            <p class="row" v-if="editField !== 'Ofi'">
               <span>{{ user.Ofi }}</span>
-              <i class="fa-solid fa-pen edit-icon"></i>
+              <i
+                class="fa-solid fa-pen edit-icon"
+                @click="startEdit('Ofi')"
+              ></i>
             </p>
+
+            <div class="edit-row" v-else>
+              <input v-model="editDraft" class="edit-input" type="text" />
+              <button class="edit-save" @click="confirmEdit('Ofi')">
+                עדכון
+              </button>
+              <button class="edit-cancel" @click="cancelEdit">בטל</button>
+            </div>
           </div>
 
+          <!-- תחביבים -->
           <div class="block" v-if="user.Hobits">
             <h3>תחביבים</h3>
-            <p class="row">
+
+            <p class="row" v-if="editField !== 'Hobits'">
               <span>{{ user.Hobits }}</span>
-              <i class="fa-solid fa-pen edit-icon"></i>
+              <i
+                class="fa-solid fa-pen edit-icon"
+                @click="startEdit('Hobits')"
+              ></i>
             </p>
+
+            <div class="edit-row" v-else>
+              <input v-model="editDraft" class="edit-input" type="text" />
+              <button class="edit-save" @click="confirmEdit('Hobits')">
+                עדכון
+              </button>
+              <button class="edit-cancel" @click="cancelEdit">בטל</button>
+            </div>
           </div>
 
+          <!-- מה מחפש -->
           <div class="block" v-if="user.MaMehapes">
             <h3>מה מחפש</h3>
-            <p class="row">
+
+            <p class="row" v-if="editField !== 'MaMehapes'">
               <span>{{ user.MaMehapes }}</span>
-              <i class="fa-solid fa-pen edit-icon"></i>
+              <i
+                class="fa-solid fa-pen edit-icon"
+                @click="startEdit('MaMehapes')"
+              ></i>
             </p>
+
+            <div class="edit-row" v-else>
+              <input v-model="editDraft" class="edit-input" type="text" />
+              <button class="edit-save" @click="confirmEdit('MaMehapes')">
+                עדכון
+              </button>
+              <button class="edit-cancel" @click="cancelEdit">בטל</button>
+            </div>
           </div>
 
+          <!-- משפחה -->
           <div class="block" v-if="user.KavimClalim">
             <h3>משפחה</h3>
-            <p class="row">
+
+            <p class="row" v-if="editField !== 'KavimClalim'">
               <span>{{ user.KavimClalim }}</span>
-              <i class="fa-solid fa-pen edit-icon"></i>
+              <i
+                class="fa-solid fa-pen edit-icon"
+                @click="startEdit('KavimClalim')"
+              ></i>
             </p>
+
+            <div class="edit-row" v-else>
+              <input v-model="editDraft" class="edit-input" type="text" />
+              <button class="edit-save" @click="confirmEdit('KavimClalim')">
+                עדכון
+              </button>
+              <button class="edit-cancel" @click="cancelEdit">בטל</button>
+            </div>
           </div>
 
           <!-- הערה -->
@@ -105,6 +200,10 @@ export default {
     const error = ref(false);
     const noteDraft = ref("");
 
+    // שדה שנמצא כרגע בעריכה + הערך הזמני שלו
+    const editField = ref(null); // למשל "RamaDatit" / "Age" וכו'
+    const editDraft = ref("");
+
     const fetchDetails = async () => {
       if (!props.id) return;
       loading.value = true;
@@ -119,6 +218,41 @@ export default {
       } finally {
         loading.value = false;
       }
+    };
+
+    const EditUser = async (payload) => {
+      const { id, field, value } = payload;
+      await axios.put(`${URL}EditUser`, { id, field, value });
+    };
+
+    const startEdit = (fieldKey) => {
+      if (!user.value) return;
+      editField.value = fieldKey;
+      editDraft.value = user.value[fieldKey] ?? "";
+    };
+
+    const cancelEdit = () => {
+      editField.value = null;
+      editDraft.value = "";
+    };
+
+    const confirmEdit = (fieldKey) => {
+      if (!user.value) return;
+
+      const payload = {
+        id: user.value._id,
+        field: fieldKey,
+        value: editDraft.value,
+      };
+
+      EditUser(payload);
+
+      // עדכון מקומי ב-UI (אופטימי)
+      user.value[fieldKey] = editDraft.value;
+
+      // יציאה ממצב עריכה
+      editField.value = null;
+      editDraft.value = "";
     };
 
     watch(
@@ -140,9 +274,11 @@ export default {
         window.$toast && window.$toast("❌ שגיאה בשמירת הערה", "error");
       }
     };
-    const LOGUSER = (user) => {
-      console.log({ ...user });
+
+    const LOGUSER = (userObj) => {
+      console.log({ ...userObj });
     };
+
     const exportDetails = async () => {
       if (!user.value) return;
 
@@ -193,6 +329,7 @@ ${imageUrl ? "🖼️ תמונה:\n" + imageUrl + "\n\n" : ""}🧑‍💼 *כר�
     });
 
     return {
+      EditUser,
       user,
       loading,
       error,
@@ -202,6 +339,11 @@ ${imageUrl ? "🖼️ תמונה:\n" + imageUrl + "\n\n" : ""}🧑‍💼 *כר�
       close,
       LOGUSER,
       initials,
+      editField,
+      editDraft,
+      startEdit,
+      cancelEdit,
+      confirmEdit,
     };
   },
 };
@@ -227,6 +369,7 @@ ${imageUrl ? "🖼️ תמונה:\n" + imageUrl + "\n\n" : ""}🧑‍💼 *כר�
   border-radius: 16px;
   padding: 1rem;
   color: #f9fafb;
+  overflow-x: hidden;
   overflow-y: auto;
   position: relative;
   direction: rtl;
@@ -490,7 +633,8 @@ textarea {
 .state-msg.error {
   color: #fecaca;
 }
-/* === תוספת בלבד לאייקון עריכה === */
+
+/* === שורה עם אייקון עריכה === */
 .row {
   display: flex;
   align-items: center;
@@ -508,5 +652,42 @@ textarea {
 .edit-icon:hover {
   color: #93c5fd;
   transform: scale(1.2);
+}
+
+/* === מצב עריכה (אינפוט וכפתורים) === */
+.edit-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.edit-input {
+  flex: 1;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid #475569;
+  background: #020617;
+  color: #e5e7eb;
+  font-size: 0.8rem;
+}
+
+.edit-save,
+.edit-cancel {
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.edit-save {
+  background: #10b981;
+  color: white;
+}
+
+.edit-cancel {
+  background: #ef4444;
+  color: white;
 }
 </style>
