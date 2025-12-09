@@ -322,9 +322,9 @@ export default {
         this.AddNewShiduh();
         const res = await axios.get(URL + "GetShoduh");
         this.resonse = res.data;
-        window.alert("השידוך נשמר בהצלחה");
+        window.$toast && window.$toast("השידוך נשמר בהצלחה", "success");
       } else {
-        window.alert("משהו השתבש בשמירת השידוך");
+        window.$toast && window.$toast("משהו השתבש בשמירת השידוך", "error");
       }
     },
 
@@ -351,9 +351,9 @@ export default {
       if (data) {
         const res = await axios.get(URL + "GetShoduh");
         this.resonse = res.data;
-        window.alert("השידוך נמחק");
+        window.$toast && window.$toast("השידוך  נמחק", "success");
       } else {
-        window.alert("מחיקה נכשלה");
+        window.$toast && window.$toast("מחיקה נכשלה", "error");
       }
     },
 
@@ -378,9 +378,9 @@ export default {
 
       if (data) {
         this.resonse = data;
-        window.alert("השידוך עודכן");
+        window.$toast && window.$toast("השידוך  עודכן", "success");
       } else {
-        window.alert("עדכון נכשל");
+        window.$toast && window.$toast("עדכון  נכשל", "error");
       }
     },
 

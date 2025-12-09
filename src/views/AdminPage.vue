@@ -60,6 +60,7 @@ export default {
     // עדכון סטטוס טעינה ב-Vuex (אם אתה משתמש בזה במקום אחר)
     watch(isFinished, (val) => {
       Store.commit("updateisFinished", val);
+      // console.log("data.value", data.value);
     });
 
     // אם נכנסים למצב מחיקה – נסגור את דף הפרטים

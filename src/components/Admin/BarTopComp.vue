@@ -119,6 +119,7 @@ export default {
         const result = await axios.post(URL + "FilterData", Filters);
         emit("updateisFinished", true);
         emit("UpdateData", result.data);
+        console.log("result.data", result.data);
       }, 200);
     });
 

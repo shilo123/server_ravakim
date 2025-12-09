@@ -200,6 +200,7 @@ app.post("/FilterData", async (req, res) => {
         return age != null && age >= AgeStart && age <= AgeEnd;
       });
     }
+    data = GetAge(data);
 
     res.json(data);
   } catch (error) {
