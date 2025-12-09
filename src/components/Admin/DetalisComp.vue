@@ -282,8 +282,8 @@ export default {
     const exportDetails = async () => {
       if (!user.value) return;
 
-      const imageUrl = user.value.picURL || "";
-
+      let imageUrl = user.value.picURL || "";
+      imageUrl = encodeURI(imageUrl);
       const content = `
 ${imageUrl ? "🖼️ תמונה:\n" + imageUrl + "\n\n" : ""}🧑‍💼 *כרטיס מועמד*
 
