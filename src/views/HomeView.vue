@@ -4,6 +4,10 @@
       <div class="form-header">
         <h1>טופס היכרות</h1>
         <p>מלא את הפרטים בנחת 🙂</p>
+        <p class="hope-note">
+          כדי לא "לאבד" אף רווק רווק יצרתי לי מאגר משלי. הלוואי ותמצא כבר את
+          החצי השני שלך.
+        </p>
       </div>
 
       <div class="form-content">
@@ -397,6 +401,48 @@ export default {
   color: #9ca3af;
 }
 
+.hope-note {
+  position: relative;
+  margin-top: 12px;
+  padding: 10px 12px 10px 14px;
+  font-size: 0.92rem;
+  color: #e0e7ff;
+  line-height: 1.55;
+  border-radius: 14px;
+  background: linear-gradient(
+    120deg,
+    rgba(56, 189, 248, 0.12),
+    rgba(99, 102, 241, 0.12)
+  );
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  box-shadow: 0 10px 30px rgba(56, 189, 248, 0.08);
+  overflow: hidden;
+}
+
+.hope-note::before {
+  content: "✨";
+  position: absolute;
+  inset-inline-start: 10px;
+  inset-block-start: 8px;
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.hope-note::after {
+  content: "";
+  position: absolute;
+  inset: -40% auto auto -20%;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(
+    circle,
+    rgba(56, 189, 248, 0.15),
+    transparent 60%
+  );
+  transform: rotate(12deg);
+  pointer-events: none;
+}
+
 .form-content {
   display: grid;
   grid-template-columns: minmax(0, 2.3fr) minmax(260px, 1.1fr);
@@ -694,7 +740,9 @@ export default {
   }
 
   .form-side {
-    order: -1;
+    /* בטלפונים נרצה שהתמונה/מגדר/שליחה יישבו בתחתית */
+    order: 1;
+    margin-top: 12px;
   }
 
   .grid-2 {

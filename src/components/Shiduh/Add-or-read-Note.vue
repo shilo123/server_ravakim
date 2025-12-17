@@ -79,6 +79,8 @@ export default {
         window.location.reload();
       } else {
         window.alert("שמירת הערה נכשלה");
+    window.$toast && window.$toast("שמירת הערה נכשלה", "error");
+
       }
     };
 
