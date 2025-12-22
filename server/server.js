@@ -70,14 +70,11 @@ function GetAge(data) {
 
       if (!isNaN(birth.getTime())) {
         const today = new Date();
-        let years = today.getFullYear() - birth.getFullYear();
-        const m = today.getMonth() - birth.getMonth();
-
-        if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
-          years--;
-        }
-
-        Age = years;
+        // חישוב גיל עם עשרוניים
+        const diffTime = today.getTime() - birth.getTime();
+        const diffDays = diffTime / (1000 * 60 * 60 * 24);
+        // 365.25 ימים לשנה (כולל שנים מעוברות)
+        Age = Math.round((diffDays / 365.25) * 10) / 10; // עיגול לספרה אחת אחרי הנקודה
       }
     }
 
@@ -108,11 +105,11 @@ function calcAge(birthDate) {
   if (isNaN(d.getTime())) return null;
 
   const today = new Date();
-  let age = today.getFullYear() - d.getFullYear();
-  const m = today.getMonth() - d.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < d.getDate())) {
-    age--;
-  }
+  // חישוב גיל עם עשרוניים
+  const diffTime = today.getTime() - d.getTime();
+  const diffDays = diffTime / (1000 * 60 * 60 * 24);
+  // 365.25 ימים לשנה (כולל שנים מעוברות)
+  const age = Math.round((diffDays / 365.25) * 10) / 10; // עיגול לספרה אחת אחרי הנקודה
   return age;
 }
 function ageToBirthDate(age) {
@@ -165,7 +162,7 @@ app.get("/GetRavakim", async (req, res) => {
 });
 app.post("/FilterData", async (req, res) => {
   try {
-    let { Name, AgeStart, AgeEnd, Gender, RamaDatit } = req.body;
+    let { Name, AgeStart, AgeEnd, Gender, RamaDatit, Address } = req.body;
 
     const ContentQuery = {};
 
@@ -175,6 +172,10 @@ app.post("/FilterData", async (req, res) => {
 
     if (RamaDatit && RamaDatit.trim() !== "") {
       ContentQuery.RamaDatit = { $regex: `^${RamaDatit}`, $options: "i" };
+    }
+
+    if (Address && Address.trim() !== "") {
+      ContentQuery.Address = { $regex: `^${Address}`, $options: "i" };
     }
 
     if (Gender && Gender.trim() !== "") {

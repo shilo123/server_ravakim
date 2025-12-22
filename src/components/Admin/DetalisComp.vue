@@ -13,7 +13,11 @@
       <div v-else-if="user" class="content">
         <!-- חלק עליון -->
         <div class="top">
-          <div class="avatar-wrapper" v-if="user.picURL">
+          <div
+            class="avatar-wrapper"
+            v-if="user.picURL"
+            @click="openImageModal"
+          >
             <img :src="user.picURL" class="avatar" />
           </div>
           <div v-else class="avatar placeholder">
@@ -31,54 +35,57 @@
 
         <!-- פרטים -->
         <div class="grid">
-          <!-- גיל -->
-          <div class="block" v-if="user.Age || user.age">
-            <h3>גיל</h3>
+          <!-- גיל ורמה דתית באותה שורה -->
+          <div class="grid-row-2">
+            <!-- גיל -->
+            <div class="block" v-if="user.Age || user.age">
+              <h3>גיל</h3>
 
-            <!-- מצב תצוגה -->
-            <p class="row" v-if="editField !== 'Age'">
-              <span>{{ user.Age ?? user.age }}</span>
-              <i
-                class="fa-solid fa-pen edit-icon"
-                @click="startEdit('Age')"
-              ></i>
-            </p>
+              <!-- מצב תצוגה -->
+              <p class="row" v-if="editField !== 'Age'">
+                <span>{{ user.Age ?? user.age }}</span>
+                <i
+                  class="fa-solid fa-pen edit-icon"
+                  @click="startEdit('Age')"
+                ></i>
+              </p>
 
-            <!-- מצב עריכה -->
-            <div class="edit-row" v-else>
-              <input
-                v-model="editDraft"
-                class="edit-input"
-                type="number"
-                min="0"
-              />
-              <button class="edit-save" @click="confirmEdit('Age')">
-                עדכון
-              </button>
-              <button class="edit-cancel" @click="cancelEdit">בטל</button>
+              <!-- מצב עריכה -->
+              <div class="edit-row" v-else>
+                <input
+                  v-model="editDraft"
+                  class="edit-input"
+                  type="number"
+                  min="0"
+                />
+                <button class="edit-save" @click="confirmEdit('Age')">
+                  עדכון
+                </button>
+                <button class="edit-cancel" @click="cancelEdit">בטל</button>
+              </div>
             </div>
-          </div>
 
-          <!-- רמה דתית -->
-          <div class="block" v-if="user.RamaDatit">
-            <h3>רמה דתית</h3>
+            <!-- רמה דתית -->
+            <div class="block" v-if="user.RamaDatit">
+              <h3>רמה דתית</h3>
 
-            <!-- מצב תצוגה -->
-            <p class="row" v-if="editField !== 'RamaDatit'">
-              <span>{{ user.RamaDatit }}</span>
-              <i
-                class="fa-solid fa-pen edit-icon"
-                @click="startEdit('RamaDatit')"
-              ></i>
-            </p>
+              <!-- מצב תצוגה -->
+              <p class="row" v-if="editField !== 'RamaDatit'">
+                <span>{{ user.RamaDatit }}</span>
+                <i
+                  class="fa-solid fa-pen edit-icon"
+                  @click="startEdit('RamaDatit')"
+                ></i>
+              </p>
 
-            <!-- מצב עריכה -->
-            <div class="edit-row" v-else>
-              <input v-model="editDraft" class="edit-input" type="text" />
-              <button class="edit-save" @click="confirmEdit('RamaDatit')">
-                עדכון
-              </button>
-              <button class="edit-cancel" @click="cancelEdit">בטל</button>
+              <!-- מצב עריכה -->
+              <div class="edit-row" v-else>
+                <input v-model="editDraft" class="edit-input" type="text" />
+                <button class="edit-save" @click="confirmEdit('RamaDatit')">
+                  עדכון
+                </button>
+                <button class="edit-cancel" @click="cancelEdit">בטל</button>
+              </div>
             </div>
           </div>
 
@@ -166,6 +173,69 @@
             </div>
           </div>
 
+          <!-- כתובת מגורים וטלפון באותה שורה -->
+          <div class="grid-row-2">
+            <!-- כתובת מגורים -->
+            <div class="block">
+              <h3>כתובת מגורים</h3>
+
+              <p class="row" v-if="editField !== 'Address'">
+                <span>{{ user.Address || "—" }}</span>
+                <i
+                  class="fa-solid fa-pen edit-icon"
+                  @click="startEdit('Address')"
+                ></i>
+              </p>
+
+              <div class="edit-row" v-else>
+                <input
+                  v-model="editDraft"
+                  class="edit-input"
+                  type="text"
+                  placeholder="הקלד כתובת מגורים"
+                />
+                <button class="edit-save" @click="confirmEdit('Address')">
+                  עדכון
+                </button>
+                <button class="edit-cancel" @click="cancelEdit">בטל</button>
+              </div>
+            </div>
+
+            <!-- טלפון -->
+            <div class="block">
+              <h3>טלפון</h3>
+
+              <p class="row" v-if="editField !== 'phone'">
+                <span>{{ user.phone || "—" }}</span>
+                <i
+                  class="fa-solid fa-pen edit-icon"
+                  @click="startEdit('phone')"
+                ></i>
+              </p>
+
+              <div class="edit-row" v-else>
+                <input
+                  v-model="editDraft"
+                  class="edit-input"
+                  type="tel"
+                  placeholder="הקלד מספר טלפון"
+                />
+                <button class="edit-save" @click="confirmEdit('phone')">
+                  עדכון
+                </button>
+                <button class="edit-cancel" @click="cancelEdit">בטל</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- סרטון -->
+          <div class="block" v-if="user.videoURL">
+            <h3>סרטון</h3>
+            <button class="video-view-btn" @click="openVideoModal">
+              🎥 צפייה בסרטון
+            </button>
+          </div>
+
           <!-- הערה -->
           <div class="block">
             <h3>הערה</h3>
@@ -176,6 +246,35 @@
       </div>
 
       <div v-else class="state-msg">אין נתונים</div>
+    </div>
+
+    <!-- פופאפ תמונה מלא מסך -->
+    <div
+      v-if="showImageModal && user?.picURL"
+      class="image-modal-overlay"
+      @click.self="closeImageModal"
+    >
+      <div class="image-modal-content">
+        <button class="image-modal-close" @click="closeImageModal">✕</button>
+        <img :src="user.picURL" class="image-modal-img" alt="תמונה" />
+      </div>
+    </div>
+
+    <!-- פופאפ סרטון מלא מסך -->
+    <div
+      v-if="showVideoModal && user?.videoURL"
+      class="video-modal-overlay"
+      @click.self="closeVideoModal"
+    >
+      <button class="video-modal-close" @click="closeVideoModal">✕</button>
+      <div class="video-modal-content">
+        <video
+          :src="user.videoURL"
+          class="video-modal-video"
+          controls
+          autoplay
+        ></video>
+      </div>
     </div>
   </div>
 </template>
@@ -199,6 +298,8 @@ export default {
     const loading = ref(false);
     const error = ref(false);
     const noteDraft = ref("");
+    const showImageModal = ref(false);
+    const showVideoModal = ref(false);
 
     // שדה שנמצא כרגע בעריכה + הערך הזמני שלו
     const editField = ref(null); // למשל "RamaDatit" / "Age" וכו'
@@ -290,7 +391,9 @@ ${imageUrl ? "🖼️ תמונה:\n" + imageUrl + "\n\n" : ""}🧑‍💼 *כר�
 👤 *שם:* ${user.value.Name || "—"}
 🎂 *גיל:* ${user.value.Age || "—"}
 🚻 *מגדר:* ${user.value.Gender || "—"}
+📞 *טלפון:* ${user.value.phone || "—"}
 💼 *עיסוק:* ${user.value.IsuckOrMosadLimudim || "—"}
+📍 *כתובת מגורים:* ${user.value.Address || "—"}
 🕍 *רמה דתית:* ${user.value.RamaDatit || "—"}
 🧠 *אופי:* ${user.value.Ofi || "—"}
 🎯 *תחביבים:* ${user.value.Hobits || "—"}
@@ -322,6 +425,26 @@ ${imageUrl ? "🖼️ תמונה:\n" + imageUrl + "\n\n" : ""}🧑‍💼 *כר�
 
     const close = () => emit("close");
 
+    const openImageModal = () => {
+      if (user.value?.picURL) {
+        showImageModal.value = true;
+      }
+    };
+
+    const closeImageModal = () => {
+      showImageModal.value = false;
+    };
+
+    const openVideoModal = () => {
+      if (user.value?.videoURL) {
+        showVideoModal.value = true;
+      }
+    };
+
+    const closeVideoModal = () => {
+      showVideoModal.value = false;
+    };
+
     const initials = computed(() => {
       if (!user.value?.Name) return "?";
       const parts = user.value.Name.split(" ");
@@ -344,6 +467,12 @@ ${imageUrl ? "🖼️ תמונה:\n" + imageUrl + "\n\n" : ""}🧑‍💼 *כר�
       startEdit,
       cancelEdit,
       confirmEdit,
+      showImageModal,
+      openImageModal,
+      closeImageModal,
+      showVideoModal,
+      openVideoModal,
+      closeVideoModal,
     };
   },
 };
@@ -351,20 +480,28 @@ ${imageUrl ? "🖼️ תמונה:\n" + imageUrl + "\n\n" : ""}🧑‍💼 *כר�
 
 <style scoped lang="scss">
 .details-overlay {
-  overflow: hidden;
-
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
   background: rgba(2, 6, 23, 0.88);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .details-card {
-  width: min(460px, 92%);
-  max-height: 78vh;
+  width: min(460px, calc(100% - 40px));
+  max-height: calc(100vh - 40px);
   background: linear-gradient(135deg, #020617, #0b1220);
   border-radius: 16px;
   padding: 1rem;
@@ -375,6 +512,8 @@ ${imageUrl ? "🖼️ תמונה:\n" + imageUrl + "\n\n" : ""}🧑‍💼 *כר�
   direction: rtl;
   text-align: right;
   box-shadow: 0 18px 45px rgba(0, 0, 0, 0.75);
+  margin: auto;
+  flex-shrink: 0;
 }
 
 /* כפתורים עליונים */
@@ -541,6 +680,16 @@ ${imageUrl ? "🖼️ תמונה:\n" + imageUrl + "\n\n" : ""}🧑‍💼 *כר�
   flex-shrink: 0;
 }
 
+.avatar-wrapper {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(255, 183, 3, 0.4);
+  }
+}
+
 .avatar {
   width: 100%;
   height: 100%;
@@ -573,6 +722,13 @@ ${imageUrl ? "🖼️ תמונה:\n" + imageUrl + "\n\n" : ""}🧑‍💼 *כר�
 .grid {
   display: grid;
   grid-template-columns: 1fr;
+  gap: 0.45rem;
+}
+
+/* שורה עם 2 עמודות */
+.grid-row-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.45rem;
 }
 
@@ -670,6 +826,10 @@ textarea {
   background: #020617;
   color: #e5e7eb;
   font-size: 0.8rem;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
 }
 
 .edit-save,
@@ -689,5 +849,220 @@ textarea {
 .edit-cancel {
   background: #ef4444;
   color: white;
+}
+
+/* פופאפ תמונה מלא מסך */
+.image-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.image-modal-content {
+  position: relative;
+  max-width: 95vw;
+  max-height: 95vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-modal-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.image-modal-img {
+  max-width: 100%;
+  max-height: 95vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  animation: zoomIn 0.3s ease;
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* רספונסיביות לפופאפ */
+@media (max-width: 600px) {
+  .image-modal-close {
+    top: -35px;
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+
+  .image-modal-img {
+    max-height: 90vh;
+    border-radius: 8px;
+  }
+}
+
+/* כפתור צפייה בסרטון */
+.video-view-btn {
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.6);
+    filter: brightness(1.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* פופאפ סרטון מלא מסך */
+.video-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10002;
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.2s ease;
+}
+
+.video-modal-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-modal-close {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10003;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.video-modal-video {
+  max-width: 90vw;
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  animation: zoomIn 0.3s ease;
+  background: #000;
+  display: block;
+  margin: 0 auto;
+}
+
+/* רספונסיביות לפופאפ סרטון */
+@media (max-width: 600px) {
+  .video-modal-close {
+    top: 15px;
+    right: 15px;
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+
+  .video-modal-content {
+    max-width: 95vw;
+    max-height: 95vh;
+  }
+
+  .video-modal-video {
+    max-width: 95vw;
+    max-height: 85vh;
+    border-radius: 8px;
+  }
+
+  /* במובייל - שורות עם 2 עמודות הופכות לעמודה אחת */
+  .grid-row-2 {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

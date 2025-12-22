@@ -36,7 +36,7 @@
         </div>
       </div>
 
-      <!-- שורה תחתונה: רמה דתית + טווח גילאים -->
+      <!-- שורה תחתונה: רמה דתית + טווח גילאים + כתובת מגורים -->
       <div class="bar-top__row bar-top__row--bottom">
         <!-- רמה דתית -->
         <!-- <div class="bar-top__field bar-top__field--rama">
@@ -51,6 +51,17 @@
             <option value="חרדי" label="חרדי"></option>
           </select>
         </div> -->
+
+        <!-- כתובת מגורים -->
+        <div class="bar-top__field bar-top__field--address">
+          <label class="bar-top__label">כתובת מגורים</label>
+          <input
+            v-model="Filters.Address"
+            type="text"
+            class="bar-top__input"
+            placeholder="חפש לפי כתובת..."
+          />
+        </div>
 
         <!-- טווח גילאים -->
         <div class="bar-top__field bar-top__field--ages">
@@ -108,6 +119,7 @@ export default {
     const Filters = reactive({
       Name: "",
       RamaDatit: "",
+      Address: "",
       AgeStart: 1,
       AgeEnd: 100,
       Gender: "",
@@ -274,6 +286,11 @@ $text-muted: rgba(255, 255, 255, 0.7);
   min-width: 200px;
 }
 
+.bar-top__field--address {
+  flex: 1;
+  min-width: 200px;
+}
+
 .bar-top__field--ages {
   flex: 1.3;
   min-width: 260px;
@@ -306,6 +323,36 @@ $text-muted: rgba(255, 255, 255, 0.7);
 
   &--age {
     max-width: 140px;
+  }
+}
+
+/* אינפוט כתובת */
+.bar-top__input {
+  width: 100%;
+  height: 38px;
+  border-radius: 999px;
+  border: none;
+  padding: 0 1rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: rgba(24, 4, 35, 0.96);
+  color: $text-main;
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(255, 200, 255, 0.4);
+  transition: box-shadow 0.18s ease, background 0.18s ease, transform 0.08s ease;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  &:hover {
+    background: rgba(31, 6, 46, 0.98);
+    box-shadow: 0 0 0 2px rgba(255, 183, 3, 0.7);
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 2px $accent-gold;
+    transform: translateY(-1px);
   }
 }
 
@@ -390,6 +437,7 @@ $text-muted: rgba(255, 255, 255, 0.7);
   }
 
   .bar-top__field--rama,
+  .bar-top__field--address,
   .bar-top__field--ages {
     flex: initial;
     min-width: 100%;

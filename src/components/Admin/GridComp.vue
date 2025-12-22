@@ -21,7 +21,11 @@
           >
             <article
               class="profile-card"
-              :class="{ 'profile-card-DeleteMode': isDelete }"
+              :class="{
+                'profile-card-DeleteMode': isDelete,
+                'profile-card--male': Item.Gender === 'זכר',
+                'profile-card--female': Item.Gender === 'נקבה'
+              }"
               @click="GetPratim(Item._id)"
             >
               <div
@@ -231,6 +235,34 @@ $text-muted: rgba(255, 255, 255, 0.75);
     }
     100% {
       box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
+  }
+
+  // כחול חזק לבן (זכר)
+  &--male {
+    background: linear-gradient(145deg, #1e3a8a, #1e40af);
+    border-color: rgba(59, 130, 246, 0.6);
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.4),
+      0 0 0 1px rgba(59, 130, 246, 0.3);
+
+    &:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 18px 45px rgba(37, 99, 235, 0.6),
+        0 0 0 2px rgba(59, 130, 246, 0.5);
+    }
+  }
+
+  // כחול חלש לבת (נקבה)
+  &--female {
+    background: linear-gradient(145deg, #3b82f6, #60a5fa);
+    border-color: rgba(147, 197, 253, 0.5);
+    box-shadow: 0 12px 30px rgba(96, 165, 250, 0.3),
+      0 0 0 1px rgba(147, 197, 253, 0.25);
+
+    &:hover {
+      border-color: #93c5fd;
+      box-shadow: 0 18px 45px rgba(96, 165, 250, 0.5),
+        0 0 0 2px rgba(147, 197, 253, 0.4);
     }
   }
 }

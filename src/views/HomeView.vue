@@ -2,11 +2,18 @@
   <div class="page-wrapper">
     <div v-if="!Zehu" class="form-card" dir="rtl">
       <div class="form-header">
-        <h1>טופס היכרות</h1>
-        <p>מלא את הפרטים בנחת 🙂</p>
+        <div class="form-header__top">
+          <div class="form-header__text">
+            <h1>טופס היכרות</h1>
+            <p>מלא את הפרטים בנחת 🙂</p>
+          </div>
+          <div class="form-header__logo-wrapper">
+            <img src="/Logo.jpg" alt="לוגו" class="form-header__logo" />
+          </div>
+        </div>
         <p class="hope-note">
-          כדי לא "לאבד" אף רווק רווק יצרתי לי מאגר משלי. הלוואי ותמצא כבר את
-          החצי השני שלך.
+          כדי לא "לאבד" אף רווק\רווקה יצרתי לי מאגר משלי. הלוואי ותמצא\תמצאי כבר
+          את החצי השני שלך.
         </p>
       </div>
 
@@ -61,6 +68,15 @@
                   placeholder="בחר תאריך לידה"
                 />
               </div>
+            </div>
+
+            <div class="field" style="margin-top: 8px">
+              <label>כתובת מגורים</label>
+              <input
+                v-model="Form.Address"
+                type="text"
+                placeholder="הקלד כתובת מגורים"
+              />
             </div>
           </section>
 
@@ -177,6 +193,28 @@
             </div>
           </div>
 
+          <div class="video-section">
+            <label class="video-upload-btn">
+              <input
+                type="file"
+                accept="video/*"
+                @change="handleVideoChange"
+                hidden
+              />
+              העלה סרטון
+            </label>
+            <p class="video-upload-hint">
+              רוצה להעלות סרטון קצר על עצמך? (לא חובה)
+            </p>
+            <div v-if="Form.videoURL" class="video-preview">
+              <video
+                :src="Form.videoURL"
+                controls
+                class="video-preview-player"
+              ></video>
+            </div>
+          </div>
+
           <div class="gender-section">
             <span class="gender-label">מגדר</span>
             <div class="gender-buttons">
@@ -255,6 +293,7 @@ export default {
           Form.phone &&
           Form.IsuckOrMosadLimudim &&
           Form.BirthDate &&
+          Form.Address &&
           Form.RamaDatit &&
           Form.Status &&
           Form.Ofi &&
@@ -296,6 +335,7 @@ export default {
           else if (!Form.IsuckOrMosadLimudim)
             showError("לא מלאת עיסוק\\מוסד לימודים");
           else if (!Form.BirthDate) showError("לא מלאת תאריך לידה");
+          else if (!Form.Address) showError("לא מלאת כתובת מגורים");
           else if (!Form.RamaDatit) showError("לא מלאת רמה דתית");
           else if (!Form.Status) showError("לא מלאת סטטוס");
           else if (!Form.Ofi) showError("לא מלאת אופי");
@@ -342,6 +382,27 @@ export default {
       }
     };
 
+    const handleVideoChange = async (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      try {
+        LoadingB.value = true;
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const { data } = await axios.post("/postFilee", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        Form.videoURL = data;
+      } catch (e) {
+        showError("העלאת הסרטון נכשלה");
+      } finally {
+        LoadingB.value = false;
+      }
+    };
+
     return {
       Form,
       Zehu,
@@ -350,6 +411,7 @@ export default {
       Submit,
       GetPiccher,
       handleFileChange,
+      handleVideoChange,
     };
   },
 };
@@ -384,10 +446,64 @@ export default {
 
 .form-header {
   border-bottom: 1px solid rgba(75, 85, 99, 0.7);
-  padding-bottom: 14px;
-  margin-bottom: 20px;
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+  position: relative;
 }
 
+.form-header__top {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.form-header__logo-wrapper {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+  margin-left: auto;
+}
+
+.form-header__logo {
+  position: relative;
+  max-width: 220px;
+  max-height: 160px;
+  width: auto;
+  height: auto;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(148, 163, 184, 0.15);
+  border: 2px solid rgba(148, 163, 184, 0.3);
+  object-fit: contain;
+  background: linear-gradient(
+    135deg,
+    rgba(15, 23, 42, 0.8),
+    rgba(30, 41, 59, 0.6)
+  );
+  padding: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: brightness(1.02);
+
+  &:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(56, 189, 248, 0.3), 0 0 20px rgba(56, 189, 248, 0.2);
+    border-color: rgba(56, 189, 248, 0.5);
+    filter: brightness(1.05);
+  }
+}
+
+.form-header__text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.form-header__text h1,
 .form-header h1 {
   margin: 0;
   font-size: 1.9rem;
@@ -395,6 +511,7 @@ export default {
   letter-spacing: 0.03em;
 }
 
+.form-header__text p,
 .form-header p {
   margin: 6px 0 0;
   font-size: 0.95rem;
@@ -402,7 +519,6 @@ export default {
 }
 
 .hope-note {
-  position: relative;
   margin-top: 12px;
   padding: 10px 12px 10px 14px;
   font-size: 0.92rem;
@@ -417,30 +533,6 @@ export default {
   border: 1px solid rgba(99, 102, 241, 0.35);
   box-shadow: 0 10px 30px rgba(56, 189, 248, 0.08);
   overflow: hidden;
-}
-
-.hope-note::before {
-  content: "✨";
-  position: absolute;
-  inset-inline-start: 10px;
-  inset-block-start: 8px;
-  font-size: 1rem;
-  opacity: 0.9;
-}
-
-.hope-note::after {
-  content: "";
-  position: absolute;
-  inset: -40% auto auto -20%;
-  width: 140px;
-  height: 140px;
-  background: radial-gradient(
-    circle,
-    rgba(56, 189, 248, 0.15),
-    transparent 60%
-  );
-  transform: rotate(12deg);
-  pointer-events: none;
 }
 
 .form-content {
@@ -562,6 +654,9 @@ export default {
   flex-direction: column;
   align-items: center;
   gap: 18px;
+  box-sizing: border-box;
+  overflow: hidden;
+  min-width: 0;
 }
 
 .avatar-section {
@@ -625,6 +720,60 @@ export default {
   margin-top: 6px;
   font-size: 0.78rem;
   color: #9ca3af;
+}
+
+.video-section {
+  width: 100%;
+  margin-bottom: 18px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.video-upload-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(135deg, #8b5cf6, #a855f7);
+  color: #f9fafb;
+  border: none;
+  box-shadow: 0 14px 30px rgba(139, 92, 246, 0.55);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.video-upload-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 40px rgba(139, 92, 246, 0.7);
+  filter: brightness(1.05);
+}
+
+.video-upload-hint {
+  margin-top: 6px;
+  font-size: 0.78rem;
+  color: #9ca3af;
+  text-align: center;
+}
+
+.video-preview {
+  margin-top: 12px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.video-preview-player {
+  width: 100%;
+  max-height: 200px;
+  display: block;
 }
 
 .gender-section {
@@ -755,8 +904,43 @@ export default {
     padding: 20px 18px 22px;
   }
 
-  .form-header h1 {
+  .form-header__top {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
+    position: relative;
+  }
+
+  .form-header__logo-wrapper {
+    justify-content: flex-end;
+    margin-left: auto;
+    position: relative;
+  }
+
+  .form-header__text {
+    text-align: right;
+    flex: 1;
+  }
+
+  .form-header h1,
+  .form-header__text h1 {
     font-size: 1.6rem;
+  }
+
+  .form-header__logo {
+    max-width: 140px;
+    max-height: 110px;
+    padding: 8px;
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 400px) {
+  .form-header__logo {
+    max-width: 120px;
+    max-height: 95px;
+    padding: 6px;
+    border-radius: 12px;
   }
 }
 </style>
