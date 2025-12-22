@@ -233,6 +233,38 @@
 
     <!-- מודאל הערות -->
     <AddNote v-if="ifparamsNote" @sgor="ifparamsNote = false" />
+
+    <!-- פופאפ אישור מחיקה -->
+    <div
+      v-if="showDeleteConfirm"
+      class="delete-confirm-overlay"
+      @click.self="cancelDelete"
+    >
+      <div class="delete-confirm-dialog">
+        <div class="delete-confirm-header">
+          <h3>אישור מחיקה</h3>
+          <button class="delete-confirm-close" @click="cancelDelete">✕</button>
+        </div>
+        <div class="delete-confirm-body">
+          <p>האם אתה בטוח שברצונך למחוק את השידוך הזה?</p>
+          <p class="delete-confirm-warning">פעולה זו אינה ניתנת לביטול!</p>
+        </div>
+        <div class="delete-confirm-actions">
+          <button
+            class="delete-confirm-btn delete-confirm-btn--cancel"
+            @click="cancelDelete"
+          >
+            ביטול
+          </button>
+          <button
+            class="delete-confirm-btn delete-confirm-btn--confirm"
+            @click="confirmDelete"
+          >
+            מחק
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -265,6 +297,10 @@ export default {
     const men = ref([]);
     const women = ref([]);
 
+    // פופאפ אישור מחיקה
+    const showDeleteConfirm = ref(false);
+    const shiduhToDelete = ref(null);
+
     const { data, isFinished } = useAxios(URL + "GetShiduhim");
     const { data: resonse, isFinished: finsih } = useAxios(URL + "GetShoduh");
 
@@ -294,6 +330,11 @@ export default {
 
     const ifSubmit = computed(() => newSHiduh.value.length === 2);
 
+    const cancelDelete = () => {
+      showDeleteConfirm.value = false;
+      shiduhToDelete.value = null;
+    };
+
     return {
       resonse,
       finsih,
@@ -311,6 +352,9 @@ export default {
       pramso,
       men,
       women,
+      showDeleteConfirm,
+      shiduhToDelete,
+      cancelDelete,
     };
   },
 
@@ -346,14 +390,29 @@ export default {
       }
     },
 
-    async DeleteShiduh(id) {
-      const { data } = await axios.delete(URL + "DeleteShiduh/" + id);
-      if (data) {
-        const res = await axios.get(URL + "GetShoduh");
-        this.resonse = res.data;
-        window.$toast && window.$toast("השידוך  נמחק", "success");
-      } else {
+    DeleteShiduh(id) {
+      this.shiduhToDelete = id;
+      this.showDeleteConfirm = true;
+    },
+
+    async confirmDelete() {
+      if (!this.shiduhToDelete) return;
+
+      try {
+        const { data } = await axios.delete(URL + "DeleteShiduh/" + this.shiduhToDelete);
+        if (data) {
+          const res = await axios.get(URL + "GetShoduh");
+          this.resonse = res.data;
+          window.$toast && window.$toast("השידוך נמחק", "success");
+        } else {
+          window.$toast && window.$toast("מחיקה נכשלה", "error");
+        }
+      } catch (error) {
+        console.error("Error deleting shiduh:", error);
         window.$toast && window.$toast("מחיקה נכשלה", "error");
+      } finally {
+        this.showDeleteConfirm = false;
+        this.shiduhToDelete = null;
       }
     },
 
@@ -863,6 +922,119 @@ export default {
 
   .match-heart {
     bottom: 0.35rem;
+  }
+}
+
+/* פופאפ אישור מחיקה */
+.delete-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+}
+
+.delete-confirm-dialog {
+  background: linear-gradient(135deg, #1a0318, #2b0630);
+  border-radius: 20px;
+  padding: 1.5rem;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 200, 255, 0.3);
+  color: #ffffff;
+  direction: rtl;
+}
+
+.delete-confirm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+
+  h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+}
+
+.delete-confirm-close {
+  background: transparent;
+  border: none;
+  color: #e5e7eb;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.delete-confirm-body {
+  margin-bottom: 1.5rem;
+
+  p {
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #e5e7eb;
+  }
+}
+
+.delete-confirm-warning {
+  color: #fecaca !important;
+  font-weight: 600;
+  font-size: 0.9rem !important;
+}
+
+.delete-confirm-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.delete-confirm-btn {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+
+  &--cancel {
+    background: rgba(148, 163, 184, 0.3);
+    color: #e5e7eb;
+
+    &:hover {
+      background: rgba(148, 163, 184, 0.5);
+      transform: translateY(-1px);
+    }
+  }
+
+  &--confirm {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.5);
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.7);
+      filter: brightness(1.1);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
   }
 }
 </style>
