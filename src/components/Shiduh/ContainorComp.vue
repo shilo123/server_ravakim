@@ -399,7 +399,9 @@ export default {
       if (!this.shiduhToDelete) return;
 
       try {
-        const { data } = await axios.delete(URL + "DeleteShiduh/" + this.shiduhToDelete);
+        const { data } = await axios.delete(
+          URL + "DeleteShiduh/" + this.shiduhToDelete
+        );
         if (data) {
           const res = await axios.get(URL + "GetShoduh");
           this.resonse = res.data;

@@ -12,8 +12,8 @@
           </div>
         </div>
         <p class="hope-note">
-          כדי לא "לאבד" אף רווק\רווקה יצרתי לי מאגר משלי. הלוואי ותמצא\תמצאי כבר
-          את החצי השני שלך.
+          כדי לא "לאבד" אף רווק\ה יצרתי לי מאגר משלי. הלוואי ותמצא\י כבר את החצי
+          השני שלך.
         </p>
       </div>
 
@@ -126,7 +126,7 @@
               <div class="section-pill">3</div>
               <div class="section-text">
                 <h2>תחביבים וציפיות</h2>
-                <p>מה אתה אוהב ומה אתה מחפש</p>
+                <p>מה את/ה אוהב/ת ומה אתה מחפש/ת</p>
               </div>
             </div>
 
@@ -141,7 +141,7 @@
               </div>
 
               <div class="field">
-                <label>מה אתה מחפש?</label>
+                <label>מה את/ה מחפש/ת?</label>
                 <textarea
                   v-model="Form.MaMehapes"
                   rows="2"
@@ -157,12 +157,12 @@
               <div class="section-pill">4</div>
               <div class="section-text">
                 <h2>המשפחה שלך</h2>
-                <p>תיאור קצר של הבית שממנו אתה מגיע</p>
+                <p>תיאור קצר של הבית שממנו את/ה מגיע</p>
               </div>
             </div>
 
             <div class="field">
-              <label>תאר בקווים כלליים את משפחתך</label>
+              <label>תאר/י בקווים כלליים את משפחתך</label>
               <textarea
                 v-model="Form.KavimClalim"
                 rows="3"
