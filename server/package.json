@@ -21,7 +21,7 @@
     "nodemon": "^3.0.1",
     "objectid": "^3.2.1",
     "path": "^0.12.7",
-    "pdfkit": "^0.14.0"
+    "puppeteer": "^22.15.0"
   },
   "engines": {
     "node": "22.x"

@@ -1,3 +1,6 @@
+// השתקת אזהרת AWS SDK v2
+process.env.AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE = "1";
+
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -12,7 +15,7 @@ const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const AWS = require("aws-sdk");
-const PDFDocument = require("pdfkit");
+const puppeteer = require("puppeteer");
 const PORT = process.env.PORT || 3006;
 
 app.use("/UpFile", express.static("UpFile"));
@@ -211,7 +214,6 @@ app.post("/FilterData", async (req, res) => {
 
     res.json(data);
   } catch (error) {
-    console.error(error);
     res.json(false);
   }
 });
@@ -350,14 +352,12 @@ app.delete("/DeleteShiduh/:id", async (req, res) => {
     await collectionP.deleteOne({ _id: new ObjectId(id) });
     res.json(true);
   } catch (error) {
-    console.log(error);
     res.json(false);
   }
 });
 app.post("/AddNoteT", async (req, res) => {
   try {
     const { id, note } = req.body;
-    console.log({ id, note });
     // res.json({ requ: req.body });
     await collectionP.updateOne(
       { _id: new ObjectId(id) },
@@ -415,14 +415,16 @@ app.put("/EditUser", async (req, res) => {
   }
 });
 
-// יצירת PDF עם שמות הרווקים
+// יצירת PDF עם שמות הרווקים באמצעות puppeteer
 app.get("/GeneratePDF", async (req, res) => {
+  let browser = null;
   try {
     if (!collection) {
       return res.status(500).json({ error: "מסד הנתונים לא מוכן" });
     }
 
     let data = await collection.find({}).toArray();
+
     const names = data
       .map((user) => user.Name)
       .filter((name) => name && name.trim());
@@ -431,91 +433,184 @@ app.get("/GeneratePDF", async (req, res) => {
       return res.status(400).json({ error: "אין שמות להצגה" });
     }
 
-    // יצירת PDF
-    const doc = new PDFDocument({
-      size: "A4",
-      margins: { top: 50, bottom: 50, left: 50, right: 50 },
+    // יצירת HTML עם עיצוב נחמד
+    const htmlContent = `
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>לזיווג הגון</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Assistant', 'Arial', sans-serif;
+      direction: rtl;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 50px;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+      padding-bottom: 30px;
+      border-bottom: 3px solid #667eea;
+    }
+    
+    .header h1 {
+      font-size: 48px;
+      font-weight: 700;
+      color: #667eea;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header p {
+      font-size: 18px;
+      color: #666;
+      margin-top: 10px;
+    }
+    
+    .names-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 30px;
+    }
+    
+    .name-item {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+      border: 2px solid transparent;
+    }
+    
+    .name-item:hover {
+      transform: translateY(-2px);
+      border-color: #667eea;
+    }
+    
+    .name-item:nth-child(even) {
+      background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 50px;
+      padding-top: 30px;
+      border-top: 2px solid #eee;
+      color: #999;
+      font-size: 14px;
+    }
+    
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .container {
+        box-shadow: none;
+        padding: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📿 לזיווג הגון</h1>
+      <p>רשימת שמות לתפילה</p>
+    </div>
+    <div class="names-grid">
+      ${names
+        .map(
+          (name) => `
+        <div class="name-item">${name}</div>
+      `
+        )
+        .join("")}
+    </div>
+    <div class="footer">
+      <p>יהי רצון שכל אחד ואחת ימצאו את זיווגם הגון במהרה</p>
+    </div>
+  </div>
+</body>
+</html>
+    `;
+
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
-    // הגדרת headers לפני pipe
+    const page = await browser.newPage();
+    await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+
+    // הגדרת CORS headers
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+    // הגדרת headers
     res.setHeader("Content-Type", "application/pdf");
+    const filename = "לזיווג הגון.pdf";
+    const encodedFilename = encodeURIComponent(filename);
     res.setHeader(
       "Content-Disposition",
-      'attachment; filename="לזיווג הגון.pdf"'
+      `attachment; filename*=UTF-8''${encodedFilename}`
     );
 
-    // טיפול בשגיאות לפני pipe
-    doc.on("error", (err) => {
-      console.error("PDF generation error:", err);
-      if (!res.headersSent) {
-        res.status(500).json({ error: "שגיאה ביצירת PDF: " + err.message });
-      } else {
-        res.end();
-      }
+    // יצירת PDF
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      printBackground: true,
+      margin: {
+        top: "20mm",
+        right: "20mm",
+        bottom: "20mm",
+        left: "20mm",
+      },
     });
 
-    // Pipe ל-response
-    doc.pipe(res);
+    await browser.close();
+    browser = null;
 
-    // כותרת
-    doc
-      .fontSize(24)
-      .font("Helvetica-Bold")
-      .text("לזיווג הגון", { align: "center" })
-      .moveDown(1.5);
-
-    // כתיבת שמות - שני שמות בשורה
-    doc.fontSize(16).font("Helvetica");
-    const pageWidth = 595; // A4 width in points
-    const margin = 50;
-    const columnWidth = (pageWidth - 2 * margin) / 2;
-    let y = 120;
-    const lineHeight = 25;
-    const maxY = 750;
-
-    for (let i = 0; i < names.length; i += 2) {
-      // בדיקה אם צריך דף חדש
-      if (y > maxY) {
-        doc.addPage();
-        y = 50;
-      }
-
-      const name1 = names[i] || "";
-      const name2 = names[i + 1] || "";
-
-      // שם ראשון - עמודה שמאלית
-      if (name1) {
-        try {
-          doc.text(name1, margin, y, {
-            width: columnWidth - 10,
-            align: "right",
-          });
-        } catch (err) {
-          console.error("Error writing name1:", err);
-        }
-      }
-
-      // שם שני - עמודה ימנית
-      if (name2) {
-        try {
-          doc.text(name2, margin + columnWidth + 10, y, {
-            width: columnWidth - 10,
-            align: "right",
-          });
-        } catch (err) {
-          console.error("Error writing name2:", err);
-        }
-      }
-
-      y += lineHeight;
-    }
-
-    // סיום ה-PDF
-    doc.end();
+    res.send(pdfBuffer);
   } catch (error) {
-    console.error("Error generating PDF:", error);
+    if (browser) {
+      await browser.close();
+    }
     if (!res.headersSent) {
-      res.status(500).json({ error: "שגיאה ביצירת PDF: " + error.message });
+      res.status(500).json({
+        error: "שגיאה ביצירת PDF",
+        details: error.message,
+        stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
+      });
+    } else {
+      res.end();
     }
   }
 });
