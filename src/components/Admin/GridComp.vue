@@ -24,7 +24,7 @@
               :class="{
                 'profile-card-DeleteMode': isDelete,
                 'profile-card--male': Item.Gender === 'זכר',
-                'profile-card--female': Item.Gender === 'נקבה'
+                'profile-card--female': Item.Gender === 'נקבה',
               }"
               @click="GetPratim(Item._id)"
             >
@@ -38,9 +38,10 @@
 
               <div class="profile-card__image-wrapper">
                 <img
-                  :src="Item.picURL"
+                  :src="Item.picURL || '/Logo.jpg'"
                   alt="תמונה"
                   class="profile-card__image"
+                  @error="(e) => (e.target.src = '/Logo.jpg')"
                 />
               </div>
 
@@ -156,8 +157,10 @@ $text-muted: rgba(255, 255, 255, 0.75);
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1.5rem 1.2rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  max-width: 400px;
+  margin: 0 auto;
 }
 
 .grid__item {
@@ -168,11 +171,12 @@ $text-muted: rgba(255, 255, 255, 0.75);
 /* כרטיס */
 .profile-card {
   position: relative;
-  width: 210px;
-  height: 270px;
-  border-radius: 20px;
+  width: 100%;
+  max-width: 120px;
+  height: 180px;
+  border-radius: 16px;
   background: linear-gradient(145deg, $card-bg1, $card-bg2);
-  padding: 1.2rem 1rem 1.3rem;
+  padding: 0.8rem 0.6rem 0.9rem;
   border: 1px solid rgba(255, 200, 255, 0.4);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.85);
   color: $text-main;
@@ -276,59 +280,61 @@ $text-muted: rgba(255, 255, 255, 0.75);
 
 /* תמונה */
 .profile-card__image-wrapper {
-  margin-top: 0.2rem;
+  margin-top: 0.1rem;
 }
 
 .profile-card__image {
-  width: 82px;
-  height: 82px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   object-fit: cover;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.9);
-  border: 3px solid rgba(255, 200, 255, 0.8);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.9);
+  border: 2px solid rgba(255, 200, 255, 0.8);
 }
 
 /* גוף הכרטיס */
 .profile-card__body {
-  margin-top: 1.2rem;
+  margin-top: 0.6rem;
   text-align: center;
   width: 100%;
 }
 
 /* כותרת + גיל */
 .profile-card__title {
-  font-size: 1.05rem;
+  font-size: 0.85rem;
   font-weight: 700;
   margin: 0;
   color: $accent-gold;
+  line-height: 1.2;
 }
 
 .profile-card__age {
-  font-size: 0.95rem;
+  font-size: 0.75rem;
   font-weight: 500;
   color: $text-main;
 }
 
 /* תת כותרת (רמה דתית) */
 .profile-card__subtitle {
-  margin-top: 0.35rem;
-  font-size: 0.9rem;
+  margin-top: 0.25rem;
+  font-size: 0.7rem;
   color: $text-muted;
+  line-height: 1.2;
 }
 
 /* כפתור "מידע נוסף" */
 .profile-card__button {
   margin-top: auto;
   margin-bottom: 0.1rem;
-  width: 80%;
+  width: 90%;
   border-radius: 999px;
   border: none;
   background: linear-gradient(135deg, $accent-gold, $accent-pink);
   color: #1a0312;
-  font-size: 0.9rem;
-  padding: 0.45rem 0.7rem;
+  font-size: 0.7rem;
+  padding: 0.3rem 0.5rem;
   font-weight: 600;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.75);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.75);
   transform: translateY(8px);
   opacity: 0;
   transition: 0.22s ease-out;
@@ -354,96 +360,65 @@ $text-muted: rgba(255, 255, 255, 0.75);
 
 /* ========= רספונסיביות ========= */
 
-/* טאבלט – קצת יותר צמוד */
-@media screen and (max-width: 900px) {
-  .grid-wrapper {
-    margin: 1rem auto 2rem;
-    padding: 0 0.75rem;
-  }
-
+/* מובייל – 2 כרטיסיות בשורה */
+@media screen and (max-width: 500px) {
   .grid {
-    gap: 1.2rem 0.9rem;
-  }
-}
-
-/* מובייל כללי – כרטיסים קטנים יותר, שתי עמודות */
-@media screen and (max-width: 600px) {
-  .grid-wrapper {
-    margin-top: 0.75rem;
-    margin-bottom: 2rem;
-    padding: 0 0.5rem;
-  }
-
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.9rem 0.5rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+    max-width: 100%;
   }
 
   .profile-card {
-    width: 100%;
-    max-width: 165px;
-    height: 215px;
-    padding: 0.9rem 0.7rem 1rem;
-    border-radius: 16px;
+    max-width: 100%;
+    height: 160px;
+    padding: 0.7rem 0.5rem 0.8rem;
   }
 
   .profile-card__image {
-    width: 64px;
-    height: 64px;
-    border-width: 2px;
-  }
-
-  .profile-card__body {
-    margin-top: 0.8rem;
+    width: 50px;
+    height: 50px;
   }
 
   .profile-card__title {
-    font-size: 0.95rem;
+    font-size: 0.8rem;
   }
 
   .profile-card__age {
-    font-size: 0.85rem;
+    font-size: 0.7rem;
   }
 
   .profile-card__subtitle {
-    font-size: 0.8rem;
+    font-size: 0.65rem;
   }
 
   .profile-card__button {
-    width: 90%;
-    font-size: 0.8rem;
-    padding: 0.35rem 0.6rem;
+    font-size: 0.65rem;
+    padding: 0.25rem 0.4rem;
   }
 }
 
-/* מובייל קטן מאוד – ממש קומפקטי */
+/* מובייל קטן מאוד – 2 כרטיסיות */
 @media screen and (max-width: 400px) {
   .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.7rem 0.4rem;
+    gap: 0.6rem;
   }
 
   .profile-card {
-    max-width: 150px;
-    height: 200px;
-    padding: 0.8rem 0.6rem 0.9rem;
+    height: 150px;
+    padding: 0.6rem 0.4rem 0.7rem;
   }
 
   .profile-card__image {
-    width: 56px;
-    height: 56px;
+    width: 45px;
+    height: 45px;
   }
 
   .profile-card__title {
-    font-size: 0.9rem;
+    font-size: 0.75rem;
   }
 
   .profile-card__subtitle {
-    font-size: 0.78rem;
-  }
-
-  .profile-card__button {
-    font-size: 0.78rem;
+    font-size: 0.6rem;
   }
 }
 

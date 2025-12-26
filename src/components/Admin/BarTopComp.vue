@@ -36,22 +36,8 @@
         </div>
       </div>
 
-      <!-- שורה תחתונה: רמה דתית + טווח גילאים + כתובת מגורים -->
+      <!-- שורה תחתונה: רמה דתית + טווח גילאים + כתובת מגורים + סטטוס -->
       <div class="bar-top__row bar-top__row--bottom">
-        <!-- רמה דתית -->
-        <!-- <div class="bar-top__field bar-top__field--rama">
-          <label class="bar-top__label">רמה דתית</label>
-          <select v-model="Filters.RamaDatit" class="bar-top__select">
-            <option label="כולם" value=""></option>
-            <option value="לא דתי" label="לא דתי"></option>
-            <option value=" מסורתי" label="מסורתי"></option>
-            <option value="דתי לאומי" label="דתי לאומי"></option>
-            <option value="דתי" label="דתי"></option>
-            <option value="תורני" label="תורני"></option>
-            <option value="חרדי" label="חרדי"></option>
-          </select>
-        </div> -->
-
         <!-- כתובת מגורים -->
         <div class="bar-top__field bar-top__field--address">
           <label class="bar-top__label">כתובת מגורים</label>
@@ -60,6 +46,17 @@
             type="text"
             class="bar-top__input"
             placeholder="חפש לפי כתובת..."
+          />
+        </div>
+
+        <!-- סטטוס -->
+        <div class="bar-top__field bar-top__field--status">
+          <label class="bar-top__label">סטטוס</label>
+          <input
+            v-model="Filters.Status"
+            type="text"
+            class="bar-top__input"
+            placeholder="חפש לפי סטטוס..."
           />
         </div>
 
@@ -123,6 +120,7 @@ export default {
       AgeStart: 1,
       AgeEnd: 100,
       Gender: "",
+      Status: "",
     });
 
     watch(Filters, async () => {
@@ -291,6 +289,11 @@ $text-muted: rgba(255, 255, 255, 0.7);
   min-width: 200px;
 }
 
+.bar-top__field--status {
+  flex: 1;
+  min-width: 200px;
+}
+
 .bar-top__field--ages {
   flex: 1.3;
   min-width: 260px;
@@ -438,6 +441,7 @@ $text-muted: rgba(255, 255, 255, 0.7);
 
   .bar-top__field--rama,
   .bar-top__field--address,
+  .bar-top__field--status,
   .bar-top__field--ages {
     flex: initial;
     min-width: 100%;

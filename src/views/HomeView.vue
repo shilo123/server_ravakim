@@ -300,7 +300,8 @@ export default {
           Form.Hobits &&
           Form.MaMehapes &&
           Form.KavimClalim &&
-          Form.Gender;
+          Form.Gender &&
+          Form.picURL;
 
         if (bool) {
           if (Form.phone.length === 10) {
@@ -343,6 +344,7 @@ export default {
           else if (!Form.MaMehapes) showError("לא אמרת מה אתה מחפש");
           else if (!Form.KavimClalim) showError("לא תיארת את משפחתך");
           else if (!Form.Gender) showError("לא תיארת מגדר");
+          else if (!Form.picURL) showError("חובה להוסיף תמונה");
 
           LoadingB.value = false;
         }

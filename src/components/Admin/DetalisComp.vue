@@ -13,17 +13,24 @@
       <div v-else-if="user" class="content">
         <!-- חלק עליון -->
         <div class="top">
-          <div
-            class="avatar-wrapper"
-            v-if="user.picURL"
-            @click="openImageModal"
-          >
-            <img :src="user.picURL" class="avatar" />
+          <div class="avatar-section-wrapper">
+            <div class="avatar-wrapper" @click="openImageModal">
+              <img
+                :src="user.picURL || defaultImage"
+                class="avatar"
+                @error="handleImageError"
+              />
+            </div>
+            <label class="avatar-upload-label">
+              <input
+                type="file"
+                accept="image/*"
+                @change="handleImageUpload"
+                hidden
+              />
+              <i class="fa-solid fa-camera"></i> שנה תמונה
+            </label>
           </div>
-          <div v-else class="avatar placeholder">
-            {{ initials }}
-          </div>
-
           <div class="top-text">
             <h2>{{ user.Name }}</h2>
             <p class="sub">{{ user.age }} · {{ user.Gender }}</p>
@@ -82,6 +89,29 @@
               <div class="edit-row" v-else>
                 <input v-model="editDraft" class="edit-input" type="text" />
                 <button class="edit-save" @click="confirmEdit('RamaDatit')">
+                  עדכון
+                </button>
+                <button class="edit-cancel" @click="cancelEdit">בטל</button>
+              </div>
+            </div>
+
+            <!-- סטטוס -->
+            <div class="block" v-if="user.Status">
+              <h3>סטטוס</h3>
+
+              <!-- מצב תצוגה -->
+              <p class="row" v-if="editField !== 'Status'">
+                <span>{{ user.Status }}</span>
+                <i
+                  class="fa-solid fa-pen edit-icon"
+                  @click="startEdit('Status')"
+                ></i>
+              </p>
+
+              <!-- מצב עריכה -->
+              <div class="edit-row" v-else>
+                <input v-model="editDraft" class="edit-input" type="text" />
+                <button class="edit-save" @click="confirmEdit('Status')">
                   עדכון
                 </button>
                 <button class="edit-cancel" @click="cancelEdit">בטל</button>
@@ -300,6 +330,8 @@ export default {
     const noteDraft = ref("");
     const showImageModal = ref(false);
     const showVideoModal = ref(false);
+    const defaultImage = "/Logo.jpg";
+    const imageError = ref(false);
 
     // שדה שנמצא כרגע בעריכה + הערך הזמני שלו
     const editField = ref(null); // למשל "RamaDatit" / "Age" וכו'
@@ -445,6 +477,43 @@ ${imageUrl ? "🖼️ תמונה:\n" + imageUrl + "\n\n" : ""}🧑‍💼 *כר�
       showVideoModal.value = false;
     };
 
+    const handleImageError = (event) => {
+      imageError.value = true;
+      if (event.target.src !== defaultImage) {
+        event.target.src = defaultImage;
+      }
+    };
+
+    const handleImageUpload = async (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      try {
+        loading.value = true;
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const { data } = await axios.post("/postFilee", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        // עדכון התמונה במשתמש
+        await axios.put(`${URL}EditUser`, {
+          id: user.value._id,
+          field: "picURL",
+          value: data,
+        });
+
+        user.value.picURL = data;
+        imageError.value = false;
+        window.$toast && window.$toast("✅ התמונה עודכנה בהצלחה", "success");
+      } catch (e) {
+        window.$toast && window.$toast("❌ שגיאה בהעלאת התמונה", "error");
+      } finally {
+        loading.value = false;
+      }
+    };
+
     const initials = computed(() => {
       if (!user.value?.Name) return "?";
       const parts = user.value.Name.split(" ");
@@ -473,6 +542,9 @@ ${imageUrl ? "🖼️ תמונה:\n" + imageUrl + "\n\n" : ""}🧑‍💼 *כר�
       showVideoModal,
       openVideoModal,
       closeVideoModal,
+      defaultImage,
+      handleImageError,
+      handleImageUpload,
     };
   },
 };
@@ -662,11 +734,32 @@ ${imageUrl ? "🖼️ תמונה:\n" + imageUrl + "\n\n" : ""}🧑‍💼 *כר�
 .top {
   display: flex;
   gap: 0.75rem;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 0.6rem;
 }
 
-.avatar-wrapper,
+.avatar-section-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+.avatar-wrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
 .avatar.placeholder {
   width: 64px;
   height: 64px;
@@ -695,6 +788,31 @@ ${imageUrl ? "🖼️ תמונה:\n" + imageUrl + "\n\n" : ""}🧑‍💼 *כר�
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.avatar-upload-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: rgba(56, 189, 248, 0.2);
+  color: #60a5fa;
+  font-size: 0.6rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+  width: fit-content;
+
+  &:hover {
+    background: rgba(56, 189, 248, 0.3);
+    color: #93c5fd;
+  }
+
+  i {
+    font-size: 0.65rem;
+  }
 }
 
 .top-text h2 {

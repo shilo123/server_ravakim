@@ -12,6 +12,7 @@ const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const AWS = require("aws-sdk");
+const PDFDocument = require("pdfkit");
 const PORT = process.env.PORT || 3006;
 
 app.use("/UpFile", express.static("UpFile"));
@@ -162,7 +163,8 @@ app.get("/GetRavakim", async (req, res) => {
 });
 app.post("/FilterData", async (req, res) => {
   try {
-    let { Name, AgeStart, AgeEnd, Gender, RamaDatit, Address } = req.body;
+    let { Name, AgeStart, AgeEnd, Gender, RamaDatit, Address, Status } =
+      req.body;
 
     const ContentQuery = {};
 
@@ -180,6 +182,10 @@ app.post("/FilterData", async (req, res) => {
 
     if (Gender && Gender.trim() !== "") {
       ContentQuery.Gender = Gender;
+    }
+
+    if (Status && Status.trim() !== "") {
+      ContentQuery.Status = { $regex: `^${Status}`, $options: "i" };
     }
 
     // ✅ פה בכוונה אין BirthDate בכלל
@@ -408,6 +414,112 @@ app.put("/EditUser", async (req, res) => {
     res.json(false);
   }
 });
+
+// יצירת PDF עם שמות הרווקים
+app.get("/GeneratePDF", async (req, res) => {
+  try {
+    if (!collection) {
+      return res.status(500).json({ error: "מסד הנתונים לא מוכן" });
+    }
+
+    let data = await collection.find({}).toArray();
+    const names = data
+      .map((user) => user.Name)
+      .filter((name) => name && name.trim());
+
+    if (names.length === 0) {
+      return res.status(400).json({ error: "אין שמות להצגה" });
+    }
+
+    // יצירת PDF
+    const doc = new PDFDocument({
+      size: "A4",
+      margins: { top: 50, bottom: 50, left: 50, right: 50 },
+    });
+
+    // הגדרת headers לפני pipe
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      'attachment; filename="לזיווג הגון.pdf"'
+    );
+
+    // טיפול בשגיאות לפני pipe
+    doc.on("error", (err) => {
+      console.error("PDF generation error:", err);
+      if (!res.headersSent) {
+        res.status(500).json({ error: "שגיאה ביצירת PDF: " + err.message });
+      } else {
+        res.end();
+      }
+    });
+
+    // Pipe ל-response
+    doc.pipe(res);
+
+    // כותרת
+    doc
+      .fontSize(24)
+      .font("Helvetica-Bold")
+      .text("לזיווג הגון", { align: "center" })
+      .moveDown(1.5);
+
+    // כתיבת שמות - שני שמות בשורה
+    doc.fontSize(16).font("Helvetica");
+    const pageWidth = 595; // A4 width in points
+    const margin = 50;
+    const columnWidth = (pageWidth - 2 * margin) / 2;
+    let y = 120;
+    const lineHeight = 25;
+    const maxY = 750;
+
+    for (let i = 0; i < names.length; i += 2) {
+      // בדיקה אם צריך דף חדש
+      if (y > maxY) {
+        doc.addPage();
+        y = 50;
+      }
+
+      const name1 = names[i] || "";
+      const name2 = names[i + 1] || "";
+
+      // שם ראשון - עמודה שמאלית
+      if (name1) {
+        try {
+          doc.text(name1, margin, y, {
+            width: columnWidth - 10,
+            align: "right",
+          });
+        } catch (err) {
+          console.error("Error writing name1:", err);
+        }
+      }
+
+      // שם שני - עמודה ימנית
+      if (name2) {
+        try {
+          doc.text(name2, margin + columnWidth + 10, y, {
+            width: columnWidth - 10,
+            align: "right",
+          });
+        } catch (err) {
+          console.error("Error writing name2:", err);
+        }
+      }
+
+      y += lineHeight;
+    }
+
+    // סיום ה-PDF
+    doc.end();
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    if (!res.headersSent) {
+      res.status(500).json({ error: "שגיאה ביצירת PDF: " + error.message });
+    }
+  }
+});
+
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "client", "index.html"));
 });

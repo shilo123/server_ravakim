@@ -20,6 +20,11 @@
     />
     <!-- v-if="!ifPhone" -->
 
+    <!-- כפתור הורדת PDF -->
+    <div class="pdf-download-wrapper">
+      <button class="pdf-download-btn" @click="downloadPDF">📿 לתפילה</button>
+    </div>
+
     <!-- Allgrid מקבל מצב מחיקה + פונקציית מחיקה -->
     <Allgrid
       :data="data"
@@ -166,6 +171,52 @@ export default {
       userToDelete.value = null;
     };
 
+    const downloadPDF = async () => {
+      try {
+        const response = await fetch(URL + "GeneratePDF", {
+          method: "GET",
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // בדיקה אם התגובה היא PDF
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/pdf")) {
+          const text = await response.text();
+          console.error("Server response:", text);
+          throw new Error("השרת לא החזיר PDF תקין");
+        }
+
+        const blob = await response.blob();
+
+        // בדיקה שהבלוב לא ריק
+        if (blob.size === 0) {
+          throw new Error("הקובץ ריק");
+        }
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "לזיווג הגון.pdf";
+        document.body.appendChild(a);
+        a.click();
+
+        // ניקוי
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        }, 100);
+
+        window.$toast && window.$toast("✅ ה-PDF הורד בהצלחה", "success");
+      } catch (error) {
+        console.error("Error downloading PDF:", error);
+        window.$toast &&
+          window.$toast(`❌ שגיאה בהורדת PDF: ${error.message}`, "error");
+      }
+    };
+
     return {
       data,
       isFinished,
@@ -178,6 +229,7 @@ export default {
       showDeleteConfirm,
       confirmDelete,
       cancelDelete,
+      downloadPDF,
     };
   },
 };
@@ -329,6 +381,49 @@ export default {
     &:active {
       transform: scale(0.98);
     }
+  }
+}
+
+/* כפתור הורדת PDF */
+.pdf-download-wrapper {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+}
+
+.pdf-download-btn {
+  padding: 12px 24px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.5);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(16, 185, 129, 0.7);
+    filter: brightness(1.1);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+@media (max-width: 600px) {
+  .pdf-download-wrapper {
+    bottom: 15px;
+    left: 15px;
+  }
+
+  .pdf-download-btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
   }
 }
 </style>
