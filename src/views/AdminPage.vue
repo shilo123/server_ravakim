@@ -2,37 +2,37 @@
   <div
     class="ravakim-page"
     :class="{ 'ravakim-page--delete-mode': isDelete }"
-    :style="{
-      backgroundImage: 'url(/Logo.jpg)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat',
-      backgroundAttachment: 'fixed',
-    }"
+    dir="rtl"
   >
     <!-- overlay כהה בזמן מחיקה -->
     <div v-if="isDelete" class="ravakim-page__overlay"></div>
 
-    <BarTop
-      @updateisFinished="isFinished = $event"
-      @UpdateData="data = $event"
-      class="BarTop"
-    />
-    <!-- v-if="!ifPhone" -->
+    <main class="ravakim-page__main">
+      <div class="ravakim-page__container">
+        <!-- כפתור הורדת PDF -->
+        <div class="ravakim-page__header">
+          <button class="pdf-download-btn" @click="downloadPDF">
+            <span class="material-symbols-outlined">description</span>
+            <span>לזיווג הגון</span>
+          </button>
+        </div>
 
-    <!-- כפתור הורדת PDF -->
-    <div class="pdf-download-wrapper">
-      <button class="pdf-download-btn" @click="downloadPDF">📿 לתפילה</button>
-    </div>
+        <BarTop
+          @updateisFinished="isFinished = $event"
+          @UpdateData="data = $event"
+          class="BarTop"
+        />
 
-    <!-- Allgrid מקבל מצב מחיקה + פונקציית מחיקה -->
-    <Allgrid
-      :data="data"
-      :isFinished="isFinished"
-      :isDeleteMode="isDelete"
-      @GetPratim="GetPratim"
-      @DelteUser="DelteUser"
-    />
+        <!-- Allgrid מקבל מצב מחיקה + פונקציית מחיקה -->
+        <Allgrid
+          :data="data"
+          :isFinished="isFinished"
+          :isDeleteMode="isDelete"
+          @GetPratim="GetPratim"
+          @DelteUser="DelteUser"
+        />
+      </div>
+    </main>
 
     <DetalisCompVue
       v-if="showDetails && selectedId"
@@ -238,36 +238,43 @@ export default {
 <style scoped lang="scss">
 .ravakim-page {
   position: relative;
-  padding: 1rem;
   min-height: 100vh;
   box-sizing: border-box;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  // שכבה כהה מעל הרקע כדי שהתוכן יהיה קריא
-  &::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.85);
-    z-index: 0;
-    pointer-events: none;
-  }
+  background: #0a1020;
+  font-family: 'Assistant', sans-serif;
+  color: #e5e7eb;
+}
 
-  // כל התוכן מעל השכבה הכהה
-  // > * {
-  //   position: relative;
-  // }
+.ravakim-page__main {
+  width: 100%;
+  min-height: 100vh;
+  padding-top: 0;
+}
+
+.ravakim-page__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 3rem;
+  
+  @media (max-width: 600px) {
+    padding: 1rem 1rem 2rem;
+  }
+}
+
+.ravakim-page__header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 2rem;
 }
 
 /* overlay כהה מאחורי הכרטיסיות */
 .ravakim-page__overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.75); /* שחור-כחלחל שקוף */
-  pointer-events: none; /* כדי שהכרטיסיות עדיין יהיו קליקביליות */
+  background: rgba(10, 16, 32, 0.75);
+  pointer-events: none;
   z-index: 5;
+  backdrop-filter: blur(4px);
 }
 
 /* דיאלוג אישור מחיקה */
@@ -280,18 +287,19 @@ export default {
   justify-content: center;
   z-index: 10000;
   backdrop-filter: blur(4px);
+  padding: 1rem;
 }
 
 .delete-confirm-dialog {
-  background: linear-gradient(135deg, #1a0318, #2b0630);
+  background: linear-gradient(135deg, #121a2e, #1e293b);
   border-radius: 20px;
   padding: 1.5rem;
   max-width: 420px;
-  width: 90%;
+  width: 100%;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
-  border: 1px solid rgba(255, 200, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   color: #ffffff;
-  direction: rtl;
+  font-family: 'Assistant', sans-serif;
 }
 
 .delete-confirm-header {
@@ -300,13 +308,14 @@ export default {
   justify-content: space-between;
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
   h3 {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: 700;
-    color: #ffb703;
+    color: #ffffff;
+    font-family: 'Assistant', sans-serif;
   }
 }
 
@@ -349,20 +358,22 @@ export default {
 }
 
 .delete-confirm-btn {
-  padding: 0.6rem 1.2rem;
+  padding: 0.625rem 1.25rem;
   border: none;
   border-radius: 999px;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   font-weight: 600;
+  font-family: 'Assistant', sans-serif;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 
   &--cancel {
-    background: rgba(148, 163, 184, 0.3);
+    background: rgba(148, 163, 184, 0.2);
     color: #e5e7eb;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 
     &:hover {
-      background: rgba(148, 163, 184, 0.5);
+      background: rgba(148, 163, 184, 0.3);
       transform: translateY(-1px);
     }
   }
@@ -370,11 +381,11 @@ export default {
   &--confirm {
     background: linear-gradient(135deg, #ef4444, #dc2626);
     color: #ffffff;
-    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.5);
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
 
     &:hover {
       transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.7);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
       filter: brightness(1.1);
     }
 
@@ -385,45 +396,43 @@ export default {
 }
 
 /* כפתור הורדת PDF */
-.pdf-download-wrapper {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  z-index: 1000;
-}
-
 .pdf-download-btn {
-  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
   border-radius: 999px;
   border: none;
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #1152d4, #0d47a1);
   color: #ffffff;
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: 'Assistant', sans-serif;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.5);
+  box-shadow: 0 4px 14px rgba(17, 82, 212, 0.3);
   transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 
+  .material-symbols-outlined {
+    font-size: 1.125rem;
+  }
+
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 28px rgba(16, 185, 129, 0.7);
+    transform: translateY(-1px);
+    box-shadow: 0 0 30px -5px rgba(17, 82, 212, 0.7);
     filter: brightness(1.1);
   }
 
   &:active {
     transform: scale(0.98);
   }
-}
 
-@media (max-width: 600px) {
-  .pdf-download-wrapper {
-    bottom: 15px;
-    left: 15px;
-  }
-
-  .pdf-download-btn {
-    padding: 10px 20px;
-    font-size: 0.9rem;
+  @media (max-width: 600px) {
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+    
+    .material-symbols-outlined {
+      font-size: 1rem;
+    }
   }
 }
 </style>
